@@ -7,7 +7,7 @@ class UserAPI {
   final client = http.Client();
 
   Future getUserData({required String token}) async {
-    const subUrl = '/auth/verify';
+    const subUrl = '/api/Auth/Login';
     final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
     final http.Response response = await client.get(
       uri,

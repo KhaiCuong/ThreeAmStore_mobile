@@ -31,8 +31,9 @@ class UserNotifier with ChangeNotifier {
     required BuildContext context,
   }) async {
     try {
+      const subUrl = '/api/Auth/Login';
       var userData = await _userAPI.getUserData(token: token);
-      var response = UserModel.fromJson(jsonDecode(userData));
+      var response = RegisterModel.fromJson(jsonDecode(userData));
 
       final _data = response.data;
       final _received = response.received;
