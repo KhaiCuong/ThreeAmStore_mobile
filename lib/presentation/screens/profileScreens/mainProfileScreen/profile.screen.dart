@@ -140,6 +140,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                  
                   Container(
                     margin: const EdgeInsets.fromLTRB(0, 18, 0, 0),
                     child: GestureDetector(
@@ -162,6 +163,7 @@ class ProfileScreen extends StatelessWidget {
                                 : AppColors.mirage,
                           ),
                           const SizedBox(width: 8),
+                     
                           Text(
                             'Sign Out',
                             style: TextStyle(
@@ -211,20 +213,26 @@ class ProfileScreen extends StatelessWidget {
                   Navigator.of(context).pushNamed(AppRouter.accountInfo);
                 }
               },
-              child: CircleAvatar(
-                backgroundColor:
-                    themeFlag ? AppColors.creamColor : AppColors.mirage,
-                radius: profilePictureSize - 4,
-                child: Hero(
-                  tag: 'profilePicture',
-                  child: ClipOval(
-                    child: SvgPicture.network(
-                      'https://avatars.dicebear.com/api/big-smile/$userName.svg',
-                      semanticsLabel: 'A shark?!',
-                      alignment: Alignment.center,
-                    ),
-                  ),
-                ),
+              child:
+                  //  CircleAvatar(
+                  //   backgroundColor:
+                  //       themeFlag ? AppColors.creamColor : AppColors.mirage,
+                  //   radius: profilePictureSize - 4,
+                  //   child: Hero(
+                  //     tag: 'profilePicture',
+                  //     child: ClipOval(
+                  //       child: SvgPicture.network(
+                  //         'https://avatars.dicebear.com/api/big-smile/$userName.svg',
+                  //         semanticsLabel: 'A shark?!',
+                  //         alignment: Alignment.center,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  const CircleAvatar(
+                radius: 50,
+                backgroundImage: NetworkImage(
+                    "https://avatars.githubusercontent.com/u/91388754?v=4"),
               ),
             ),
           ),

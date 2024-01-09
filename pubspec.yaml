@@ -29,6 +29,8 @@ dependencies:
   shared_preferences: ^2.0.8
   shimmer: ^2.0.0
   url_strategy: ^0.2.0
+  connectivity: ^3.0.6
+  dio: ^4.0.0
 
 dev_dependencies:
   flutter_lints: ^1.0.0
@@ -37,7 +39,7 @@ dev_dependencies:
 
 flutter_native_splash:
   color: "#42a5f5"
-  image: assets/splash.png
+  image: assets/images/logo/splash.jpg
   android: true
   ios: true
   web: true
@@ -45,7 +47,7 @@ flutter_native_splash:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/logo/logo.png"
+  image_path: "assets/images/logo/splash.jpg"
 
 flutter:
   generate: true

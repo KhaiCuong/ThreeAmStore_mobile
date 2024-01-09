@@ -9,20 +9,21 @@ class CartNotifier with ChangeNotifier {
   final CartAPI _cartAPI = CartAPI();
 
   Future checkCartData(
-      {required BuildContext context, required String useremail}) async {
+      {required BuildContext context, required int useremail}) async {
     try {
       var products =
-          await _cartAPI.checkCartData(useremail: useremail, context: context);
+          await _cartAPI.checkCartData(useremail: 1, context: context);
+          
       var response = CartData.fromJson(jsonDecode(products));
 
       final _productBody = response.data;
-      final _productFilled = response.filled;
+      // final _productFilled = response.filled;
       final _productReceived = response.received;
 
       notifyListeners();
-      if (_productReceived && _productFilled) {
+      if (_productReceived ) {
         return _productBody;
-      } else if (!_productFilled || !_productReceived) {
+      } else if (!_productReceived ) {
         return null;
       }
     } on SocketException catch (_) {
@@ -34,25 +35,27 @@ class CartNotifier with ChangeNotifier {
 
   Future addToCart({
     required String useremail,
-    required String productPrice,
-    required String productName,
-    required String productCategory,
-    required String productImage,
+    // required String productPrice,
+    // required String productName,
+    // required String productCategory,
+    // required String productImage,
     required BuildContext context,
     required String productSize,
   }) async {
     try {
       var products = await _cartAPI.addToCart(
-          useremail: useremail,
-          productPrice: productPrice,
-          productName: productName,
-          productCategory: productCategory,
-          productImage: productImage,
+          useremail: 'hoang@tiwi.vn',
+          // productPrice: '100000',
+          // productName: 'Rolex',
+          // productCategory: 'productCategory',
+          // productImage: 'productImage',
           context: context,
-          productSize: productSize);
-      var response = AddToCartModel.fromJson(
-        jsonDecode(products),
-      );
+          productSize: '20');
+      var response = 
+        jsonDecode(products);
+  
+ print(">>>>>>>>>>>>>>>>>>>>>>>>>>products data: ${products}");
+
 
       final _productAdded = response.added;
       return _productAdded;
