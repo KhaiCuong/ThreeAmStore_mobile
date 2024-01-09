@@ -67,7 +67,7 @@ Widget _showProducts(
               tag: Key(prod.productId.toString()),
               child: SizedBox(
                 height: height,
-                child: Image.network(prod.productImage),
+                child: Image.network(prod.productImage!),
               ),
             ),
           ),

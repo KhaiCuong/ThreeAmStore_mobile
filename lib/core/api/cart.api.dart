@@ -11,7 +11,49 @@ class CartAPI {
     'Access-Control-Allow-Origin': "*",
   };
 
-  Future addToCart({
+ Future addToCart({
+  required String useremail,
+  required BuildContext context,
+  required String productSize,
+}) async {
+  const subUrl = '/api/Order/AddOrder';
+  final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
+
+  final http.Response response = await client.post(uri,
+      headers: headers,
+      body: jsonEncode({
+        "username": 'nguyen minh hoang',
+        "address": 'tran van dang q5',
+        "phone_number": '0909090909',
+        "user_id": 1,
+      }));
+
+  print(">>>>>>>>>>>>>>>>>>>>>>>>>> ADD Order response.statusCode : ${response.statusCode}");
+
+  final dynamic orderBody = jsonDecode(response.body);
+  final int orderId = orderBody["order_id"];
+  print(">>>>>>>>>>>>>>>>>>>>>>>>>>  orderId: ${orderId}");
+
+  const subUrl2 = '/api/OrderDetail/AddOrderDetail';
+  final Uri uri2 = Uri.parse(ApiRoutes.baseurl + subUrl2);
+
+  final http.Response response2 = await client.post(uri2,
+      headers: headers,
+      body: jsonEncode({
+        "quantity": 2,
+        "price": 1223412,
+        "produc_name": 'CALVIN KLEIN K8M216G6',
+        "product_id": 'PD03',
+        "image": '/uploads/lue14k4d.3i4PD1-1.jpg',
+        "order_id": orderId,
+      }));
+  print(">>>>>>>>>>>>>>>>>>>>>>>>>> ADD OrderDetail response.statusCode : ${response2.statusCode}");
+  final dynamic body = jsonDecode(response2.body);
+  return body;
+}
+
+
+  Future addToCartDetail({
     required String useremail,
     required String productPrice,
     required String productName,
@@ -37,10 +79,10 @@ class CartAPI {
   }
 
   Future checkCartData({
-    required String useremail,
+    required int useremail,
     required BuildContext context,
   }) async {
-    var subUrl = '/cart/$useremail';
+    var subUrl = '/api/Order/GetOrderListByUserId/$useremail';
     final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
     final http.Response response = await client.get(
       uri,

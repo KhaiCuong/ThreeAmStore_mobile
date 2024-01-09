@@ -86,9 +86,9 @@ class ProductScreen extends StatelessWidget {
                                     backgroundColor: AppColors.creamColor,
                                     enableFeedback: true,
                                     padding: const EdgeInsets.symmetric(
-                                      // horizontal: 20,
-                                      // vertical: 2,
-                                    ),
+                                        // horizontal: 20,
+                                        // vertical: 2,
+                                        ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5.0),
                                     ),
@@ -105,7 +105,8 @@ class ProductScreen extends StatelessWidget {
                                 SizedBox(
                                   height: 124,
                                   width: 190,
-                                  child: Image.network('https://rolex.dafc.com.vn/wp-content/uploads/watch-assets-laying-down/landscape_assets/m126508-0003_modelpage_laying_down_landscape.png'),
+                                  child: Image.network(
+                                      'https://rolex.dafc.com.vn/wp-content/uploads/watch-assets-laying-down/landscape_assets/m126508-0003_modelpage_laying_down_landscape.png'),
                                 ),
                               ],
                             ),
@@ -117,7 +118,7 @@ class ProductScreen extends StatelessWidget {
                     const BrandWidget(),
                     vSizedBox2,
                     Text(
-                      'Exclusive Shoes',
+                      'More Watches',
                       style: CustomTextWidget.bodyTextB2(
                         color:
                             themeFlag ? AppColors.creamColor : AppColors.mirage,
@@ -129,7 +130,6 @@ class ProductScreen extends StatelessWidget {
                       width: MediaQuery.of(context).size.width,
                       child: Consumer<ProductNotifier>(
                         builder: (context, notifier, _) {
-                          
                           return FutureBuilder(
                             future: notifier.fetchProducts(context: context),
                             builder: (context, snapshot) {
@@ -137,24 +137,52 @@ class ProductScreen extends StatelessWidget {
                                   ConnectionState.waiting) {
                                 return ShimmerEffects.loadShimmer(
                                     context: context);
-                              } else if (!snapshot.hasData) {
-                                return Center(
-                                  child: Text(
-                                    'Some Error Occurred...',
-                                    style: CustomTextWidget.bodyTextUltra(
-                                      color: themeFlag
-                                          ? AppColors.creamColor
-                                          : AppColors.mirage,
-                                    ),
-                                  ),
-                                );
+                                // } else if (!snapshot.hasData) {
+                                //   return Center(
+                                //     child: Text(
+                                //       'Some Error Occurred...',
+                                //       style: CustomTextWidget.bodyTextUltra(
+                                //         color: themeFlag
+                                //             ? AppColors.creamColor
+                                //             : AppColors.mirage,
+                                //       ),
+                                //     ),
+                                //   );
                               } else {
-                                var _snapshot = snapshot.data as List;
-                                return productForYou(
-                                  snapshot: _snapshot,
-                                  themeFlag: themeFlag,
-                                  context: context,
-                                );
+                                var _snapshot = snapshot.data;
+                                if (_snapshot == null) {
+                                  // Xử lý khi dữ liệu là null
+                                  // Ví dụ: Hiển thị thông báo hoặc thực hiện hành động khác
+                                  return Center(
+                                    child: Text(
+                                      'Data is null...',
+                                      style: CustomTextWidget.bodyTextUltra(
+                                        color: themeFlag
+                                            ? AppColors.creamColor
+                                            : AppColors.mirage,
+                                      ),
+                                    ),
+                                  );
+                                } else if (_snapshot is List) {
+                                  // Thực hiện chuyển đổi kiểu và xử lý dữ liệu
+                                  return productForYou(
+                                    snapshot: _snapshot,
+                                    themeFlag: themeFlag,
+                                    context: context,
+                                  );
+                                } else {
+                                  // Xử lý khi _snapshot không phải là List
+                                  return Center(
+                                    child: Text(
+                                      'Invalid data format...',
+                                      style: CustomTextWidget.bodyTextUltra(
+                                        color: themeFlag
+                                            ? AppColors.creamColor
+                                            : AppColors.mirage,
+                                      ),
+                                    ),
+                                  );
+                                }
                               }
                             },
                           );
