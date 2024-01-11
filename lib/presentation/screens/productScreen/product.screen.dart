@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
+import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/product.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:scarvs/core/notifiers/user.notifier.dart';
@@ -18,9 +19,13 @@ class ProductScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
+    final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
 
-    UserNotifier _userData = Provider.of<UserNotifier>(context);
-    var userName = _userData.getUserName ?? ' ';
+    // AuthenticationNotifier _userData =
+    //     Provider.of<AuthenticationNotifier>(context);
+    // var userName = _userData.getUserName ?? ' ';
+    var userName = authNotifier.auth.username ?? 'Wait';
     return SafeArea(
       child: Scaffold(
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
@@ -86,9 +91,9 @@ class ProductScreen extends StatelessWidget {
                                     backgroundColor: AppColors.creamColor,
                                     enableFeedback: true,
                                     padding: const EdgeInsets.symmetric(
-                                      // horizontal: 20,
-                                      // vertical: 2,
-                                    ),
+                                        // horizontal: 20,
+                                        // vertical: 2,
+                                        ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5.0),
                                     ),
@@ -105,7 +110,8 @@ class ProductScreen extends StatelessWidget {
                                 SizedBox(
                                   height: 124,
                                   width: 190,
-                                  child: Image.network('https://rolex.dafc.com.vn/wp-content/uploads/watch-assets-laying-down/landscape_assets/m126508-0003_modelpage_laying_down_landscape.png'),
+                                  child: Image.network(
+                                      'https://rolex.dafc.com.vn/wp-content/uploads/watch-assets-laying-down/landscape_assets/m126508-0003_modelpage_laying_down_landscape.png'),
                                 ),
                               ],
                             ),
@@ -129,7 +135,6 @@ class ProductScreen extends StatelessWidget {
                       width: MediaQuery.of(context).size.width,
                       child: Consumer<ProductNotifier>(
                         builder: (context, notifier, _) {
-                          
                           return FutureBuilder(
                             future: notifier.fetchProducts(context: context),
                             builder: (context, snapshot) {

@@ -3,8 +3,12 @@ import 'dart:io';
 
 import 'package:cache_manager/cache_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:http/http.dart';
 import 'package:scarvs/app/constants/app.keys.dart';
+import 'package:scarvs/app/routes/api.routes.dart';
 import 'package:scarvs/app/routes/app.routes.dart';
+import 'package:scarvs/core/api/authentication.api.dart';
 import 'package:scarvs/core/api/user.api.dart';
 import 'package:scarvs/core/models/update.user.model.dart';
 import 'package:scarvs/core/models/user.model.dart';
@@ -13,6 +17,10 @@ import 'package:scarvs/core/utils/snackbar.util.dart';
 
 class UserNotifier with ChangeNotifier {
   final UserAPI _userAPI = UserAPI();
+  final AuthenticationAPI _authenticationAPI = AuthenticationAPI();
+
+  int? userId;
+  int? get getUserId => userId;
 
   String? userEmail = 'Not Available';
   String? get getUserEmail => userEmail;
@@ -26,13 +34,59 @@ class UserNotifier with ChangeNotifier {
   String userPhoneNumber = 'Not Available';
   String get getuserPhoneNumber => userPhoneNumber;
 
+  String? token;
+  String? get gettoken => gettoken;
+
+  Future userLogin(
+      {required String useremail,
+      required String userpassword,
+      required BuildContext context}) async {
+    try {
+      // const subUrl = '/api/User/GetUser/$id';
+      var userData = await _authenticationAPI.userLogin(
+          useremail: useremail, userpassword: userpassword);
+      // var userData = await _userAPI.getUserData(id: id);
+      var response = RegisterModel.fromJson(jsonDecode(userData));
+      print(">>>>>>>>>>>>>>>>>>>>>>>parseData: ${response}");
+
+      final _data = response.data;
+      final _received = response.received;
+
+      if (!_received) {
+        notifyListeners();
+        Navigator.of(context)
+            .pushReplacementNamed(AppRouter.loginRoute)
+            .whenComplete(
+              () => DeleteCache.deleteKey(AppKeys.userData).whenComplete(() {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackUtil.stylishSnackBar(
+                      text: 'Oops Session Timeout', context: context),
+                );
+              }),
+            );
+      } else {
+        userEmail = _data.email;
+        userName = _data.username;
+        notifyListeners();
+      }
+    } on SocketException catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackUtil.stylishSnackBar(
+            text: 'Oops No You Need A Good Internet Connection',
+            context: context),
+      );
+    }
+  }
+
   Future getUserData({
+    required int id,
     required String token,
     required BuildContext context,
   }) async {
     try {
-      const subUrl = '/api/Auth/Login';
-      var userData = await _userAPI.getUserData(token: token);
+      // const subUrl = '/api/User/GetUser/$id';
+      // var userData = await _userAPI.getUserData(token: token);
+      var userData = await _userAPI.getUserData(id: id, token: token);
       var response = RegisterModel.fromJson(jsonDecode(userData));
 
       final _data = response.data;
@@ -44,11 +98,11 @@ class UserNotifier with ChangeNotifier {
             .pushReplacementNamed(AppRouter.loginRoute)
             .whenComplete(
               () => DeleteCache.deleteKey(AppKeys.userData).whenComplete(() {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackUtil.stylishSnackBar(
-                        text: 'Oops Session Timeout', context: context),
-                  );
-                }),
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackUtil.stylishSnackBar(
+                      text: 'Oops Session Timeout', context: context),
+                );
+              }),
             );
       } else {
         userEmail = _data.email;
@@ -65,11 +119,11 @@ class UserNotifier with ChangeNotifier {
   }
 
   Future getUserDetails({
-    required String userEmail,
+    required int userId,
     required BuildContext context,
   }) async {
     try {
-      var userData = await _userAPI.getUserDetails(userEmail: userEmail);
+      var userData = await _userAPI.getUserDetails(id: userId);
       var response = UserDetails.fromJson(jsonDecode(userData));
       final _data = response.data;
       final _filled = response.filled;

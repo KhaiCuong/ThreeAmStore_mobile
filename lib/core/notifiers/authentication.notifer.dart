@@ -15,6 +15,7 @@ import 'package:scarvs/app/constants/app.keys.dart';
 import 'package:scarvs/app/routes/app.routes.dart';
 import 'package:scarvs/core/api/authentication.api.dart';
 import 'package:scarvs/core/models/api_response.dart';
+import 'package:scarvs/core/models/userDetails.model.dart';
 import 'package:scarvs/core/utils/snackbar.util.dart';
 import 'package:scarvs/presentation/screens/signUpScreen/widget/loading/loading_options_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,8 +28,22 @@ class AuthenticationNotifier with ChangeNotifier {
   String? _passwordLevel = "";
   String? get passwordLevel => _passwordLevel;
 
+  String? _fullName = "";
+  String? get fullName => _fullName;
+
   String? _passwordEmoji = "";
   String? get passwordEmoji => _passwordEmoji;
+
+  User _user = User(
+      token: '',
+      id: 0,
+      username: '',
+      useremail: '',
+      userpassword: '',
+      useraddress: '',
+      userphoneNo: '',
+      role: '');
+  User get auth => _user;
 
   void checkPasswordStrength({required String password}) {
     String mediumPattern = r'^(?=.*?[!@#\$&*~]).{8,}';
@@ -112,10 +127,11 @@ class AuthenticationNotifier with ChangeNotifier {
     }
   }
 
-  Future userLogin(
-      {required String useremail,
-      required BuildContext context,
-      required String userpassword}) async {
+  Future userLogin({
+    required String useremail,
+    required BuildContext context,
+    required String userpassword,
+  }) async {
     try {
       const subUrl = '/api/Auth/Login';
       final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
@@ -131,7 +147,22 @@ class AuthenticationNotifier with ChangeNotifier {
       // print(">>>>>>>>>>>>>>>>>>>>>>>userData: ${response}");
 
       final Map<String, dynamic> parseData = await jsonDecode(userData);
+
+      final Map<String, dynamic> kkk = {
+        "token": parseData['token'],
+        "id": parseData['userToken']['user_id'],
+        "username": parseData['userToken']['fullname'],
+        "userphoneNo": parseData['userToken']['phone_number'],
+        "useraddress": parseData['userToken']['address'],
+        "useremail": parseData['userToken']['email'],
+        "userpassword": parseData['userToken']['password'],
+        "role": parseData['userToken']['role'],
+      };
+
+      _user = User.fromJson(kkk);
+
       print(">>>>>>>>>>>>>>>>>>>>>>>parseData: ${parseData}");
+
       // bool isAuthenticated = parseData['authentication'];
       // dynamic authData = parseData['data'];
 

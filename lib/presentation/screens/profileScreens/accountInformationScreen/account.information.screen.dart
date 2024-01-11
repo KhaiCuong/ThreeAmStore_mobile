@@ -27,7 +27,7 @@ class AccountInformationScreen extends StatelessWidget {
               builder: (context, notifier, _) {
                 return FutureBuilder(
                   future: notifier.getUserDetails(
-                      userEmail: userNotifier.userEmail!, context: context),
+                       context: context, userId: 3),
                   builder: (context, snapshot) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

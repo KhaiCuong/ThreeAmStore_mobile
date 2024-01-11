@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
 import 'package:scarvs/app/constants/app.keys.dart';
 import 'package:scarvs/app/routes/app.routes.dart';
+import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/notifiers/user.notifier.dart';
@@ -189,13 +190,18 @@ class ProfileScreen extends StatelessWidget {
     required bool themeFlag,
   }) {
     final userNotifier = Provider.of<UserNotifier>(context, listen: false);
-    var userName = userNotifier.getUserName ?? 'Wait';
+    final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+
+    var userName = authNotifier.auth.username ?? 'Wait';
+
     final double profilePictureSize = MediaQuery.of(context).size.width / 4;
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Text($userId),
           SizedBox(
             width: profilePictureSize,
             height: profilePictureSize,

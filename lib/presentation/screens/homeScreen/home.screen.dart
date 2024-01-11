@@ -57,9 +57,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     final userNotifier = Provider.of<UserNotifier>(context, listen: false);
-    ReadCache.getString(key: AppKeys.userData).then(
-      (token) => {
-        userNotifier.getUserData(context: context, token: token),
+    ReadCache.getString(key: AppKeys.userId).then(
+      (userid) => {
+        userNotifier.getUserData(context: context, id: userid, token: 'token'),
       },
     );
     super.initState();
