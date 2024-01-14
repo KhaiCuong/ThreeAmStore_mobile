@@ -5,6 +5,8 @@ import 'package:scarvs/core/models/product.model.dart';
 import 'package:scarvs/presentation/screens/productDetailScreen/product.detail.screen.dart';
 import 'package:scarvs/presentation/widgets/custom.text.style.dart';
 
+import '../../../../app/routes/api.routes.dart';
+
 Widget showDataInGrid(
     {required snapshot,
     required themeFlag,
@@ -30,12 +32,14 @@ Widget showDataInGrid(
     ),
   );
 }
+Widget _showProducts({
+  required BuildContext context,
+  required ProductData prod,
+  required bool themeFlag,
+  required double height,
+}) {
+  var domain = ApiRoutes.baseurl;
 
-Widget _showProducts(
-    {required BuildContext context,
-    required ProductData prod,
-    required bool themeFlag,
-    required double height}) {
   return Card(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10),
@@ -54,10 +58,9 @@ Widget _showProducts(
           arguments: ProductDetailsArgs(id: prod.productId),
         );
       },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
+          // Hình ảnh sản phẩm
           ClipRRect(
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(10),
@@ -67,33 +70,58 @@ Widget _showProducts(
               tag: Key(prod.productId.toString()),
               child: SizedBox(
                 height: height,
-                child: Image.network(prod.productImage!),
+                child: prod.productImage != null &&
+                        prod.productImage!.isNotEmpty
+                    ? Image.network(
+                        "$domain${prod.productImage!}",
+                        fit: BoxFit.cover,
+                      )
+                    : Container(),
               ),
             ),
           ),
-          Container(
-            margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  prod.productName,
-                  style: CustomTextWidget.bodyText3(
-                    color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+          // Giá sản phẩm
+          Positioned(
+           top: height - 18, // Điều chỉnh vị trí của tên sản phẩm
+            left: 8,
+            right: 8,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '\$ ${prod.productPrice}',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
                 ),
-                Text(
-                  '₹  ${prod.productPrice}',
-                  style: CustomTextWidget.bodyText3(
-                    color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+          // Tên sản phẩm
+          Positioned(
+            bottom: 1, // Điều chỉnh vị trí của tên sản phẩm
+            left: 8,
+            right: 8,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              // decoration: BoxDecoration(
+              //   color: const Color.fromARGB(255, 248, 248, 248).withOpacity(1),
+              //   borderRadius: BorderRadius.circular(8),
+              // ),
+              child: Text(
+                prod.productName,
+                
+                style: TextStyle(
+                  color: themeFlag ? AppColors.creamColor : AppColors.blackPearl,
+                  fontSize: 12,
                 ),
-              ],
+                
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ],

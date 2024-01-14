@@ -163,7 +163,7 @@ class ProductNotifier with ChangeNotifier {
   }
 
   Future fetchProductDetail(
-      {required BuildContext context, required dynamic id}) async {
+      { required dynamic id}) async {
     try {
       final dio = Dio();
       final response =
@@ -189,34 +189,57 @@ class ProductNotifier with ChangeNotifier {
       print("DioError: $e");
       return [];
     } on SocketException catch (_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackUtil.stylishSnackBar(
-            text: 'Oops No You Need A Good Internet Connection',
-            context: context),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackUtil.stylishSnackBar(
+      //       text: 'Oops No You Need A Good Internet Connection',
+      //       context: context),
+      // );
     }
   }
 
-  Future fetchProductCategory(
-      {required BuildContext context, required dynamic categoryName}) async {
+  Future<List<ProductData>> fetchProductCategory(
+      {required BuildContext context, required String id}) async {
     try {
-      var products =
-          await _productAPI.fetchProductCategory(categoryName: categoryName);
-      var response = ProductModel.fromJson(jsonDecode(products));
+      // id = 'RL9';
+      final dio = Dio();
+      final response =
+          await dio.get(ApiRoutes.baseurl + '/api/Product/GetProductListByCategoryId/$id');
+      print(
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>fetchProductCategory response.statusCode: ${response.statusCode}");
+      // print(">>>>>>>>>>>>>>>>>>>>>>>>>>products data: ${response.data}");
+      if (response.statusCode == 200) {
+        var responseData = response.data;
+        // print(">>>>>>>>>>>>>>>>>>>>>>>>>>responseData : ${responseData['data']}");
 
-      final _productBody = response.data;
-      // final _productFilled = response.filled;
-      // final _productReceived = response.received;
-
-      // if (_productReceived && _productFilled) {
-      return _productBody;
-      // } else if (!_productFilled && _productReceived) {
-      //   return [];
-      // }
+        if (responseData != null && responseData['data'] is List<dynamic>) {
+          List<ProductData> productList =
+              (responseData['data'] as List<dynamic>)
+                  .map((json) => ProductData.fromJson(json))
+                  .toList();
+          // print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: $productList");
+          return productList;
+        } else {
+          return [];
+          // Xử lý khi data là null hoặc không phải là List<dynamic>
+        }
+      } else {
+        // Xử lý khi mã trạng thái không phải là 200
+        return [];
+      }
+    } on DioError catch (e) {
+      // Xử lý lỗi từ Dio.
+      print("DioError: $e");
+      return [];
     } on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
-          text: 'Oops No You Need A Good Internet Connection',
-          context: context));
+        text: 'Oops No You Need A Good Internet Connection',
+        context: context,
+      ));
+      return [];
+    } catch (e) {
+      // Xử lý lỗi tổng quát
+      print("Error: $e");
+      return [];
     }
   }
 

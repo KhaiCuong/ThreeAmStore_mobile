@@ -76,11 +76,39 @@ class BrandWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Brands We Have',
-          style: CustomTextWidget.bodyTextB2(
-            color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Brands We Have',
+              style: CustomTextWidget.bodyTextB2(
+                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Xử lý sự kiện khi nút được nhấn
+                 Navigator.of(context).pushNamed(
+            AppRouter.categoryRoute,
+            arguments: const CategoryScreenArgs(categoryName: 'All Brands'),
+          );
+              },
+              child:  Text(
+                'See All',
+                style: TextStyle(
+                  color: themeFlag?AppColors.creamColor:AppColors.blueZodiac,
+                  fontSize: 16.0,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                primary:themeFlag? AppColors.blackPearl:AppColors.creamColor, // Màu nền của nút
+                shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(10.0), // Độ bo tròn của nút
+                ),
+              ),
+            )
+          ],
         ),
         vSizedBox2,
         SizedBox(

@@ -57,10 +57,19 @@ class CategoryScreen extends StatelessWidget {
                   child: Consumer<ProductNotifier>(
                     builder: (context, notifier, _) {
                       return FutureBuilder(
-                        future: notifier.fetchProductCategory(
-                          context: context,
-                          categoryName: categoryScreenArgs.categoryName,
-                        ),
+                        future: categoryScreenArgs.categoryName == 'All Brands'
+                            ? notifier.fetchProducts(context: context)
+                            : notifier.fetchProductCategory(
+                                context: context,
+                                id: categoryScreenArgs.categoryName == 'Rolex'
+                                    ? 'RL9'
+                                    : categoryScreenArgs.categoryName == 'Omega'
+                                        ? 'OM2'
+                                        : categoryScreenArgs.categoryName ==
+                                                'Hublot'
+                                            ? 'MV4'
+                                            : 'CS7',
+                              ),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
