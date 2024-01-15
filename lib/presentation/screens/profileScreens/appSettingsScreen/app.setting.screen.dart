@@ -33,11 +33,11 @@ class AppSettings extends StatelessWidget {
               builder: (context, notifier, _) {
                 return SwitchListTile(
                   contentPadding: const EdgeInsets.only(left: 16, right: 4),
-                  title: const Text(
-                    'Dark Mode',
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
+                  title:  Text(
+                    'Dark Mode',  style: CustomTextWidget.bodyTextB4(
+                    color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                  ),
+                   
                   ),
                   value: themeFlag,
                   activeColor:

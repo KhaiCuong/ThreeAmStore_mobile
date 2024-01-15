@@ -143,10 +143,10 @@ class AuthenticationAPI {
   //   }
   // }
 
-  // bool checkTokenExp(int expireTime) {
-  //   bool checkTime = DateTime.now().millisecondsSinceEpoch > expireTime * 1000;
-  //   return checkTime;
-  // }
+  bool checkTokenExp(int expireTime) {
+    bool checkTime = DateTime.now().millisecondsSinceEpoch > expireTime * 1000;
+    return checkTime;
+  }
 
   // Future<Position> getPosition() async {
   //   LocationPermission? permission;

@@ -193,7 +193,9 @@ class ProfileScreen extends StatelessWidget {
     final authNotifier =
         Provider.of<AuthenticationNotifier>(context, listen: false);
 
-    var userName = authNotifier.auth.username ?? 'Wait';
+    // var userName = authNotifier.auth.username ?? 'Wait';
+    var userName =
+        authNotifier.auth.username != '' ? authNotifier.auth.username : 'Wait';
 
     final double profilePictureSize = MediaQuery.of(context).size.width / 4;
     return Container(
@@ -201,7 +203,6 @@ class ProfileScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Text($userId),
           SizedBox(
             width: profilePictureSize,
             height: profilePictureSize,
@@ -217,20 +218,26 @@ class ProfileScreen extends StatelessWidget {
                   Navigator.of(context).pushNamed(AppRouter.accountInfo);
                 }
               },
-              child: CircleAvatar(
-                backgroundColor:
-                    themeFlag ? AppColors.creamColor : AppColors.mirage,
-                radius: profilePictureSize - 4,
-                child: Hero(
-                  tag: 'profilePicture',
-                  child: ClipOval(
-                    child: SvgPicture.network(
-                      'https://avatars.dicebear.com/api/big-smile/$userName.svg',
-                      semanticsLabel: 'A shark?!',
-                      alignment: Alignment.center,
-                    ),
-                  ),
-                ),
+              child:
+                  //  CircleAvatar(
+                  //   backgroundColor:
+                  //       themeFlag ? AppColors.creamColor : AppColors.mirage,
+                  //   radius: profilePictureSize - 4,
+                  //   child: Hero(
+                  //     tag: 'profilePicture',
+                  //     child: ClipOval(
+                  //       child: SvgPicture.network(
+                  //         'https://avatars.dicebear.com/api/big-smile/$userName.svg',
+                  //         semanticsLabel: 'A shark?!',
+                  //         alignment: Alignment.center,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  const CircleAvatar(
+                radius: 50,
+                backgroundImage: NetworkImage(
+                    "https://avatars.githubusercontent.com/u/91388754?v=4"),
               ),
             ),
           ),

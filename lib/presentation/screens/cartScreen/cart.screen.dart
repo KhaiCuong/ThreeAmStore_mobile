@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
 import 'package:scarvs/app/routes/app.routes.dart';
+import 'package:scarvs/core/api/authentication.api.dart';
+import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/cart.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:scarvs/core/notifiers/user.notifier.dart';
@@ -29,7 +31,11 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
-    final userNotifier = Provider.of<UserNotifier>(context, listen: false);
+    // final userNotifier = Provider.of<AuthenticationNotifier>(context, listen: false);
+  
+     final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+          var useremail = authNotifier.auth.useremail ?? 'Wait';
 
     return SafeArea(
       child: Scaffold(
@@ -61,7 +67,7 @@ class _CartScreenState extends State<CartScreen> {
                     return FutureBuilder(
                       future: notifier.checkCartData(
                           context: context,
-                          useremail: userNotifier.getUserEmail!),
+                          useremail: authNotifier.auth.useremail),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           return customLoader(

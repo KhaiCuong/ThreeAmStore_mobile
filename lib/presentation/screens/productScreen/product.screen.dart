@@ -123,7 +123,7 @@ class ProductScreen extends StatelessWidget {
                     const BrandWidget(),
                     vSizedBox2,
                     Text(
-                      'Exclusive Shoes',
+                      'More Watches',
                       style: CustomTextWidget.bodyTextB2(
                         color:
                             themeFlag ? AppColors.creamColor : AppColors.mirage,
@@ -142,24 +142,52 @@ class ProductScreen extends StatelessWidget {
                                   ConnectionState.waiting) {
                                 return ShimmerEffects.loadShimmer(
                                     context: context);
-                              } else if (!snapshot.hasData) {
-                                return Center(
-                                  child: Text(
-                                    'Some Error Occurred...',
-                                    style: CustomTextWidget.bodyTextUltra(
-                                      color: themeFlag
-                                          ? AppColors.creamColor
-                                          : AppColors.mirage,
-                                    ),
-                                  ),
-                                );
+                                // } else if (!snapshot.hasData) {
+                                //   return Center(
+                                //     child: Text(
+                                //       'Some Error Occurred...',
+                                //       style: CustomTextWidget.bodyTextUltra(
+                                //         color: themeFlag
+                                //             ? AppColors.creamColor
+                                //             : AppColors.mirage,
+                                //       ),
+                                //     ),
+                                //   );
                               } else {
-                                var _snapshot = snapshot.data as List;
-                                return productForYou(
-                                  snapshot: _snapshot,
-                                  themeFlag: themeFlag,
-                                  context: context,
-                                );
+                                var _snapshot = snapshot.data;
+                                if (_snapshot == null) {
+                                  // Xử lý khi dữ liệu là null
+                                  // Ví dụ: Hiển thị thông báo hoặc thực hiện hành động khác
+                                  return Center(
+                                    child: Text(
+                                      'Data is null...',
+                                      style: CustomTextWidget.bodyTextUltra(
+                                        color: themeFlag
+                                            ? AppColors.creamColor
+                                            : AppColors.mirage,
+                                      ),
+                                    ),
+                                  );
+                                } else if (_snapshot is List) {
+                                  // Thực hiện chuyển đổi kiểu và xử lý dữ liệu
+                                  return productForYou(
+                                    snapshot: _snapshot,
+                                    themeFlag: themeFlag,
+                                    context: context,
+                                  );
+                                } else {
+                                  // Xử lý khi _snapshot không phải là List
+                                  return Center(
+                                    child: Text(
+                                      'Invalid data format...',
+                                      style: CustomTextWidget.bodyTextUltra(
+                                        color: themeFlag
+                                            ? AppColors.creamColor
+                                            : AppColors.mirage,
+                                      ),
+                                    ),
+                                  );
+                                }
                               }
                             },
                           );

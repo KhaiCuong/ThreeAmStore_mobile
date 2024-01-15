@@ -9,6 +9,7 @@ class AppColors {
   static Color rawSienna = const Color(0xffd7834f);
   static Color blueZodiac = const Color(0xff0c1c3d);
   static Color blueZodiacTwo = const Color(0xff122651);
-  static Color creamColor = const Color(0xfff5f5ff);
+  static Color creamColor = Color.fromARGB(255, 247, 247, 247);
+  static Color buyColor = Color.fromARGB(255, 249, 200, 200);
   static Color darkCreamColor = const Color(0xff18181B);
 }
