@@ -110,7 +110,7 @@ class AuthenticationNotifier with ChangeNotifier {
         WriteCache.setString(key: AppKeys.userData, value: username)
             .whenComplete(
           () =>
-              Navigator.of(context).pushReplacementNamed(AppRouter.loginRoute),
+              Navigator.of(context).pushReplacementNamed(AppRouter.successSignup),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
 import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/product.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:scarvs/core/notifiers/user.notifier.dart';
 import 'package:scarvs/presentation/screens/productScreen/widgets/brands.widget.dart';
-import 'package:scarvs/presentation/screens/productScreen/widgets/recommended.widget.dart';
 import 'package:scarvs/presentation/widgets/shimmer.effects.dart';
 import 'package:scarvs/presentation/widgets/custom.text.style.dart';
 import 'package:scarvs/presentation/widgets/dimensions.widget.dart';
 
-class ProductScreen extends StatelessWidget {
+import '../../../app/routes/api.routes.dart';
+import '../../../app/routes/app.routes.dart';
+import '../../../core/models/favorite_product.dart';
+import '../../../core/models/product.model.dart';
+import '../../../core/service/favorite_product_box.dart';
+import '../productDetailScreen/product.detail.screen.dart';
+
+class ProductScreen extends StatefulWidget {
   const ProductScreen({Key? key}) : super(key: key);
 
+  @override
+  State<ProductScreen> createState() => _ProductScreenState();
+}
+
+class _ProductScreenState extends State<ProductScreen> {
   @override
   Widget build(BuildContext context) {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
@@ -170,10 +180,18 @@ class ProductScreen extends StatelessWidget {
                                   );
                                 } else if (_snapshot is List) {
                                   // Thực hiện chuyển đổi kiểu và xử lý dữ liệu
-                                  return productForYou(
-                                    snapshot: _snapshot,
-                                    themeFlag: themeFlag,
-                                    context: context,
+                                  return ListView.separated(
+                                    physics: const ScrollPhysics(),
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    separatorBuilder: (context, index) =>
+                                        const SizedBox(width: 8),
+                                    itemCount: _snapshot.length,
+                                    itemBuilder: (context, index) {
+                                      ProductData prod = _snapshot[index];
+                                      return buildProductCard(
+                                          prod, themeFlag, context);
+                                    },
                                   );
                                 } else {
                                   // Xử lý khi _snapshot không phải là List
@@ -203,4 +221,160 @@ class ProductScreen extends StatelessWidget {
       ),
     );
   }
+  
+Widget buildProductCard(
+    ProductData prod, bool themeFlag, BuildContext context) {
+  var domain = ApiRoutes.baseurl;
+
+  return InkWell(
+    onTap: () {
+      Navigator.of(context).pushNamed(
+        AppRouter.prodDetailRoute,
+        arguments: ProductDetailsArgs(id: prod.productId),
+      );
+    },
+    child: Container(
+      width: 190,
+      height: 120,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.grey.withOpacity(0.2),
+            width: 1,
+          ),
+        ),
+        elevation: 6,
+        color: themeFlag ? AppColors.mirage : AppColors.creamColor,
+        child: Stack(
+          children: [
+            Positioned(
+              top: 4,
+              left: -16,
+              child: Transform.rotate(
+                angle: -45 * 3.141592653589793238462 / 180,
+                child: Container(
+                  width: 60,
+                  height: 20,
+                  color: Colors.red,
+                  child: const Center(
+                    child: Text(
+                      "NEW",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: -8,
+              left: 124,
+              child: IconButton(
+                onPressed: () {
+                  toggleFavoriteStatus(context, prod.productId);
+              
+                },
+                icon: Icon(
+                  isProductFavorite(prod.productId)
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 26,
+              left: 15,
+              child: Hero(
+                tag: Key(prod.productId.toString()),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.14,
+                  width: MediaQuery.of(context).size.height * 0.160,
+                  child:
+                      prod.productImage != null && prod.productImage!.isNotEmpty
+                          ? Image.network(
+                              "$domain${prod.productImage!}",
+                              fit: BoxFit.scaleDown,
+                            )
+                          : Container(),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 132,
+              left: 02,
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      prod.productName,
+                      style: CustomTextWidget.bodyText3(
+                        color:
+                            themeFlag ? AppColors.creamColor : AppColors.mirage,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      '      \$  ${prod.productPrice}',
+                      style: CustomTextWidget.bodyText3(
+                        color:
+                            themeFlag ? AppColors.creamColor : AppColors.mirage,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+}
+
+// Hàm kiểm tra xem sản phẩm có trong danh sách favorite hay không
+bool isProductFavorite(String productId) {
+  final favoriteBox = FavoriteProductBox();
+  return favoriteBox.isFavorite(productId);
+}
+Future<void> toggleFavoriteStatus(
+    BuildContext context, String productId) async {
+  final favoriteBox = FavoriteProductBox();
+
+  if (favoriteBox.isFavorite(productId)) {
+    await FavoriteProductBox.removeFromFavorites(productId);
+    print("Đã xoá yêu thích");
+  } else {
+    ProductNotifier productNotifier = ProductNotifier();
+    ProductData productToAdd =
+        await productNotifier.fetchProductDetail(id: productId);
+
+    final favoriteProduct = FavoriteProduct(
+      productId: productToAdd.productId,
+      productName: productToAdd.productName,
+      productDescription: productToAdd.productDescription,
+      productPrice: productToAdd.productPrice,
+      productImage: productToAdd.productImage,
+    );
+
+    await favoriteBox.addToFavorites(favoriteProduct);
+
+    print("Đã thêm yêu thích");
+  }
+
+  // Trigger UI rebuild
+  setState(() {});
+}
+
+
 }
