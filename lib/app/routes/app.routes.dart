@@ -18,6 +18,9 @@ import 'package:scarvs/presentation/screens/searchScreen/search.screen.dart';
 import 'package:scarvs/presentation/screens/signUpScreen/signup.screen.dart';
 import 'package:scarvs/presentation/screens/splashScreen/splash.screen.dart';
 
+import '../../presentation/screens/cartScreen/success_booked.dart';
+import '../../presentation/screens/profileScreens/favoriteListScreen/favoriteList.screen.dart';
+
 class AppRouter {
   static const String splashRoute = "/splash";
   static const String onBoardRoute = "/onBoard";
@@ -34,6 +37,8 @@ class AppRouter {
   static const String prodDetailRoute = "/productDetail";
   static const String editProfileRoute = "/editProfile";
   static const String changePassRoute = "/changePassword";
+  static const String successOrder = "/succesOrder";
+  static const String favoriteList = "/favoriteList";
 
   static Route? generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -135,6 +140,18 @@ class AppRouter {
         {
           return MaterialPageRoute(
             builder: (_) => ChangePasswordScreen(),
+          );
+        }
+         case successOrder:
+        {
+          return MaterialPageRoute(
+            builder: (_) => const AppointmentBooked(),
+          );
+        }
+          case favoriteList:
+        {
+          return MaterialPageRoute(
+            builder: (_) => const FavoriteList(),
           );
         }
     }

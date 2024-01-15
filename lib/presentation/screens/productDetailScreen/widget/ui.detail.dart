@@ -115,44 +115,66 @@ Widget productUI({
                 borderRadius: BorderRadius.circular(8.0),
               ),
             ),
-            onPressed: () {
-              cartNotifier.addToCart(
-                // useremail: userNotifier.getUserEmail!,
-                useremail: 'hoang@tiwi.vn',
-                // productPrice: snapshot.productPrice as String,
-                // productName: snapshot.productName,
-                // productCategory: snapshot.category!,
-                // productImage: snapshot.productImage!,
-                context: context,
-                productSize: sizeNotifier.getSize,
-              );
-              // print("User Email: ${userNotifier.getUserEmail}");
-              // print("User Price: ${snapshot.productPrice}");
-              // print("User Name: ${snapshot.productName}");
-              // print("User Cate: ${snapshot.category}");
-              // print("User Image: ${snapshot.productImage}");
-              // print("User Size: ${sizeNotifier.getSize}");
+            onPressed: () async {
+              bool isInCart =
+                  await cartNotifier.isProductInCart(snapshot.productId);
 
-              //   .then((value) {
-              // if (value) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackUtil.stylishSnackBar(
-                  text: 'Added To Cart',
+              if (isInCart) {
+                // Sản phẩm đã có trong OrderData, cập nhật quantity thêm 1
+                bool updateQuantity = await cartNotifier.updateQuantityInCart(
+                    snapshot.productId, 1);
+                if (updateQuantity) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackUtil.stylishSnackBar(
+                      text: 'Added More To Cart',
+                      context: context,
+                    ),
+                  );
+                }
+              } else {
+                cartNotifier.addToHiveCart(
+                  // useremail: userNotifier.getUserEmail!,
+                  userEmail: 'hoang@tiwi.vn',
+                  username: "Hoang",
+                  address: "Tran Van Dang",
+                  phoneNumber: '0909222009',
+                  price: snapshot.productPrice!,
+                  productName: snapshot.productName,
+                  productId: snapshot.productId,
+                  image: snapshot.productImage!,
+                  userId: 2,
+                  quantity: 1,
                   context: context,
-                ),
-              );
-              // Navigator.of(context).pushNamed(AppRouter.homeRoute);
-              // } else {
-              //   ScaffoldMessenger.of(context).showSnackBar(
-              //     SnackUtil.stylishSnackBar(
-              //       text: 'Oops Something Went Wrong',
-              //       context: context,
-              //     ),
-              //   );
-              // }
-              // }
-              // )
-              // ;
+                  productSize: sizeNotifier.getSize,
+                );
+                // print("User Email: ${userNotifier.getUserEmail}");
+                // print("User Price: ${snapshot.productPrice}");
+                // print("User Name: ${snapshot.productName}");
+                // print("User Cate: ${snapshot.category}");
+                // print("User Image: ${snapshot.productImage}");
+                // print("User Size: ${sizeNotifier.getSize}");
+
+                //   .then((value) {
+                // if (value) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackUtil.stylishSnackBar(
+                    text: 'Added To Cart',
+                    context: context,
+                  ),
+                );
+                // Navigator.of(context).pushNamed(AppRouter.homeRoute);
+                // } else {
+                //   ScaffoldMessenger.of(context).showSnackBar(
+                //     SnackUtil.stylishSnackBar(
+                //       text: 'Oops Something Went Wrong',
+                //       context: context,
+                //     ),
+                //   );
+                // }
+                // }
+                // )
+                // ;
+              }
             },
             child: Text(
               'Add To Cart',
@@ -161,58 +183,58 @@ Widget productUI({
               ),
             ),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  themeFlag ? AppColors.buyColor : AppColors.rawSienna,
-              enableFeedback: true,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 25,
-                vertical: 8,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-            ),
-            onPressed: () {
-              cartNotifier.addToCart(
-                // useremail: userNotifier.getUserEmail!,
-                useremail: 'hoang@tiwi.vn',
-                // productPrice: snapshot.productPrice as String,
-                // productName: snapshot.productName,
-                // productCategory: snapshot.category!,
-                // productImage: snapshot.productImage!,
-                context: context,
-                productSize: sizeNotifier.getSize,
-              );
-              //   .then((value) {
-              // if (value) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackUtil.stylishSnackBar(
-                  text: 'Added To Cart',
-                  context: context,
-                ),
-              );
-              // Navigator.of(context).pushNamed(AppRouter.homeRoute);
-              // } else {
-              //   ScaffoldMessenger.of(context).showSnackBar(
-              //     SnackUtil.stylishSnackBar(
-              //       text: 'Oops Something Went Wrong',
-              //       context: context,
-              //     ),
-              //   );
-              // }
-              // }
-              // )
-              // ;
-            },
-            child: Text(
-              'Buy Now',
-              style: CustomTextWidget.bodyTextB2(
-                color: themeFlag ? AppColors.mirage : AppColors.creamColor,
-              ),
-            ),
-          ),
+          // ElevatedButton(
+          //   style: ElevatedButton.styleFrom(
+          //     backgroundColor:
+          //         themeFlag ? AppColors.buyColor : AppColors.rawSienna,
+          //     enableFeedback: true,
+          //     padding: const EdgeInsets.symmetric(
+          //       horizontal: 25,
+          //       vertical: 8,
+          //     ),
+          //     shape: RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.circular(8.0),
+          //     ),
+          //   ),
+          //   onPressed: () {
+          //     cartNotifier.addToHiveCart(
+          //       // useremail: userNotifier.getUserEmail!,
+          //       useremail: 'hoang@tiwi.vn',
+          //       // productPrice: snapshot.productPrice as String,
+          //       // productName: snapshot.productName,
+          //       // productCategory: snapshot.category!,
+          //       // productImage: snapshot.productImage!,
+          //       context: context,
+          //       productSize: sizeNotifier.getSize,
+          //     );
+          //     //   .then((value) {
+          //     // if (value) {
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       SnackUtil.stylishSnackBar(
+          //         text: 'Added To Cart',
+          //         context: context,
+          //       ),
+          //     );
+          //     // Navigator.of(context).pushNamed(AppRouter.homeRoute);
+          //     // } else {
+          //     //   ScaffoldMessenger.of(context).showSnackBar(
+          //     //     SnackUtil.stylishSnackBar(
+          //     //       text: 'Oops Something Went Wrong',
+          //     //       context: context,
+          //     //     ),
+          //     //   );
+          //     // }
+          //     // }
+          //     // )
+          //     // ;
+          //   },
+          //   child: Text(
+          //     'Buy Now',
+          //     style: CustomTextWidget.bodyTextB2(
+          //       color: themeFlag ? AppColors.mirage : AppColors.creamColor,
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     ],

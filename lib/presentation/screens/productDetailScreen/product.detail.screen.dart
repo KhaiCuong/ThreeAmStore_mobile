@@ -33,24 +33,24 @@ class _ProductDetailState extends State<ProductDetail> {
           child: Consumer<ProductNotifier>(builder: (context, notifier, _) {
             return FutureBuilder(
               future: notifier.fetchProductDetail(
-                context: context,
+                // context: context,
                 id: widget.productDetailsArguements.id,
               ),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: customLoader(
-                        context: context,
-                        themeFlag: themeFlag,
-                        lottieAsset: AppAssets.onBoardingOne,
-                        text: 'Please Wait Till It Loads'),
-                  );
-                } else {
-                  var _snapshot = snapshot.data;
+                if (snapshot.connectionState == ConnectionState.done) {
+                    var _snapshot = snapshot.data;
                   return productUI(
                     context: context,
                     themeFlag: themeFlag,
                     snapshot: _snapshot,
+                  );
+                } else {
+                   return Center(
+                    child: customLoader(
+                        context: context,
+                        themeFlag: themeFlag,
+                        lottieAsset: AppAssets.onBoardingTwo,
+                        text: 'Please Wait Till It Loads'),
                   );
                 }
               },

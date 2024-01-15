@@ -22,7 +22,6 @@ dependencies:
   fluttertoast: ^8.0.8
   font_awesome_flutter: ^9.2.0
   http: ^0.13.4
-  lottie: ^1.2.1
   provider: ^6.0.1
   razorpay_flutter: ^1.2.7
   salomon_bottom_bar: ^3.1.0
@@ -31,11 +30,18 @@ dependencies:
   url_strategy: ^0.2.0
   connectivity: ^3.0.6
   dio: ^4.0.0
+  hive: any
+  hive_flutter: any
+  flutter_paypal: ^0.2.0
+  one_context: ^2.1.0
+  lottie: ^2.7.0
 
 dev_dependencies:
   flutter_lints: ^1.0.0
   flutter_test:
     sdk: flutter
+  hive_generator: any
+  build_runner: any
 
 flutter_native_splash:
   color: "#42a5f5"
@@ -53,6 +59,7 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
+    - assets/images/
     - assets/animations/
     - assets/images/shoes/
     - assets/images/misc/

@@ -1,3 +1,3 @@
 class ApiRoutes {
-  static const String baseurl = "https://b2c8-42-113-126-235.ngrok-free.app";
+  static const String baseurl = "https://7313-183-81-60-30.ngrok-free.app";
 }
