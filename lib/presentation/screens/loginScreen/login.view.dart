@@ -33,11 +33,11 @@ class LoginScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         resizeToAvoidBottomInset: false,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        body: ListView(
+          // mainAxisAlignment: MainAxisAlignment.start,
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            welcomeTextLogin(themeFlag: themeFlag),
+            // welcomeTextLogin(themeFlag: themeFlag),
             vSizedBox2,
             Center(
               child: Column(

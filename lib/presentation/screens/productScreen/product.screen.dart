@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
+import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/product.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:scarvs/core/notifiers/user.notifier.dart';
@@ -28,9 +29,13 @@ class _ProductScreenState extends State<ProductScreen> {
   Widget build(BuildContext context) {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
+    final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
 
-    UserNotifier _userData = Provider.of<UserNotifier>(context);
-    var userName = _userData.getUserName ?? ' ';
+    // AuthenticationNotifier _userData =
+    //     Provider.of<AuthenticationNotifier>(context);
+    // var userName = _userData.getUserName ?? ' ';
+    var userName = authNotifier.auth.username ?? 'Wait';
     return SafeArea(
       child: Scaffold(
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,

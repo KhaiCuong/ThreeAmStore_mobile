@@ -54,27 +54,42 @@ class Data {
 
 class User {
   User({
+    required this.token,
     required this.id,
     required this.username,
     required this.useremail,
     required this.userpassword,
+    required this.useraddress,
+    required this.userphoneNo,
+    required this.role,
   });
+  late final String token;
   late final int id;
+  late final String useraddress;
+  late final String userphoneNo;
   late final String username;
   late final String useremail;
   late final String userpassword;
+   late final String role;
 
   User.fromJson(Map<String, dynamic> json) {
+    print("🚀 ~ User ~ User.fromJson ~ json: ${json}");
+    token = json['token'];
     id = json['id'];
-    username = json['username'];
-    useremail = json['useremail'];
-    userpassword = json['userpassword'];
+    username = json['username'] ?? '';
+    useremail = json['useremail'] ?? '';
+    useraddress = json['useraddress'] ?? '';
+    userphoneNo = json['userphoneNo'] ?? '';
+    userpassword = json['userpassword'] ?? '';
+     role = json['role'] ?? '';
   }
 
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
     _data['id'] = id;
     _data['username'] = username;
+    _data['useraddress'] = useraddress;
+    _data['userphoneNo'] = userphoneNo;
     _data['useremail'] = useremail;
     _data['userpassword'] = userpassword;
     return _data;

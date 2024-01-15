@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
+import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/notifiers/user.notifier.dart';
@@ -22,6 +23,8 @@ class EditProfileScreen extends StatelessWidget {
     var themeFlag = _themeNotifier.darkTheme;
     UserNotifier userNotifier =
         Provider.of<UserNotifier>(context, listen: false);
+    AuthenticationNotifier authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
     String patttern = r'(^(?:[+0]9)?[0-9]{10,15}$)';
     return SafeArea(
       child: Scaffold(

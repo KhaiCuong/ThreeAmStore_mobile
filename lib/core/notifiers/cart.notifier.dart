@@ -12,7 +12,7 @@ class CartNotifier with ChangeNotifier {
   final CartAPI _cartAPI = CartAPI();
 
   Future checkCartData(
-      {required BuildContext context, required int useremail}) async {
+      {required BuildContext context, required String useremail}) async {
     try {
       var products =
           await _cartAPI.checkCartData(useremail: 1, context: context);

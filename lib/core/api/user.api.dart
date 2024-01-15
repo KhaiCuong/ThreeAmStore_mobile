@@ -6,8 +6,10 @@ import 'package:scarvs/app/routes/api.routes.dart';
 class UserAPI {
   final client = http.Client();
 
-  Future getUserData({required String token}) async {
-    const subUrl = '/auth/verify';
+  
+
+  Future getUserData({required String token, required int id}) async {
+    var subUrl = '/api/User/GetUser/$id';
     final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
     final http.Response response = await client.get(
       uri,
@@ -15,15 +17,15 @@ class UserAPI {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Access-Control-Allow-Origin': "*",
-        "Authorization": token
+        //  "Authorization": token,
       },
     );
     final dynamic body = response.body;
     return body;
   }
 
-  Future getUserDetails({required String userEmail}) async {
-    var subUrl = '/info/$userEmail';
+  Future getUserDetails({required int id}) async {
+    var subUrl = 'api/User/GetUser/$id';
     final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
     final http.Response response = await client.get(
       uri,

@@ -11,6 +11,7 @@ class CartAPI {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'Access-Control-Allow-Origin': "*",
+       // "Authorization": token,
   };
 
 //  Future addToCart({

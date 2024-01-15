@@ -3,4 +3,7 @@ class AppKeys {
   static String userData = 'jwt';
   static String razorKey = 'rzp_test_ImLClDOqMc2kc1';
   static String onBoardDone = 'onBoard';
+   static String userId = 'userid';
+
+
 }

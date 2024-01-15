@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
+import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/core/notifiers/user.notifier.dart';
@@ -15,7 +16,12 @@ class AccountInformationScreen extends StatelessWidget {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
     final double profilePictureSize = MediaQuery.of(context).size.width / 3;
-    final userNotifier = Provider.of<UserNotifier>(context, listen: false);
+    // final userNotifier = Provider.of<UserNotifier>(context, listen: false);
+    final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+
+    var userName =
+        authNotifier.auth.username != '' ? authNotifier.auth.username : 'Wait';
 
     return SafeArea(
       child: Scaffold(
@@ -26,8 +32,7 @@ class AccountInformationScreen extends StatelessWidget {
             child: Consumer<UserNotifier>(
               builder: (context, notifier, _) {
                 return FutureBuilder(
-                  future: notifier.getUserDetails(
-                      userEmail: userNotifier.userEmail!, context: context),
+                  future: notifier.getUserDetails(context: context, userId: 3),
                   builder: (context, snapshot) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,7 +65,7 @@ class AccountInformationScreen extends StatelessWidget {
                                 tag: 'profilePicture',
                                 child: ClipOval(
                                   child: SvgPicture.network(
-                                    'https://avatars.dicebear.com/api/big-smile/${userNotifier.getUserName!}.svg',
+                                    'https://avatars.dicebear.com/api/big-smile/${authNotifier.auth.username!}.svg',
                                     semanticsLabel: 'A shark?!',
                                     alignment: Alignment.center,
                                   ),
@@ -77,7 +82,7 @@ class AccountInformationScreen extends StatelessWidget {
                           height: 8,
                         ),
                         Text(
-                          notifier.getUserName!,
+                          authNotifier.auth.username!,
                           style: TextStyle(
                             color: themeFlag
                                 ? AppColors.creamColor
@@ -94,7 +99,7 @@ class AccountInformationScreen extends StatelessWidget {
                           height: 8,
                         ),
                         Text(
-                          notifier.getUserEmail!,
+                          authNotifier.auth.useremail!,
                           style: TextStyle(
                             color: themeFlag
                                 ? AppColors.creamColor
@@ -111,7 +116,7 @@ class AccountInformationScreen extends StatelessWidget {
                           height: 8,
                         ),
                         Text(
-                          notifier.getuserAddress,
+                          authNotifier.auth.useraddress,
                           style: TextStyle(
                             color: themeFlag
                                 ? AppColors.creamColor
@@ -128,7 +133,7 @@ class AccountInformationScreen extends StatelessWidget {
                           height: 8,
                         ),
                         Text(
-                          notifier.getuserPhoneNumber,
+                          authNotifier.auth.userphoneNo,
                           style: TextStyle(
                             color: themeFlag
                                 ? AppColors.creamColor

@@ -14,6 +14,8 @@ class SignUpScreen extends StatelessWidget {
   final TextEditingController userEmailController = TextEditingController();
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController userPassController = TextEditingController();
+  final TextEditingController userPhoneController = TextEditingController();
+  final TextEditingController userAddressController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -29,7 +31,9 @@ class SignUpScreen extends StatelessWidget {
             context: context,
             useremail: userEmailController.text,
             username: userNameController.text,
-            userpassword: userPassController.text);
+            userpassword: userPassController.text,
+            userphone: userPhoneController.text,
+            useraddress: userAddressController.text);
       }
     }
 
@@ -37,11 +41,11 @@ class SignUpScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         resizeToAvoidBottomInset: false,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        body: ListView(
+          // mainAxisAlignment: MainAxisAlignment.start,
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            welcomeTextSignup(themeFlag: themeFlag),
+            // welcomeTextSignup(themeFlag: themeFlag),
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -71,6 +75,32 @@ class SignUpScreen extends StatelessWidget {
                                         .hasMatch(val!)
                                     ? 'Enter an email'
                                     : null,
+                          ),
+                        ),
+                        Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(35.0, 10.0, 35.0, 2.0),
+                          child: CustomTextField.customTextField(
+                            textEditingController: userPhoneController,
+                            hintText: 'Enter a Phone Number',
+                            validator: (val) {
+                              if (val!.isEmpty) {
+                                return "Phone is required";
+                              } else if (!RegExp(r'^0\d{9}$').hasMatch(val)) {
+                                return "The phone starts with 0 and must have 10 numbers";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(35.0, 10.0, 35.0, 2.0),
+                          child: CustomTextField.customTextField(
+                            textEditingController: userAddressController,
+                            hintText: 'Enter a Youre Addresss',
+                            validator: (val) =>
+                                val!.isEmpty ? 'Enter a Youre Address' : null,
                           ),
                         ),
                         Padding(
@@ -134,6 +164,7 @@ class SignUpScreen extends StatelessWidget {
                     onPressed: () async {
                       _createAccount();
                     },
+                 
                     color: AppColors.rawSienna,
                     child: const Text(
                       'Sign Up',
