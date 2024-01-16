@@ -183,17 +183,6 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                 ],
               ),
-              //   Row(
-              //    children: [
-              //     Text('Phone Number: 09092220009'),
-              //      IconButton(
-              //                  onPressed: () {
-              //                    _showEditDialog(context, "Phone", '0909222009');
-              //                  },
-              //                  icon: const Icon(Icons.edit),
-              //                ),
-              //    ],
-              //  ),
             ],
           ),
         ),
@@ -258,9 +247,10 @@ class _CartScreenState extends State<CartScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+         Text(
           'Total',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+           style: CustomTextWidget.bodyTextB2(
+            color: themeFlag ? AppColors.creamColor : AppColors.mirage,),
         ),
         Text(
           '\$ $cartPrice',
@@ -420,7 +410,7 @@ class _CartScreenState extends State<CartScreen> {
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 255, 249, 249)?.withOpacity(0.8),
+        color: themeFlag ? AppColors.mirage : AppColors.creamColor,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
