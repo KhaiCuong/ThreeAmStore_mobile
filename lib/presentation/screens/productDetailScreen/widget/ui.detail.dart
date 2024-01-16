@@ -78,18 +78,6 @@ Widget productUI({
         ],
       ),
       vSizedBox2,
-      // Text(
-      //   'Choose Size',
-      //   style: CustomTextWidget.bodyTextB4(
-      //     color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-      //   ),
-      // ),
-      // vSizedBox2,
-      // SizedBox(
-      //   height: MediaQuery.of(context).size.height * 0.05,
-      //   width: MediaQuery.of(context).size.width,
-      //   child: selectSize(context: context, themeFlag: themeFlag),
-      // ),
       Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         child: Text(
@@ -147,33 +135,13 @@ Widget productUI({
                   context: context,
                   productSize: sizeNotifier.getSize,
                 );
-                // print("User Email: ${userNotifier.getUserEmail}");
-                // print("User Price: ${snapshot.productPrice}");
-                // print("User Name: ${snapshot.productName}");
-                // print("User Cate: ${snapshot.category}");
-                // print("User Image: ${snapshot.productImage}");
-                // print("User Size: ${sizeNotifier.getSize}");
 
-                //   .then((value) {
-                // if (value) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackUtil.stylishSnackBar(
                     text: 'Added To Cart',
                     context: context,
                   ),
                 );
-                // Navigator.of(context).pushNamed(AppRouter.homeRoute);
-                // } else {
-                //   ScaffoldMessenger.of(context).showSnackBar(
-                //     SnackUtil.stylishSnackBar(
-                //       text: 'Oops Something Went Wrong',
-                //       context: context,
-                //     ),
-                //   );
-                // }
-                // }
-                // )
-                // ;
               }
             },
             child: Text(
@@ -183,58 +151,6 @@ Widget productUI({
               ),
             ),
           ),
-          // ElevatedButton(
-          //   style: ElevatedButton.styleFrom(
-          //     backgroundColor:
-          //         themeFlag ? AppColors.buyColor : AppColors.rawSienna,
-          //     enableFeedback: true,
-          //     padding: const EdgeInsets.symmetric(
-          //       horizontal: 25,
-          //       vertical: 8,
-          //     ),
-          //     shape: RoundedRectangleBorder(
-          //       borderRadius: BorderRadius.circular(8.0),
-          //     ),
-          //   ),
-          //   onPressed: () {
-          //     cartNotifier.addToHiveCart(
-          //       // useremail: userNotifier.getUserEmail!,
-          //       useremail: 'hoang@tiwi.vn',
-          //       // productPrice: snapshot.productPrice as String,
-          //       // productName: snapshot.productName,
-          //       // productCategory: snapshot.category!,
-          //       // productImage: snapshot.productImage!,
-          //       context: context,
-          //       productSize: sizeNotifier.getSize,
-          //     );
-          //     //   .then((value) {
-          //     // if (value) {
-          //     ScaffoldMessenger.of(context).showSnackBar(
-          //       SnackUtil.stylishSnackBar(
-          //         text: 'Added To Cart',
-          //         context: context,
-          //       ),
-          //     );
-          //     // Navigator.of(context).pushNamed(AppRouter.homeRoute);
-          //     // } else {
-          //     //   ScaffoldMessenger.of(context).showSnackBar(
-          //     //     SnackUtil.stylishSnackBar(
-          //     //       text: 'Oops Something Went Wrong',
-          //     //       context: context,
-          //     //     ),
-          //     //   );
-          //     // }
-          //     // }
-          //     // )
-          //     // ;
-          //   },
-          //   child: Text(
-          //     'Buy Now',
-          //     style: CustomTextWidget.bodyTextB2(
-          //       color: themeFlag ? AppColors.mirage : AppColors.creamColor,
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     ],

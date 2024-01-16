@@ -12,12 +12,23 @@ import 'package:scarvs/presentation/widgets/custom.loader.dart';
 import 'package:scarvs/presentation/widgets/dimensions.widget.dart';
 import 'package:scarvs/presentation/widgets/shimmer.effects.dart';
 
-class CategoryScreen extends StatelessWidget {
+import '../../../app/routes/api.routes.dart';
+import '../../../core/models/favorite_product.dart';
+import '../../../core/models/product.model.dart';
+import '../../../core/service/favorite_product_box.dart';
+import '../productDetailScreen/product.detail.screen.dart';
+
+class CategoryScreen extends StatefulWidget {
   final CategoryScreenArgs categoryScreenArgs;
 
   const CategoryScreen({Key? key, required this.categoryScreenArgs})
       : super(key: key);
 
+  @override
+  State<CategoryScreen> createState() => _CategoryScreenState();
+}
+
+class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
@@ -38,7 +49,7 @@ class CategoryScreen extends StatelessWidget {
                   ),
                   Center(
                     child: Text(
-                      categoryScreenArgs.categoryName,
+                      widget.categoryScreenArgs.categoryName,
                       style: CustomTextWidget.bodyTextB2(
                         color:
                             themeFlag ? AppColors.creamColor : AppColors.mirage,
@@ -57,15 +68,19 @@ class CategoryScreen extends StatelessWidget {
                   child: Consumer<ProductNotifier>(
                     builder: (context, notifier, _) {
                       return FutureBuilder(
-                        future: categoryScreenArgs.categoryName == 'All Brands'
+                        future: widget.categoryScreenArgs.categoryName ==
+                                'All Brands'
                             ? notifier.fetchProducts(context: context)
                             : notifier.fetchProductCategory(
                                 context: context,
-                                id: categoryScreenArgs.categoryName == 'Rolex'
+                                id: widget.categoryScreenArgs.categoryName ==
+                                        'Rolex'
                                     ? 'RL9'
-                                    : categoryScreenArgs.categoryName == 'Omega'
+                                    : widget.categoryScreenArgs.categoryName ==
+                                            'Omega'
                                         ? 'OM2'
-                                        : categoryScreenArgs.categoryName ==
+                                        : widget.categoryScreenArgs
+                                                    .categoryName ==
                                                 'Hublot'
                                             ? 'MV4'
                                             : 'CS7',
@@ -83,13 +98,10 @@ class CategoryScreen extends StatelessWidget {
                               lottieAsset: AppAssets.error,
                             );
                           } else {
-                            var _snapshot = snapshot.data as List;
-                            return showDataInGrid(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.20,
-                                snapshot: _snapshot,
-                                themeFlag: themeFlag,
-                                context: context);
+                            var _snapshot = snapshot.data as List<ProductData>;
+                            return ShowDataGrid(prods: _snapshot);
+                               
+
                           }
                         },
                       );

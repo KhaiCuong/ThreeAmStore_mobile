@@ -14,6 +14,7 @@ import 'package:scarvs/presentation/screens/profileScreens/appSettingsScreen/app
 import 'package:scarvs/presentation/screens/profileScreens/changePasswordScreen/change.password.screen.dart';
 import 'package:scarvs/presentation/screens/profileScreens/editProfileScreen/edit.profile.screen.dart';
 import 'package:scarvs/presentation/screens/profileScreens/mainProfileScreen/profile.screen.dart';
+import 'package:scarvs/presentation/screens/profileScreens/ordersPage/appointment_page.dart';
 import 'package:scarvs/presentation/screens/searchScreen/search.screen.dart';
 import 'package:scarvs/presentation/screens/signUpScreen/signup.screen.dart';
 import 'package:scarvs/presentation/screens/signUpScreen/success_signup.dart';
@@ -41,6 +42,7 @@ class AppRouter {
   static const String successOrder = "/succesOrder";
   static const String favoriteList = "/favoriteList";
    static const String successSignup = "/successSignup";
+   static const String orderManagerment = "/orderManagerment";
 
   static Route? generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -162,6 +164,12 @@ class AppRouter {
             builder: (_) => const SuccessSignup(),
           );
         }
+        //      case orderManagerment:
+        // {
+        //   return MaterialPageRoute(
+        //     builder: (_) => const AppointmentPage(),
+        //   );
+        // }
     }
   }
 }
