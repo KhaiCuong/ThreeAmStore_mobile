@@ -100,10 +100,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.creamColor,
                                     enableFeedback: true,
-                                    padding: const EdgeInsets.symmetric(
-                                        // horizontal: 20,
-                                        // vertical: 2,
-                                        ),
+                                    padding: const EdgeInsets.symmetric(),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(5.0),
                                     ),
@@ -133,7 +130,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     const BrandWidget(),
                     vSizedBox2,
                     Text(
-                      'More Watches',
+                      'New Watches',
                       style: CustomTextWidget.bodyTextB2(
                         color:
                             themeFlag ? AppColors.creamColor : AppColors.mirage,
@@ -152,22 +149,9 @@ class _ProductScreenState extends State<ProductScreen> {
                                   ConnectionState.waiting) {
                                 return ShimmerEffects.loadShimmer(
                                     context: context);
-                                // } else if (!snapshot.hasData) {
-                                //   return Center(
-                                //     child: Text(
-                                //       'Some Error Occurred...',
-                                //       style: CustomTextWidget.bodyTextUltra(
-                                //         color: themeFlag
-                                //             ? AppColors.creamColor
-                                //             : AppColors.mirage,
-                                //       ),
-                                //     ),
-                                //   );
                               } else {
                                 var _snapshot = snapshot.data;
                                 if (_snapshot == null) {
-                                  // Xử lý khi dữ liệu là null
-                                  // Ví dụ: Hiển thị thông báo hoặc thực hiện hành động khác
                                   return Center(
                                     child: Text(
                                       'Data is null...',
@@ -179,7 +163,6 @@ class _ProductScreenState extends State<ProductScreen> {
                                     ),
                                   );
                                 } else if (_snapshot is List) {
-                                  // Thực hiện chuyển đổi kiểu và xử lý dữ liệu
                                   return ListView.separated(
                                     physics: const ScrollPhysics(),
                                     shrinkWrap: true,
@@ -189,12 +172,13 @@ class _ProductScreenState extends State<ProductScreen> {
                                     itemCount: _snapshot.length,
                                     itemBuilder: (context, index) {
                                       ProductData prod = _snapshot[index];
-                                      return buildProductCard(
-                                          prod, themeFlag, context);
+                                      return ProductCard(
+                                        prod: prod,
+                                        themeFlag: themeFlag,
+                                      );
                                     },
                                   );
                                 } else {
-                                  // Xử lý khi _snapshot không phải là List
                                   return Center(
                                     child: Text(
                                       'Invalid data format...',
@@ -221,160 +205,176 @@ class _ProductScreenState extends State<ProductScreen> {
       ),
     );
   }
-  
-Widget buildProductCard(
-    ProductData prod, bool themeFlag, BuildContext context) {
-  var domain = ApiRoutes.baseurl;
+}
 
-  return InkWell(
-    onTap: () {
-      Navigator.of(context).pushNamed(
-        AppRouter.prodDetailRoute,
-        arguments: ProductDetailsArgs(id: prod.productId),
-      );
-    },
-    child: Container(
-      width: 190,
-      height: 120,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: Colors.grey.withOpacity(0.2),
-            width: 1,
+class ProductCard extends StatefulWidget {
+  final ProductData prod;
+  final bool themeFlag;
+
+  const ProductCard({
+    Key? key,
+    required this.prod,
+    required this.themeFlag,
+  }) : super(key: key);
+
+  @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  @override
+  Widget build(BuildContext context) {
+    var domain = ApiRoutes.baseurl;
+
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pushNamed(
+          AppRouter.prodDetailRoute,
+          arguments: ProductDetailsArgs(id: widget.prod.productId),
+        );
+      },
+      child: Container(
+        width: 190,
+        height: 120,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child:
+         Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: Colors.grey.withOpacity(0.2),
+              width: 1,
+            ),
           ),
-        ),
-        elevation: 6,
-        color: themeFlag ? AppColors.mirage : AppColors.creamColor,
-        child: Stack(
-          children: [
-            Positioned(
-              top: 4,
-              left: -16,
-              child: Transform.rotate(
-                angle: -45 * 3.141592653589793238462 / 180,
-                child: Container(
-                  width: 60,
-                  height: 20,
-                  color: Colors.red,
-                  child: const Center(
-                    child: Text(
-                      "NEW",
-                      style: TextStyle(
-                        color: Colors.white,
+          elevation: 6,
+          color: widget.themeFlag ? AppColors.mirage : AppColors.creamColor,
+          child: Stack(
+            children: [
+              Positioned(
+                top: 4,
+                left: -16,
+                child: Transform.rotate(
+                  angle: -45 * 3.141592653589793238462 / 180,
+                  child: Container(
+                    width: 60,
+                    height: 20,
+                    color: Colors.red,
+                    child: const Center(
+                      child: Text(
+                        "NEW",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              top: -8,
-              left: 124,
-              child: IconButton(
-                onPressed: () {
-                  toggleFavoriteStatus(context, prod.productId);
-              
-                },
-                icon: Icon(
-                  isProductFavorite(prod.productId)
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+              Positioned(
+                top: -8,
+                left: 124,
+                child: IconButton(
+                  onPressed: () {
+                    toggleFavoriteStatus(context, widget.prod.productId);
+                  },
+                  icon: Icon(
+                    isProductFavorite(widget.prod.productId)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color:
+                        widget.themeFlag ? AppColors.creamColor : AppColors.mirage,
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              top: 26,
-              left: 15,
-              child: Hero(
-                tag: Key(prod.productId.toString()),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.14,
-                  width: MediaQuery.of(context).size.height * 0.160,
-                  child:
-                      prod.productImage != null && prod.productImage!.isNotEmpty
-                          ? Image.network(
-                              "$domain${prod.productImage!}",
-                              fit: BoxFit.scaleDown,
-                            )
-                          : Container(),
+              Positioned(
+                top: 26,
+                left: 15,
+                child: Hero(
+                  tag: Key(widget.prod.productId.toString()),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.14,
+                    width: MediaQuery.of(context).size.height * 0.160,
+                    child: widget.prod.productImage != null &&
+                            widget.prod.productImage!.isNotEmpty
+                        ? Image.network(
+                            "$domain${widget.prod.productImage!}",
+                            fit: BoxFit.scaleDown,
+                          )
+                        : Container(),
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              top: 132,
-              left: 02,
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      prod.productName,
-                      style: CustomTextWidget.bodyText3(
-                        color:
-                            themeFlag ? AppColors.creamColor : AppColors.mirage,
+              Positioned(
+                top: 132,
+                left: 02,
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.prod.productName,
+                        style: CustomTextWidget.bodyText3(
+                          color: widget.themeFlag
+                              ? AppColors.creamColor
+                              : AppColors.mirage,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      '      \$  ${prod.productPrice}',
-                      style: CustomTextWidget.bodyText3(
-                        color:
-                            themeFlag ? AppColors.creamColor : AppColors.mirage,
+                      Text(
+                        '      \$  ${widget.prod.productPrice}',
+                        style: CustomTextWidget.bodyText3(
+                          color: widget.themeFlag
+                              ? AppColors.creamColor
+                              : AppColors.mirage,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
-
-}
-
-// Hàm kiểm tra xem sản phẩm có trong danh sách favorite hay không
-bool isProductFavorite(String productId) {
-  final favoriteBox = FavoriteProductBox();
-  return favoriteBox.isFavorite(productId);
-}
-Future<void> toggleFavoriteStatus(
-    BuildContext context, String productId) async {
-  final favoriteBox = FavoriteProductBox();
-
-  if (favoriteBox.isFavorite(productId)) {
-    await FavoriteProductBox.removeFromFavorites(productId);
-    print("Đã xoá yêu thích");
-  } else {
-    ProductNotifier productNotifier = ProductNotifier();
-    ProductData productToAdd =
-        await productNotifier.fetchProductDetail(id: productId);
-
-    final favoriteProduct = FavoriteProduct(
-      productId: productToAdd.productId,
-      productName: productToAdd.productName,
-      productDescription: productToAdd.productDescription,
-      productPrice: productToAdd.productPrice,
-      productImage: productToAdd.productImage,
     );
-
-    await favoriteBox.addToFavorites(favoriteProduct);
-
-    print("Đã thêm yêu thích");
   }
 
-  // Trigger UI rebuild
-  setState(() {});
-}
+  bool isProductFavorite(String productId) {
+    final favoriteBox = FavoriteProductBox();
+    return favoriteBox.isFavorite(productId);
+  }
 
+  Future<void> toggleFavoriteStatus(
+      BuildContext context, String productId) async {
+    final favoriteBox = FavoriteProductBox();
 
+    if (favoriteBox.isFavorite(productId)) {
+      await FavoriteProductBox.removeFromFavorites(productId);
+      print("Đã xoá yêu thích");
+    } else {
+      ProductNotifier productNotifier = ProductNotifier();
+      ProductData productToAdd =
+          await productNotifier.fetchProductDetail(id: productId);
+
+      final favoriteProduct = FavoriteProduct(
+        productId: productToAdd.productId,
+        productName: productToAdd.productName,
+        productDescription: productToAdd.productDescription,
+        productPrice: productToAdd.productPrice,
+        productImage: productToAdd.productImage,
+      );
+
+      await favoriteBox.addToFavorites(favoriteProduct);
+
+      print("Đã thêm yêu thích");
+    }
+
+    // Trigger UI rebuild
+    setState(() {});
+  }
 }

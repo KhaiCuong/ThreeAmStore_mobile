@@ -7,8 +7,10 @@ import 'package:scarvs/presentation/widgets/custom.back.btn.dart';
 import 'package:scarvs/presentation/widgets/custom.text.style.dart';
 
 import '../../../../app/routes/api.routes.dart';
+import '../../../../app/routes/app.routes.dart';
 import '../../../../core/models/favorite_product.dart';
 import '../../../../core/service/favorite_product_box.dart';
+import '../../productDetailScreen/product.detail.screen.dart';
 
 class FavoriteList extends StatefulWidget {
   const FavoriteList({Key? key}) : super(key: key);
@@ -95,58 +97,67 @@ class _FavoriteListState extends State<FavoriteList> {
                               AssetImage("assets/placeholder_image.png");
                         }
 
-                        return Card(
-                          elevation: 4,
-                          margin:
-                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          color: themeFlag
-                              ? AppColors.mirage
-                              : AppColors.creamColor, // Thêm màu sắc vào đây
-                          child: ListTile(
-                            leading: Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.circular(8),
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: productImage,
+                        return GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                AppRouter.prodDetailRoute,
+                                arguments:
+                                    ProductDetailsArgs(id: product.productId),
+                              );
+                            },
+                            child: Card(
+                              elevation: 4,
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              color: themeFlag
+                                  ? AppColors.mirage
+                                  : AppColors
+                                      .creamColor, // Thêm màu sắc vào đây
+                              child: ListTile(
+                                leading: Container(
+                                  width: 60,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.rectangle,
+                                    borderRadius: BorderRadius.circular(8),
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: productImage,
+                                    ),
+                                  ),
+                                ),
+                                title: Text(
+                                  product.productName,
+                                  style: CustomTextWidget.bodyTextB4(
+                                    color: themeFlag
+                                        ? AppColors.creamColor
+                                        : AppColors.mirage,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  '\$${product.productPrice}',
+                                  style: CustomTextWidget.bodyText3(
+                                    color: themeFlag
+                                        ? AppColors.creamColor
+                                        : AppColors.mirage,
+                                  ),
+                                ),
+                                trailing: IconButton(
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: themeFlag
+                                        ? AppColors.creamColor
+                                        : AppColors.mirage,
+                                  ),
+                                  onPressed: () {
+                                    _removeFavoriteProduct(product.productId);
+                                  },
                                 ),
                               ),
-                            ),
-                            title: Text(
-                              product.productName,
-                              style: CustomTextWidget.bodyTextB4(
-                                color: themeFlag
-                                    ? AppColors.creamColor
-                                    : AppColors.mirage,
-                              ),
-                            ),
-                            subtitle: Text(
-                              '\$${product.productPrice}',
-                              style: CustomTextWidget.bodyTextB4(
-                                color: themeFlag
-                                    ? AppColors.creamColor
-                                    : AppColors.mirage,
-                              ),
-                            ),
-                            trailing: IconButton(
-                              icon: Icon(
-                                Icons.delete,
-                                color: themeFlag
-                                    ? AppColors.creamColor
-                                    : AppColors.mirage,
-                              ),
-                              onPressed: () {
-                                _removeFavoriteProduct(product.productId);
-                              },
-                            ),
-                          ),
-                        );
+                            ));
                       },
                     )
                   : Center(
