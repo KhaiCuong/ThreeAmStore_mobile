@@ -146,10 +146,7 @@ class ProductNotifier with ChangeNotifier {
         // Xử lý khi mã trạng thái không phải là 200
         return [];
       }
-    } on DioError catch (e) {
-      // Xử lý lỗi từ Dio.
-      print("DioError: $e");
-      return [];
+    
     } on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
         text: 'Oops No You Need A Good Internet Connection',
@@ -184,10 +181,7 @@ class ProductNotifier with ChangeNotifier {
         // Xử lý khi mã trạng thái không phải là 200
         return [];
       }
-    } on DioError catch (e) {
-      // Xử lý lỗi từ Dio.
-      print("DioError: $e");
-      return [];
+    
     } on SocketException catch (_) {
       // ScaffoldMessenger.of(context).showSnackBar(
       //   SnackUtil.stylishSnackBar(

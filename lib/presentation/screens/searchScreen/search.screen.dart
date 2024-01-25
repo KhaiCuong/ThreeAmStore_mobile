@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
+import 'package:scarvs/core/models/product.model.dart';
 import 'package:scarvs/core/notifiers/product.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:scarvs/presentation/screens/categoryScreen/widgets/category.widget.dart';
@@ -160,12 +161,9 @@ class _SearchScreenState extends State<SearchScreen> {
                       lottieAsset: AppAssets.error,
                     );
                   } else {
-                    var _snapshot = snapshot.data as List;
-                    return showDataInGrid(
-                        height: MediaQuery.of(context).size.height * 0.17,
-                        snapshot: _snapshot,
-                        themeFlag: themeFlag,
-                        context: context);
+                    var _snapshot = snapshot.data as List<ProductData>;
+                    return 
+                  ShowDataGrid(prods: _snapshot);
                   }
                 },
               );
