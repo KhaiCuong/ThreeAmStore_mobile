@@ -12,6 +12,7 @@ import '../../app/routes/api.routes.dart';
 
 class ProductNotifier with ChangeNotifier {
   final ProductAPI _productAPI = ProductAPI();
+  List<String> searchResults = [];
 
   // Future<List<ProductData>> fetchProducts(
   //     {required BuildContext context}) async {
@@ -159,8 +160,7 @@ class ProductNotifier with ChangeNotifier {
     }
   }
 
-  Future fetchProductDetail(
-      { required dynamic id}) async {
+  Future fetchProductDetail({required dynamic id}) async {
     try {
       final dio = Dio();
       final response =
@@ -196,8 +196,8 @@ class ProductNotifier with ChangeNotifier {
     try {
       // id = 'RL9';
       final dio = Dio();
-      final response =
-          await dio.get(ApiRoutes.baseurl + '/api/Product/GetProductListByCategoryId/$id');
+      final response = await dio.get(
+          ApiRoutes.baseurl + '/api/Product/GetProductListByCategoryId/$id');
       print(
           ">>>>>>>>>>>>>>>>>>>>>>>>>>fetchProductCategory response.statusCode: ${response.statusCode}");
       // print(">>>>>>>>>>>>>>>>>>>>>>>>>>products data: ${response.data}");
@@ -237,25 +237,59 @@ class ProductNotifier with ChangeNotifier {
     }
   }
 
-  Future searchProduct(
-      {required BuildContext context, required dynamic productName}) async {
+  Future<List<ProductData>> searchProduct({
+    required BuildContext context,
+    required String query,
+    required String productName,
+  }) async {
     try {
-      var products = await _productAPI.searchProduct(productName: productName);
-      var response = ProductModel.fromJson(jsonDecode(products));
+      // Gọi hàm để lấy danh sách sản phẩm từ API
+      final dio = Dio();
+      final response =
+          await dio.get(ApiRoutes.baseurl + '/api/Product/GetProductList');
+      print(
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>Products response.statusCode: ${response.statusCode}");
+      // print(">>>>>>>>>>>>>>>>>>>>>>>>>>products data: ${response.data}");
+      if (response.statusCode == 200) {
+        var responseData = response.data;
+        // print(">>>>>>>>>>>>>>>>>>>>>>>>>>responseData : ${responseData['data']}");
+        if (responseData != null && responseData['data'] is List<dynamic>) {
+          List<ProductData> productList =
+              (responseData['data'] as List<dynamic>)
+                  .map((json) => ProductData.fromJson(json))
+                  .toList();
+          // print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: $productList");
+          // Hàm kiểm tra tên sản phẩm có thỏa mãn điều kiện tìm kiếm gần đúng không
 
-      final _productBody = response.data;
-      // final _productFilled = response.filled;
-      // final _productReceived = response.received;
-
-      // if (_productReceived && _productFilled) {
-      return _productBody;
-      // } else if (!_productFilled && _productReceived) {
-      //   return [];
-      // }
+          List<ProductData> searchResults = productList
+              .where((item) =>
+                  item.productName.toLowerCase().contains(query.toLowerCase()))
+              .toList();
+          print(">>>>>>>>>>>>>>>>>>>>>>>>>>searchResults: $searchResults");
+          return searchResults;
+        } else {
+          return [];
+          // Xử lý khi data là null hoặc không phải là List<dynamic>
+        }
+      } else {
+        // Xử lý khi mã trạng thái không phải là 200
+        return [];
+      }
+    } on DioError catch (e) {
+      // Xử lý lỗi từ Dio.
+      print("DioError: $e");
+      return [];
     } on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
-          text: 'Oops No You Need A Good Internet Connection',
-          context: context));
+        text: 'Oops No You Need A Good Internet Connection',
+        context: context,
+      ));
+      return [];
+    } catch (e) {
+      // Xử lý lỗi tổng quát
+      print("Error: $e");
+      return [];
     }
   }
+
 }

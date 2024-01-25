@@ -121,6 +121,7 @@ class UserNotifier with ChangeNotifier {
   Future getUserDetails({
     required int userId,
     required BuildContext context,
+    
   }) async {
     try {
       var userData = await _userAPI.getUserDetails(id: userId);
@@ -150,6 +151,7 @@ class UserNotifier with ChangeNotifier {
     required String userAddress,
     required String userPhoneNo,
     required BuildContext context,
+    required BuildContext userName,
   }) async {
     try {
       var userData = await _userAPI.updateUserDetails(

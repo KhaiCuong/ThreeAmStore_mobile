@@ -148,28 +148,28 @@ class ProfileScreen extends StatelessWidget {
                           .pushNamed(AppRouter.changePassRoute);
                     },
                     child: Container(
-                      margin: const EdgeInsets.fromLTRB(0, 18, 0, 18),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Change Password',
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: themeFlag
-                                  ? AppColors.creamColor
-                                  : AppColors.mirage,
-                            ),
-                          ),
-                          Icon(
-                            Icons.chevron_right,
-                            size: 20,
-                            color: themeFlag
-                                ? AppColors.creamColor
-                                : AppColors.mirage,
-                          ),
-                        ],
-                      ),
+                      // margin: const EdgeInsets.fromLTRB(0, 18, 0, 18),
+                      // child: Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Text(
+                      //       'Change Password',
+                      //       style: TextStyle(
+                      //         fontSize: 15,
+                      //         color: themeFlag
+                      //             ? AppColors.creamColor
+                      //             : AppColors.mirage,
+                      //       ),
+                      //     ),
+                      //     Icon(
+                      //       Icons.chevron_right,
+                      //       size: 20,
+                      //       color: themeFlag
+                      //           ? AppColors.creamColor
+                      //           : AppColors.mirage,
+                      //     ),
+                      //   ],
+                      // ),
                     ),
                   ),
                   GestureDetector(
