@@ -19,6 +19,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController searchProductController = TextEditingController();
+  final ProductNotifier notifier = ProductNotifier();
   bool isExecuted = false;
   @override
   Widget build(BuildContext context) {
@@ -37,69 +38,13 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             child: Column(
               children: [
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(
-                      color: Colors.grey.withOpacity(0.5),
-                      width: 1,
-                    ),
-                  ),
-                  elevation: 6,
-                  color: themeFlag ? AppColors.mirage : AppColors.creamColor,
-                  child: Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Row(
-                      children: [
-                        hSizedBox1,
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.07,
-                          width: MediaQuery.of(context).size.width * 0.65,
-                          child: TextField(
-                            controller: searchProductController,
-                            style: CustomTextWidget.bodyText2(
-                              color: themeFlag
-                                  ? AppColors.creamColor
-                                  : AppColors.mirage,
-                            ),
-                            decoration: InputDecoration(
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: AppColors.rawSienna,
-                                ),
-                              ),
-                              hintText: 'Search......',
-                              hintStyle: CustomTextWidget.bodyText2(
-                                color: themeFlag
-                                    ? AppColors.creamColor
-                                    : AppColors.mirage,
-                              ),
-                            ),
-                          ),
-                        ),
-                        hSizedBox1,
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isExecuted = true;
-                            });
-                          },
-                          icon: Icon(
-                            Icons.search,
-                            color: themeFlag
-                                ? AppColors.creamColor
-                                : AppColors.mirage,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                buildSearchInput(searchContent: '', themeFlag: isExecuted),
                 vSizedBox2,
                 isExecuted
                     ? searchData(
                         searchContent: searchProductController.text,
-                        themeFlag: themeFlag)
+                        themeFlag: themeFlag,
+                      )
                     : Center(
                         child: Text(
                           'Search Any Product',
@@ -118,6 +63,77 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  Widget buildSearchInput(
+      {required String searchContent, required bool themeFlag}) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(
+          color: Colors.grey.withOpacity(0.5),
+          width: 1,
+        ),
+      ),
+      elevation: 6,
+      color: themeFlag ? AppColors.mirage : AppColors.creamColor,
+      child: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Row(
+          children: [
+            hSizedBox1,
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.07,
+              width: MediaQuery.of(context).size.width * 0.65,
+              child: TextField(
+                controller: searchProductController,
+                style: CustomTextWidget.bodyText2(
+                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                ),
+                decoration: InputDecoration(
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AppColors.rawSienna,
+                    ),
+                  ),
+                  hintText: 'Search......',
+                  hintStyle: CustomTextWidget.bodyText2(
+                    color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                  ),
+                ),
+                onSubmitted: (value) {
+                  setState(() {
+                    isExecuted = true;
+                  });
+                },
+                onChanged: (value) {
+                  setState(() {
+                    isExecuted = true;
+                  });
+                  notifier.searchProduct(
+                    context: context,
+                    query: value,
+                    productName: value,
+                  );
+                },
+              ),
+            ),
+            hSizedBox1,
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  isExecuted = true;
+                });
+              },
+              icon: Icon(
+                Icons.search,
+                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget searchData({required String searchContent, required bool themeFlag}) {
     return Column(
       children: [
@@ -129,6 +145,7 @@ class _SearchScreenState extends State<SearchScreen> {
               return FutureBuilder(
                 future: notifier.searchProduct(
                   context: context,
+                  query: searchProductController.text,
                   productName: searchProductController.text,
                 ),
                 builder: (context, snapshot) {

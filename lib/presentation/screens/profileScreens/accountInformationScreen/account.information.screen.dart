@@ -32,7 +32,7 @@ class AccountInformationScreen extends StatelessWidget {
             child: Consumer<UserNotifier>(
               builder: (context, notifier, _) {
                 return FutureBuilder(
-                  future: notifier.getUserDetails(context: context, userId: 3),
+                  future: notifier.getUserDetails(context: context, userId: authNotifier.auth.id),
                   builder: (context, snapshot) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +65,7 @@ class AccountInformationScreen extends StatelessWidget {
                                 tag: 'profilePicture',
                                 child: ClipOval(
                                   child: SvgPicture.network(
-                                    'https://avatars.dicebear.com/api/big-smile/${authNotifier.auth.username!}.svg',
+                                    'https://avatars.dicebear.com/api/big-smile/${authNotifier.auth.id!}.svg',
                                     semanticsLabel: 'A shark?!',
                                     alignment: Alignment.center,
                                   ),
@@ -151,4 +151,5 @@ class AccountInformationScreen extends StatelessWidget {
       ),
     );
   }
+  
 }
