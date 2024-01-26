@@ -119,7 +119,8 @@ class _CartScreenState extends State<CartScreen> {
      final authNotifier =
         Provider.of<AuthenticationNotifier>(context, listen: false);
           var useremail = authNotifier.auth.useremail ?? 'Wait';
-
+          var useraddress = authNotifier.auth.useraddress ;
+    print(">>>>>>>>>>>>>>>> email: $useremail");
     return SafeArea(
       child: Scaffold(
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
@@ -174,10 +175,10 @@ class _CartScreenState extends State<CartScreen> {
               ),
               Row(
                 children: [
-                  Text('Adress: 215 TRần Văn Đang'),
+                  Text('Adress: $useraddress'),
                   IconButton(
                     onPressed: () {
-                      _showEditDialog(context, "address", "Tran Van Dang");
+                      _showEditDialog(context, "address", useraddress);
                     },
                     icon: const Icon(Icons.edit),
                   ),
@@ -364,40 +365,42 @@ class _CartScreenState extends State<CartScreen> {
        
   }
 
-  _showEditDialog(BuildContext context, String field, String initialValue) {
-    TextEditingController _textEditingController =
-        TextEditingController(text: initialValue);
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Edit $field"),
-          content: TextField(
-            controller: _textEditingController,
-            decoration: InputDecoration(labelText: "Enter new $field:"),
+  _showEditDialog(BuildContext context, String field, String value) {
+  TextEditingController _textEditingController =
+      TextEditingController(text: value);
+print("$_textEditingController");
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text("Edit $field"),
+        content: TextField(
+          controller: _textEditingController,
+          decoration: InputDecoration(labelText: "Enter new $field:"),
+     
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Đóng dialog nếu người dùng chọn "Huỷ"
+            },
+            child: Text("Cancel"),
           ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Đóng dialog nếu người dùng chọn "Huỷ"
-              },
-              child: Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                // Lưu giá trị mới và đóng dialog
-                String newValue = _textEditingController.text;
-                // TODO: Lưu giá trị mới vào người dùng hoặc nơi lưu trữ tương ứng
-                Navigator.pop(context);
-              },
-              child: Text("Save"),
-            ),
-          ],
-        );
-      },
-    );
-  }
+          TextButton(
+            onPressed: () {
+              // Lưu giá trị mới và đóng dialog
+              String newValue = _textEditingController.text;
+              // TODO: Lưu giá trị mới vào người dùng hoặc nơi lưu trữ tương ứng
+              Navigator.pop(context);
+            },
+            child: Text("Save"),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 
   Widget _showCartData({
     required BuildContext context,

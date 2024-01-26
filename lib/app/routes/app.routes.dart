@@ -13,6 +13,7 @@ import 'package:scarvs/presentation/screens/profileScreens/accountInformationScr
 import 'package:scarvs/presentation/screens/profileScreens/appSettingsScreen/app.setting.screen.dart';
 import 'package:scarvs/presentation/screens/profileScreens/changePasswordScreen/change.password.screen.dart';
 import 'package:scarvs/presentation/screens/profileScreens/editProfileScreen/edit.profile.screen.dart';
+import 'package:scarvs/presentation/screens/profileScreens/editProfileScreen/success_editProfile.dart';
 import 'package:scarvs/presentation/screens/profileScreens/mainProfileScreen/profile.screen.dart';
 import 'package:scarvs/presentation/screens/profileScreens/ordersPage/appointment_page.dart';
 import 'package:scarvs/presentation/screens/searchScreen/search.screen.dart';
@@ -41,8 +42,9 @@ class AppRouter {
   static const String changePassRoute = "/changePassword";
   static const String successOrder = "/succesOrder";
   static const String favoriteList = "/favoriteList";
-   static const String successSignup = "/successSignup";
-   static const String orderManagerment = "/orderManagerment";
+  static const String successSignup = "/successSignup";
+  static const String orderManagerment = "/orderManagerment";
+    static const String successEditProfile = "/orderManagerment";
 
   static Route? generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -140,36 +142,36 @@ class AppRouter {
             builder: (_) => const AccountInformationScreen(),
           );
         }
-      case changePassRoute:
-        {
-          return MaterialPageRoute(
-            builder: (_) => ChangePasswordScreen(),
-          );
-        }
-         case successOrder:
+      // case changePassRoute:
+      //   {
+      //     return MaterialPageRoute(
+      //       builder: (_) => ChangePasswordScreen(),
+      //     );
+      //   }
+      case successOrder:
         {
           return MaterialPageRoute(
             builder: (_) => const AppointmentBooked(),
           );
         }
-          case favoriteList:
+      case favoriteList:
         {
           return MaterialPageRoute(
             builder: (_) => const FavoriteList(),
           );
         }
-             case successSignup:
+      case successSignup:
         {
           return MaterialPageRoute(
             builder: (_) => const SuccessSignup(),
           );
         }
-        //      case orderManagerment:
-        // {
-        //   return MaterialPageRoute(
-        //     builder: (_) => const AppointmentPage(),
-        //   );
-        // }
+      case successEditProfile:
+        {
+          return MaterialPageRoute(
+            builder: (_) => const SuccessEditProfile(),
+          );
+        }
     }
   }
 }

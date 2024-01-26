@@ -31,6 +31,9 @@ class AuthenticationNotifier with ChangeNotifier {
   String? _fullName = "";
   String? get fullName => _fullName;
 
+  String? _password = "";
+  String? get password => _password;
+
   String? _passwordEmoji = "";
   String? get passwordEmoji => _passwordEmoji;
 
@@ -92,9 +95,6 @@ class AuthenticationNotifier with ChangeNotifier {
             "password": userpassword
           }));
 
-      // var userData = await _authenticationAPI.createAccount(
-      //     useremail: useremail, username: username, userpassword: userpassword, userphone: userphone, useraddress: useraddress);
-      // print(userData);
       var userData = response.body;
 
       // print(">>>>>>>>>>>>>>>>>>>>>>>userData: ${response}");
@@ -109,12 +109,12 @@ class AuthenticationNotifier with ChangeNotifier {
       if (response.statusCode == 200) {
         WriteCache.setString(key: AppKeys.userData, value: username)
             .whenComplete(
-          () =>
-              Navigator.of(context).pushReplacementNamed(AppRouter.successSignup),
+          () => Navigator.of(context)
+              .pushReplacementNamed(AppRouter.successSignup),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackUtil.stylishSnackBar(context: context, text: ''));
+        ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+            context: context, text: 'Register faill'));
       }
     } on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
@@ -173,7 +173,7 @@ class AuthenticationNotifier with ChangeNotifier {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackUtil.stylishSnackBar(context: context, text: ''));
+            SnackUtil.stylishSnackBar(context: context, text: 'Check'));
       }
     } on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
@@ -182,7 +182,7 @@ class AuthenticationNotifier with ChangeNotifier {
     } catch (e) {
       print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
-          text: 'An error occurred', context: context));
+          text: 'Please check your Password & Email', context: context));
     }
   }
   // Future<bool> getDataToken(String token, SharedPreferences prefs) async {
@@ -210,5 +210,90 @@ class AuthenticationNotifier with ChangeNotifier {
   bool checkTokenExp(int expireTime) {
     bool checkTime = DateTime.now().millisecondsSinceEpoch > expireTime * 1000;
     return checkTime;
+  }
+
+  Future updateUserDetails(
+      {required BuildContext context,
+      required int user_id,
+      required String password,
+      required String fullname,
+      required String phone_number,
+      required String address,
+      required String email}) async {
+    // try {
+    final subUrl = '/api/User/UpdateUser/$user_id';
+    final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
+    print(">>>>>>>>>>>>>>>>>>>>>>>uri: ${uri}");
+    final http.Response response = await http.Client().put(uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Access-Control-Allow-Origin': "*",
+        },
+        body: jsonEncode({
+          "user_id": user_id,
+          "fullname": fullname,
+          "email": email,
+          "address": address,
+          "phone_number": phone_number,
+          "role": "User",
+          "password": password
+        }));
+    print(">>>>>>>>>>>>>>>>>>>>>>>body: ${jsonEncode({
+          "user_id": user_id,
+          "fullname": fullname,
+          "email": email,
+          "address": address,
+          "phone_number": phone_number,
+          "role": "User",
+          "password": password
+        })}");
+    var userData = response.body;
+    print(">>>>>>>>>>>>>>>>>>>>>>>response.body: ${response.body}");
+    final Map<String, dynamic> parseData = await jsonDecode(userData);
+    print(">>>>>>>>>>>>>>>>>>>>>>>parseData: ${parseData}");
+    final dynamic body = response.body;
+    final Map<String, dynamic> kkkupdate = {
+      "token": _user.token,
+      "id": parseData['data']['user_id'],
+      "username": parseData['data']['fullname'],
+      "userphoneNo": parseData['data']['phone_number'],
+      "useraddress": parseData['data']['address'],
+      "useremail": parseData['data']['email'],
+      "userpassword": parseData['data']['password'],
+      "role": parseData['data']['role'],
+    };
+
+    _user = User.fromJson(kkkupdate);
+
+    print(">>>>>>>>>>>>>>>>>>>>>>>parseData: ${parseData}");
+    print(">>>>>>>>>>>>>>>>>>>>>>>StatusCode: ${response.statusCode}");
+    if (response.statusCode == 200) {
+      // _user.username = fullname;
+      // _user.useremail = email;
+      // _user.userphoneNo = phone_number;
+      // _user.useraddress = address;
+      // _user.id = user_id;
+      // _user.userpassword = password;
+      await WriteCache.setString(key: AppKeys.userData, value: fullname);
+      await WriteCache.setInt(key: 'user_id', value: user_id);
+      await WriteCache.setString(key: 'email', value: email);
+
+      Navigator.of(context).pushReplacementNamed(AppRouter.successEditProfile);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+          text: 'Please Check Infor Enter', context: context));
+    }
+    print(">>>>>>>>>>>>>>>>>>>>>>>userData: ${response.body}");
+    return body;
+    // } on SocketException catch (_) {
+    //   ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+    //       text: 'Oops No You Need A Good Internet Connection',
+    //       context: context));
+    // } catch (e) {
+    //   print("Error: $e");
+    //   ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+    //       text: 'Please check your Password & Email', context: context));
+    // }
   }
 }

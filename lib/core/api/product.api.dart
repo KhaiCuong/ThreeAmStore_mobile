@@ -85,7 +85,7 @@ class ProductAPI {
   }
 
   Future searchProduct({required dynamic productName}) async {
-    var subUrl = '/product/search/$productName';
+    var subUrl = 'api/Product/GetProductList/';
     final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
 
     final http.Response response = await client.get(
