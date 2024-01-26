@@ -127,7 +127,7 @@ class _ProductScreenState extends State<ProductScreen> {
                       ),
                     ),
                     vSizedBox2,
-                    const BrandWidget(),
+                     BrandWidget(),
                     vSizedBox2,
                     Text(
                       'New Watches',
@@ -298,7 +298,7 @@ class _ProductCardState extends State<ProductCard> {
                             widget.prod.productImage!.isNotEmpty
                         ? Image.network(
                             "$domain${widget.prod.productImage!}",
-                            fit: BoxFit.scaleDown,
+                            fit: BoxFit.cover,
                           )
                         : Container(),
                   ),

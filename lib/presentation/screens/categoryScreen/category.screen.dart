@@ -71,7 +71,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         future: widget.categoryScreenArgs.categoryName ==
                                 'All Brands'
                             ? notifier.fetchProducts(context: context)
-                            : notifier.fetchProductCategory(
+                            : notifier.fetchProductCategoryById(
                                 context: context,
                                 id: widget.categoryScreenArgs.categoryName ==
                                         'Rolex'
@@ -81,9 +81,37 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                         ? 'OM2'
                                         : widget.categoryScreenArgs
                                                     .categoryName ==
-                                                'Hublot'
-                                            ? 'MV4'
-                                            : 'CS7',
+                                                'Casio'
+                                            ? 'CS7'
+                                            : widget.categoryScreenArgs
+                                                        .categoryName ==
+                                                    'Orient'
+                                                ? 'OR1'
+                                                : widget.categoryScreenArgs
+                                                            .categoryName ==
+                                                        'Citizen'
+                                                    ? 'CT6'
+                                                    : widget.categoryScreenArgs
+                                                                .categoryName ==
+                                                            'Calvin Klein'
+                                                        ? 'CK3'
+                                                        : widget.categoryScreenArgs
+                                                                    .categoryName ==
+                                                                'Daniel Wellington'
+                                                            ? 'DW8'
+                                                             : widget.categoryScreenArgs
+                                                        .categoryName ==
+                                                    'Movado'
+                                                ? 'MV4'
+                                                            : widget.categoryScreenArgs
+                                                                        .categoryName ==
+                                                                    'Seiko'
+                                                                ? 'Sk5'
+                                                                : widget.categoryScreenArgs
+                                                                            .categoryName ==
+                                                                        'Hublot'
+                                                                    ? 'MV4'
+                                                                    : 'CS7',
                               ),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
@@ -100,8 +128,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           } else {
                             var _snapshot = snapshot.data as List<ProductData>;
                             return ShowDataGrid(prods: _snapshot);
-                               
-
                           }
                         },
                       );

@@ -8,28 +8,50 @@ import 'package:scarvs/presentation/screens/categoryScreen/category.screen.dart'
 import 'package:scarvs/presentation/widgets/custom.text.style.dart';
 import 'package:scarvs/presentation/widgets/dimensions.widget.dart';
 
+import '../../../../core/notifiers/product.notifier.dart';
+
 class BrandWidget extends StatelessWidget {
-  const BrandWidget({Key? key}) : super(key: key);
+  BrandWidget({Key? key}) : super(key: key);
+
+  // Khai báo biến future
+  ProductNotifier productNotifier = ProductNotifier();
 
   @override
   Widget build(BuildContext context) {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
 
-    List<String> _categories = [
-      "Rolex",
-      "Hublot",
-      "Patek Philippe",
-      "Omega",
-      "Breitling",
-    ];
+    // Không cần khởi tạo categoryListFuture ở đây nữa
+
     List<String> _categoriesImages = [
       AppAssets.brandRolex,
       AppAssets.brandHublot,
       AppAssets.brandPatek,
       AppAssets.brandOmega,
-      AppAssets.brandBreitling
+      AppAssets.brandBreitling,
+      AppAssets.brandCalvin,
+      AppAssets.brandCasio,
+      AppAssets.brandCitizen,
+      AppAssets.brandMovado,
+      AppAssets.brandOrient,
+      AppAssets.brandSeiko,AppAssets.brandDaniel
     ];
+    Map<String, int> brandToImageIndex = {
+      "Rolex": 0,
+      "Hublot": 1,
+      "Patek Philippe": 2,
+      "Omega": 3,
+      "Breitling": 4,
+      "Calvin Klein": 5,
+      "Casio": 6,
+      "Citizen": 7,
+      "Movado": 8,
+      "Orient": 9,
+      "Seiko": 10,
+      "Daniel Wellington":11
+    };
+
+    // Widget showBrands không thay đổi
 
     showBrands(String text, String images) {
       return GestureDetector(
@@ -56,7 +78,7 @@ class BrandWidget extends StatelessWidget {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.14,
                   width: MediaQuery.of(context).size.width * 0.38,
-                  child: Image.network(images),
+                  child: Image.asset(images),
                 ),
                 vSizedBox1,
                 Text(
@@ -87,21 +109,24 @@ class BrandWidget extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                // Xử lý sự kiện khi nút được nhấn
-                 Navigator.of(context).pushNamed(
-            AppRouter.categoryRoute,
-            arguments: const CategoryScreenArgs(categoryName: 'All Brands'),
-          );
+                Navigator.of(context).pushNamed(
+                  AppRouter.categoryRoute,
+                  arguments:
+                      const CategoryScreenArgs(categoryName: 'All Brands'),
+                );
               },
-              child:  Text(
+              child: Text(
                 'See All',
                 style: TextStyle(
-                  color: themeFlag?AppColors.creamColor:AppColors.blueZodiac,
+                  color:
+                      themeFlag ? AppColors.creamColor : AppColors.blueZodiac,
                   fontSize: 16.0,
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                primary:themeFlag? AppColors.blackPearl:AppColors.creamColor, // Màu nền của nút
+                primary: themeFlag
+                    ? AppColors.blackPearl
+                    : AppColors.creamColor, // Màu nền của nút
                 shape: RoundedRectangleBorder(
                   borderRadius:
                       BorderRadius.circular(10.0), // Độ bo tròn của nút
@@ -111,22 +136,47 @@ class BrandWidget extends StatelessWidget {
           ],
         ),
         vSizedBox2,
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.20,
-          width: MediaQuery.of(context).size.width,
-          child: ListView.builder(
-            shrinkWrap: false,
-            scrollDirection: Axis.horizontal,
-            physics: const ScrollPhysics(),
-            itemCount: _categories.length,
-            itemBuilder: (BuildContext context, int index) {
-              return showBrands(
-                _categories[index],
-                _categoriesImages[index],
+        // Sử dụng FutureBuilder để lấy dữ liệu từ hàm fetchProductCategoryList
+        FutureBuilder<List<String>>(
+          future: productNotifier.fetchProductCategoryList(context: context),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // Hiển thị loading indicator nếu dữ liệu đang được tải
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              // Xử lý lỗi nếu có
+              return Text('Error: ${snapshot.error}');
+            } else {
+              // Hiển thị danh sách sản phẩm khi dữ liệu đã sẵn sàng
+              return SizedBox(
+                height: MediaQuery.of(context).size.height * 0.20,
+                width: MediaQuery.of(context).size.width,
+                child: ListView.builder(
+                  shrinkWrap: false,
+                  scrollDirection: Axis.horizontal,
+                  physics: const ScrollPhysics(),
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    // Lấy brand từ snapshot.data![index]
+                    String brand = snapshot.data![index];
+                    // Kiểm tra xem brand có trong ánh xạ không
+                    if (brandToImageIndex.containsKey(brand)) {
+                      // Nếu có, lấy chỉ số tương ứng trong _categoriesImages
+                      int imageIndex = brandToImageIndex[brand]!;
+                      // Sử dụng chỉ số đó để lấy hình ảnh tương ứng trong _categoriesImages
+                      String image = _categoriesImages[imageIndex];
+                      // Trả về widget hiển thị hình ảnh và brand
+                      return showBrands(brand, image);
+                    } else {
+                      // Nếu không tìm thấy ánh xạ, trả về widget trống
+                      return showBrands(brand, _categoriesImages[4]);
+                    }
+                  },
+                ),
               );
-            },
-          ),
-        )
+            }
+          },
+        ),
       ],
     );
   }
