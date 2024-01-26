@@ -36,6 +36,8 @@ dependencies:
   hive_flutter: any
   flutter_paypal: ^0.2.0
   one_context: ^2.1.0
+  carousel_slider: ^4.0.0
+  dots_indicator: ^2.0.0
  
 
 dev_dependencies:
@@ -66,6 +68,7 @@ flutter:
     - assets/images/shoes/
     - assets/images/misc/
     - assets/images/logo/
+    - assets/images/brands/
 
   fonts:
     - family: Contax

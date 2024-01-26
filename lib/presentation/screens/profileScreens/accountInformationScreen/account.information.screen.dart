@@ -64,11 +64,10 @@ class AccountInformationScreen extends StatelessWidget {
                               child: Hero(
                                 tag: 'profilePicture',
                                 child: ClipOval(
-                                  child: SvgPicture.network(
-                                    'https://avatars.dicebear.com/api/big-smile/${authNotifier.auth.id!}.svg',
-                                    semanticsLabel: 'A shark?!',
-                                    alignment: Alignment.center,
-                                  ),
+                                  child: const CircleAvatar(
+                radius: 60,
+                backgroundImage: NetworkImage(
+                    "https://avatars.githubusercontent.com/u/91388754?v=4"),),
                                 ),
                               ),
                             ),

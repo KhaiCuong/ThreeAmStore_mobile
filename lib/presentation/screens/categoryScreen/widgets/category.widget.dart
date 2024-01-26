@@ -62,7 +62,7 @@ class _ShowDataGridState extends State<ShowDataGrid> {
               onTap: () {
                 Navigator.of(context).pushNamed(
                   AppRouter.prodDetailRoute,
-                  arguments: ProductDetailsArgs(id:prod.productId),
+                  arguments: ProductDetailsArgs(id: prod.productId),
                 );
               },
               child: Stack(
@@ -76,37 +76,103 @@ class _ShowDataGridState extends State<ShowDataGrid> {
                     child: Hero(
                       tag: Key(prod.productId.toString()),
                       child: SizedBox(
-                        height: height,
+                        height:
+                            height, // Đặt chiều cao của SizedBox là chiều cao mong muốn của hình ảnh
+                        width: double
+                            .infinity, // Đặt chiều rộng của SizedBox là vô hạn để đảm bảo lấp đầy không gian
                         child: prod.productImage != null &&
                                 prod.productImage!.isNotEmpty
                             ? Image.network(
                                 "$domain${prod.productImage!}",
-                                fit: BoxFit.cover,
+                                fit: BoxFit
+                                    .cover, // Đặt thuộc tính fit thành BoxFit.cover
                               )
                             : Container(),
                       ),
                     ),
                   ),
+
+                  //Favorite Icon
                   Positioned(
-                    top: height - 170,
-                    left: 120,
-                    right: 8,
-                    child: IconButton(
-                      onPressed: () {
-                        toggleFavoriteStatus(context, prod.productId);
-                      },
-                      icon: Icon(
-                        isProductFavorite(prod.productId)
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color:
-                            themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      ),
+                    bottom: 10,
+                    right: 0,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 60,
+                          height: 40,
+                          padding: const EdgeInsets.all(1),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 248, 248, 248)
+                                .withOpacity(1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: InkWell(
+                            onTap: () async {
+                              bool isInCart = await cartNotifier
+                                  .isProductInCart(prod.productId);
+
+                              if (isInCart) {
+                                bool updateQuantity = await cartNotifier
+                                    .updateQuantityInCart(prod.productId, 1);
+                                if (updateQuantity) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackUtil.stylishSnackBar(
+                                      text: 'Added More To Cart',
+                                      context: context,
+                                    ),
+                                  );
+                                }
+                              } else {
+                                cartNotifier.addToHiveCart(
+                                  userEmail: 'hoang@tiwi.vn',
+                                  username: "Hoang",
+                                  address: "Tran Van Dang",
+                                  phoneNumber: '0909222009',
+                                  price: prod.productPrice!,
+                                  productName: prod.productName,
+                                  productId: prod.productId,
+                                  image: prod.productImage!,
+                                  userId: 2,
+                                  quantity: 1,
+                                  context: context,
+                                  productSize: sizeNotifier.getSize,
+                                );
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackUtil.stylishSnackBar(
+                                    text: 'Added To Cart',
+                                    context: context,
+                                  ),
+                                );
+                              }
+                            },
+                            child: Icon(
+                              Icons.shopping_cart,
+                              color: Colors.blue,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            toggleFavoriteStatus(context, prod.productId);
+                          },
+                          icon: Icon(
+                            isProductFavorite(prod.productId)
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   // Giá sản phẩm
                   Positioned(
-                    top: height - 18, // Điều chỉnh vị trí của tên sản phẩm
+                    top: height - 18,
                     left: 8,
                     right: 8,
                     child: Container(
@@ -126,7 +192,7 @@ class _ShowDataGridState extends State<ShowDataGrid> {
                   ),
                   // Tên sản phẩm
                   Positioned(
-                    bottom: 10,
+                    bottom: 42,
                     left: 8,
                     right: 8,
                     child: Container(
@@ -135,9 +201,7 @@ class _ShowDataGridState extends State<ShowDataGrid> {
                       child: Row(
                         children: [
                           Container(
-                            width: 104,
-                            padding: EdgeInsets.only(
-                                left: 2), // Đặt giá trị width mong muốn
+                            padding: EdgeInsets.only(left: 2),
                             child: Text(
                               prod.productName,
                               style: TextStyle(
@@ -148,65 +212,6 @@ class _ShowDataGridState extends State<ShowDataGrid> {
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Container(
-                            width: 40,
-                            height: 40,
-                            padding: const EdgeInsets.all(1),
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 248, 248, 248)
-                                  .withOpacity(1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: InkWell(
-                              onTap: () async {
-                                bool isInCart = await cartNotifier
-                                    .isProductInCart(prod.productId);
-
-                                if (isInCart) {
-                                  // Sản phẩm đã có trong OrderData, cập nhật quantity thêm 1
-                                  bool updateQuantity =
-                                      await cartNotifier.updateQuantityInCart(
-                                          prod.productId, 1);
-                                  if (updateQuantity) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackUtil.stylishSnackBar(
-                                        text: 'Added More To Cart',
-                                        context: context,
-                                      ),
-                                    );
-                                  }
-                                } else {
-                                  cartNotifier.addToHiveCart(
-                                    // useremail: userNotifier.getUserEmail!,
-                                    userEmail: 'hoang@tiwi.vn',
-                                    username: "Hoang",
-                                    address: "Tran Van Dang",
-                                    phoneNumber: '0909222009',
-                                    price: prod.productPrice!,
-                                    productName: prod.productName,
-                                    productId: prod.productId,
-                                    image: prod.productImage!,
-                                    userId: 2,
-                                    quantity: 1,
-                                    context: context,
-                                    productSize: sizeNotifier.getSize,
-                                  );
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackUtil.stylishSnackBar(
-                                      text: 'Added To Cart',
-                                      context: context,
-                                    ),
-                                  );
-                                }
-                              },
-                              child: Icon(
-                                Icons.shopping_cart,
-                                color: Colors.blue,
-                                size: 20, // Kích thước của biểu tượng
-                              ),
                             ),
                           ),
                         ],

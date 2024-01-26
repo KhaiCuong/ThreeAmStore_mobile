@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:scarvs/core/api/product.api.dart';
-import 'package:scarvs/core/models/productID.model.dart';
 import 'package:scarvs/core/models/product.model.dart';
 import 'package:scarvs/core/utils/snackbar.util.dart';
 
@@ -146,7 +145,6 @@ class ProductNotifier with ChangeNotifier {
         // Xử lý khi mã trạng thái không phải là 200
         return [];
       }
-    
     } on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
         text: 'Oops No You Need A Good Internet Connection',
@@ -181,7 +179,6 @@ class ProductNotifier with ChangeNotifier {
         // Xử lý khi mã trạng thái không phải là 200
         return [];
       }
-    
     } on SocketException catch (_) {
       // ScaffoldMessenger.of(context).showSnackBar(
       //   SnackUtil.stylishSnackBar(
@@ -191,7 +188,86 @@ class ProductNotifier with ChangeNotifier {
     }
   }
 
-  Future<List<ProductData>> fetchProductCategory(
+  Future<List<String>> fetchProductImages(String productId) async {
+    try {
+      final dio = Dio();
+      final response = await dio.get(ApiRoutes.baseurl +
+          '/api/ProductImage/GetProductImagesByProductId/$productId');
+      print(
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>fetchProductImages response.statusCode: ${response.statusCode}");
+      // print(">>>>>>>>>>>>>>>>>>>>>>>>>>products data: ${response.data}");
+      if (response.statusCode == 200) {
+        var responseData = response.data;
+        // print(">>>>>>>>>>>>>>>>>>>>>>>>>>responseData : ${responseData['data']}");
+
+        if (responseData != null) {
+          List<String> productImageList =
+              List<String>.from(responseData['data']);
+          // print(">>>>>>>>>>>>>>>>>>>>>>>>>>productImageList: $productImageList");
+          return productImageList;
+        } else {
+          return [];
+          // Xử lý khi data là null hoặc không phải là List<dynamic>
+        }
+      } else {
+        // Xử lý khi mã trạng thái không phải là 200
+        return [];
+      }
+    } on DioError catch (e) {
+      // Xử lý lỗi từ Dio.
+      print("DioError: $e");
+      return [];
+    } catch (e) {
+      // Xử lý lỗi tổng quát
+      print("Error: $e");
+      return [];
+    }
+  }
+
+
+  //// CATEGORY
+
+  Future<List<String>> fetchProductCategoryList(
+      {required BuildContext context}) async {
+    try {
+      final dio = Dio();
+      final response =
+          await dio.get(ApiRoutes.baseurl + '/api/Category/GetCategoryList');
+      print(
+          ">>>>>>>>>>>>>>>> fetch GetCategoryList response.statusCode: ${response.statusCode}");
+      // print(">>>>>>>>>>>>>>>> GetCategoryList data: ${response.data}");
+
+      if (response.statusCode == 200) {
+        var responseData = response.data['data'];
+        // print(">>>>>>>>>>>>>>>> responseData: $responseData");
+
+        // Tạo danh sách rỗng để lưu trữ category_name
+        List<String> categoryList = [];
+
+        // Lặp qua từng đối tượng trong danh sách và trích xuất category_name
+        for (var category in responseData) {
+          String categoryName = category['category_name'];
+          categoryList.add(categoryName);
+        }
+        print(">>>>>>>>>>>>>>>> categoryList: $categoryList");
+        // Trả về danh sách categoryList đã được xây dựng từ category_name
+        return categoryList;
+      } else {
+        return [];
+      }
+    } on SocketException catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+        text: 'Oops No You Need A Good Internet Connection',
+        context: context,
+      ));
+      return [];
+    } catch (e) {
+      print("Error: $e");
+      return [];
+    }
+  }
+
+  Future<List<ProductData>> fetchProductCategoryById(
       {required BuildContext context, required String id}) async {
     try {
       // id = 'RL9';
@@ -199,7 +275,7 @@ class ProductNotifier with ChangeNotifier {
       final response = await dio.get(
           ApiRoutes.baseurl + '/api/Product/GetProductListByCategoryId/$id');
       print(
-          ">>>>>>>>>>>>>>>>>>>>>>>>>>fetchProductCategory response.statusCode: ${response.statusCode}");
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>fetchProductCategoryById response.statusCode: ${response.statusCode}");
       // print(">>>>>>>>>>>>>>>>>>>>>>>>>>products data: ${response.data}");
       if (response.statusCode == 200) {
         var responseData = response.data;

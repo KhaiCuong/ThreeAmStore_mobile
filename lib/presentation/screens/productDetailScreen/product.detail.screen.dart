@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
-import 'package:scarvs/core/models/productID.model.dart';
 import 'package:scarvs/core/notifiers/product.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:scarvs/presentation/screens/productDetailScreen/widget/ui.detail.dart';
 import 'package:scarvs/presentation/widgets/custom.loader.dart';
+import 'package:scarvs/core/notifiers/cart.notifier.dart';
+import 'package:scarvs/core/notifiers/user.notifier.dart';
+import 'package:scarvs/core/utils/snackbar.util.dart';
+import 'package:scarvs/presentation/widgets/custom.back.btn.dart';
+import 'package:scarvs/presentation/widgets/custom.text.style.dart';
+import 'package:scarvs/presentation/widgets/dimensions.widget.dart';
+import '../../../../app/routes/api.routes.dart';
 
 class ProductDetail extends StatefulWidget {
   final ProductDetailsArgs productDetailsArguements;
@@ -21,6 +26,171 @@ class ProductDetail extends StatefulWidget {
 }
 
 class _ProductDetailState extends State<ProductDetail> {
+  var domain = ApiRoutes.baseurl;
+  int _currentIndex = 0; 
+  CartNotifier cartNotifier = CartNotifier();
+  UserNotifier userNotifier = UserNotifier();
+  // SizeNotifier sizeNotifier =
+  ProductNotifier productNotifier = ProductNotifier();
+
+  Widget _buildProductUI(
+      BuildContext context, bool themeFlag, dynamic _snapshot) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomBackPop(themeFlag: themeFlag),
+        Column(
+          children: [
+            Center(
+              child: Text(
+                _snapshot.productName,
+                style: CustomTextWidget.bodyTextB1(
+                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                ),
+              ),
+            ),
+            vSizedBox2,
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                // SizedBox(
+                //   height: MediaQuery.of(context).size.height * 0.35,
+                //   width: MediaQuery.of(context).size.width * 0.8,
+                //   child: themeFlag
+                //       ? Image.asset(AppAssets.diamondWhite)
+                //       : Image.asset(AppAssets.diamondBlack),
+                // ),
+                Hero(
+                  tag: Key(_snapshot.productId.toString()),
+                  child: InteractiveViewer(
+                    child: SizedBox(
+                    //   height: MediaQuery.of(context).size.height * 0.3,
+                    //   width: MediaQuery.of(context).size.width * 0.7,
+                    //   child: _snapshot.productImage != null &&
+                    //           _snapshot.productImage!.isNotEmpty
+                    //       ? Image.network("$domain${_snapshot.productImage!}",
+                    //           alignment: Alignment.center)
+                    //       : Container(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            vSizedBox2,
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                FutureBuilder(
+                  future:
+                      productNotifier.fetchProductImages(_snapshot.productId),
+                  builder: (context, imageSnapshot) {
+                    if (imageSnapshot.connectionState == ConnectionState.done) {
+                      List<String> imageList =
+                          imageSnapshot.data as List<String>;
+                      if (imageList != null) {
+                        return ProductImageSlider(
+                          imageList: imageList,
+                          domain: domain,
+                        );
+                      } else {
+                        return const SizedBox
+                            .shrink(); // hoặc Widget khác để hiển thị khi dữ liệu rỗng.
+                      }
+                    } else {
+                      return CircularProgressIndicator(); // Hoặc bạn có thể thay bằng Widget khác để hiển thị khi đang tải ảnh.
+                    }
+                  },
+                ),
+              ],
+            ),
+             vSizedBox2,
+            Text(
+              _snapshot.productDescription!,
+              style: CustomTextWidget.bodyText3(
+                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+              ),
+              textAlign: TextAlign.justify,
+            ),
+          ],
+        ),
+        vSizedBox2,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+          child: Text(
+            '\$ ${_snapshot.productPrice}',
+            style: CustomTextWidget.bodyTextUltra(
+              color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+            ),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    themeFlag ? AppColors.creamColor : AppColors.mirage,
+                enableFeedback: true,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 25,
+                  vertical: 8,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              onPressed: () async {
+                bool isInCart =
+                    await cartNotifier.isProductInCart(_snapshot.productId);
+
+                if (isInCart) {
+                  bool updateQuantity = await cartNotifier.updateQuantityInCart(
+                      _snapshot.productId, 1);
+                  if (updateQuantity) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackUtil.stylishSnackBar(
+                        text: 'Added More To Cart',
+                        context: context,
+                      ),
+                    );
+                  }
+                } else {
+                  cartNotifier.addToHiveCart(
+                    userEmail: 'hoang@tiwi.vn',
+                    username: "Hoang",
+                    address: "Tran Van Dang",
+                    phoneNumber: '0909222009',
+                    price: _snapshot.productPrice!,
+                    productName: _snapshot.productName,
+                    productId: _snapshot.productId,
+                    image: _snapshot.productImage!,
+                    userId: 2,
+                    quantity: 1,
+                    context: context,
+                    productSize: '40',
+                  );
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackUtil.stylishSnackBar(
+                      text: 'Added To Cart',
+                      context: context,
+                    ),
+                  );
+                }
+              },
+              child: Text(
+                'Add To Cart',
+                style: CustomTextWidget.bodyTextB2(
+                  color: themeFlag ? AppColors.mirage : AppColors.creamColor,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
@@ -33,24 +203,20 @@ class _ProductDetailState extends State<ProductDetail> {
           child: Consumer<ProductNotifier>(builder: (context, notifier, _) {
             return FutureBuilder(
               future: notifier.fetchProductDetail(
-                // context: context,
                 id: widget.productDetailsArguements.id,
               ),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                    var _snapshot = snapshot.data;
-                  return productUI(
-                    context: context,
-                    themeFlag: themeFlag,
-                    snapshot: _snapshot,
-                  );
+                  var _snapshot = snapshot.data;
+                  return _buildProductUI(context, themeFlag, _snapshot);
                 } else {
-                   return Center(
+                  return Center(
                     child: customLoader(
-                        context: context,
-                        themeFlag: themeFlag,
-                        lottieAsset: AppAssets.onBoardingTwo,
-                        text: 'Please Wait Till It Loads'),
+                      context: context,
+                      themeFlag: themeFlag,
+                      lottieAsset: AppAssets.onBoardingTwo,
+                      text: 'Please Wait Till It Loads',
+                    ),
                   );
                 }
               },
