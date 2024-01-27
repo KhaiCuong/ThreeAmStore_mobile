@@ -83,7 +83,7 @@ class _ShowDataGridState extends State<ShowDataGrid> {
                         child: prod.productImage != null &&
                                 prod.productImage!.isNotEmpty
                             ? Image.network(
-                                "$domain${prod.productImage!}",
+                                "$domain/${prod.productImage!}",
                                 fit: BoxFit
                                     .cover, // Đặt thuộc tính fit thành BoxFit.cover
                               )

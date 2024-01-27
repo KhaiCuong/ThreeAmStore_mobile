@@ -135,7 +135,7 @@ class ProductNotifier with ChangeNotifier {
               (responseData['data'] as List<dynamic>)
                   .map((json) => ProductData.fromJson(json))
                   .toList();
-          // print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: $productList");
+          print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: ${productList.length}");
           return productList;
         } else {
           return [];

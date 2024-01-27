@@ -32,9 +32,9 @@ class _SearchScreenState extends State<SearchScreen> {
         body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              20,
-              20,
-              20,
+              1,
+              1,
+              1,
               MediaQuery.of(context).viewInsets.top,
             ),
             child: Column(
@@ -83,7 +83,7 @@ class _SearchScreenState extends State<SearchScreen> {
             hSizedBox1,
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.07,
-              width: MediaQuery.of(context).size.width * 0.65,
+              width: MediaQuery.of(context).size.width * 0.75,
               child: TextField(
                 controller: searchProductController,
                 style: CustomTextWidget.bodyText2(
