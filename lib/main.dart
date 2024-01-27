@@ -4,20 +4,25 @@ import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.theme.dart';
 import 'package:scarvs/app/providers/app.provider.dart';
 import 'package:scarvs/app/routes/app.routes.dart';
+import 'package:scarvs/core/models/address.dart';
 import 'package:scarvs/core/models/favorite_product.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'core/models/orders.dart';
+import 'core/notifiers/address.notifiter.dart';
+import 'core/notifiers/authentication.notifer.dart';
 // import 'web_url/configure_nonweb.dart'
 //     if (dart.library.html) 'web_url/configure_web.dart';
 
 Future<void> main() async {
   // configureApp();
   WidgetsFlutterBinding.ensureInitialized();
-    await Hive.initFlutter();
+  await Hive.initFlutter();
   Hive.registerAdapter(OrderDataAdapter());
   Hive.registerAdapter(FavoriteProductAdapter());
+  Hive.registerAdapter(AddressAdapter());
   await Hive.openBox<OrderData>('orders');
   await Hive.openBox<FavoriteProduct>('favorite_products');
+  await Hive.openBox<Address>('addresses');
   runApp(const Lava());
 }
 
@@ -36,6 +41,7 @@ class Core extends StatelessWidget {
   const Core({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+   
     return Consumer<ThemeNotifier>(
       builder: (context, notifier, _) {
         return MaterialApp(

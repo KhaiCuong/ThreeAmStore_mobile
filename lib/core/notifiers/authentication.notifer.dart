@@ -144,24 +144,27 @@ class AuthenticationNotifier with ChangeNotifier {
       // print(userData);
       var userData = response.body;
 
-      // print(">>>>>>>>>>>>>>>>>>>>>>>userData: ${response}");
+      print(
+          ">>>>>>>>>>>>>>>>>>>>>>>userData statusCode: ${response.statusCode}");
+      // print(">>>>>>>>>>>>>>>>>>>>>>>userData : ${userData}");
 
       final Map<String, dynamic> parseData = await jsonDecode(userData);
 
-      final Map<String, dynamic> kkk = {
-        "token": parseData['token'],
-        "id": parseData['userToken']['user_id'],
-        "username": parseData['userToken']['fullname'],
-        "userphoneNo": parseData['userToken']['phone_number'],
-        "useraddress": parseData['userToken']['address'],
-        "useremail": parseData['userToken']['email'],
-        "userpassword": parseData['userToken']['password'],
-        "role": parseData['userToken']['role'],
-      };
-
-      _user = User.fromJson(kkk);
-
-      print(">>>>>>>>>>>>>>>>>>>>>>>parseData: ${parseData}");
+      if (parseData.containsKey('userToken')) {
+        final Map<String, dynamic> userToken = parseData['userToken'];
+        final Map<String, dynamic> kkk = {
+          "token": parseData['token'],
+          "id": userToken['userId'] ?? '',
+          "username": userToken['fullname'] ?? '',
+          "userphoneNo": userToken['phone_number'] ?? '',
+          "useraddress": userToken['address'] ?? '',
+          "useremail": userToken['email'] ?? '',
+          "userpassword": userToken['password'] ?? '',
+          "role": userToken['role'] ?? '',
+          "verify": userToken['verify'] ?? '',
+        };
+        _user = User.fromJson(kkk);
+      }
 
       // bool isAuthenticated = parseData['authentication'];
       // dynamic authData = parseData['data'];
@@ -169,7 +172,8 @@ class AuthenticationNotifier with ChangeNotifier {
       if (response.statusCode == 200) {
         WriteCache.setString(key: AppKeys.userData, value: useremail)
             .whenComplete(
-          () => Navigator.of(context).pushReplacementNamed(AppRouter.homeRoute),
+          () =>
+        Navigator.of(context).pushReplacementNamed(AppRouter.homeRoute),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -231,7 +235,7 @@ class AuthenticationNotifier with ChangeNotifier {
           'Access-Control-Allow-Origin': "*",
         },
         body: jsonEncode({
-          "user_id": user_id,
+          "userId": user_id,
           "fullname": fullname,
           "email": email,
           "address": address,
@@ -240,7 +244,7 @@ class AuthenticationNotifier with ChangeNotifier {
           "password": password
         }));
     print(">>>>>>>>>>>>>>>>>>>>>>>body: ${jsonEncode({
-          "user_id": user_id,
+          "userId": user_id,
           "fullname": fullname,
           "email": email,
           "address": address,
@@ -276,7 +280,7 @@ class AuthenticationNotifier with ChangeNotifier {
       // _user.id = user_id;
       // _user.userpassword = password;
       await WriteCache.setString(key: AppKeys.userData, value: fullname);
-      await WriteCache.setInt(key: 'user_id', value: user_id);
+      await WriteCache.setInt(key: 'userId', value: user_id);
       await WriteCache.setString(key: 'email', value: email);
 
       Navigator.of(context).pushReplacementNamed(AppRouter.successEditProfile);

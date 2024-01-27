@@ -90,7 +90,7 @@ class _FavoriteListState extends State<FavoriteList> {
                         if (product.productImage != null &&
                             product.productImage!.isNotEmpty) {
                           productImage =
-                              NetworkImage("$domain${product.productImage!}");
+                              NetworkImage("$domain/${product.productImage!}");
                         } else {
                           // Nếu không có hình ảnh, sử dụng hình ảnh placeholder hoặc mặc định
                           productImage =

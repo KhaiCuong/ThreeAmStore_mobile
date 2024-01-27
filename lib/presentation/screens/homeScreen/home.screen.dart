@@ -12,6 +12,9 @@ import 'package:scarvs/presentation/screens/productScreen/product.screen.dart';
 import 'package:scarvs/presentation/screens/profileScreens/mainProfileScreen/profile.screen.dart';
 import 'package:scarvs/presentation/screens/searchScreen/search.screen.dart';
 
+import '../../../core/notifiers/address.notifiter.dart';
+import '../../../core/notifiers/authentication.notifer.dart';
+
 final List<SalomonBottomBarItem> bottomNavBarIcons = [
   SalomonBottomBarItem(
     icon: const Icon(Icons.home),
@@ -62,6 +65,12 @@ class _HomeScreenState extends State<HomeScreen> {
         userNotifier.getUserData(context: context, id: userid, token: 'token'),
       },
     );
+    final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+    var useraddress = authNotifier.auth.useraddress;
+    AddressNotifier addressNotifier = AddressNotifier();
+    addressNotifier.addAddress(useraddress);
+
     super.initState();
   }
 

@@ -75,43 +75,43 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                 context: context,
                                 id: widget.categoryScreenArgs.categoryName ==
                                         'Rolex'
-                                    ? 'RL9'
+                                    ? 'RL'
                                     : widget.categoryScreenArgs.categoryName ==
                                             'Omega'
-                                        ? 'OM2'
+                                        ? 'OM'
                                         : widget.categoryScreenArgs
                                                     .categoryName ==
                                                 'Casio'
-                                            ? 'CS7'
+                                            ? 'CS'
                                             : widget.categoryScreenArgs
                                                         .categoryName ==
                                                     'Orient'
-                                                ? 'OR1'
+                                                ? 'OR'
                                                 : widget.categoryScreenArgs
                                                             .categoryName ==
                                                         'Citizen'
-                                                    ? 'CT6'
+                                                    ? 'CT'
                                                     : widget.categoryScreenArgs
                                                                 .categoryName ==
                                                             'Calvin Klein'
-                                                        ? 'CK3'
+                                                        ? 'CK'
                                                         : widget.categoryScreenArgs
                                                                     .categoryName ==
                                                                 'Daniel Wellington'
-                                                            ? 'DW8'
+                                                            ? 'DW'
                                                              : widget.categoryScreenArgs
                                                         .categoryName ==
                                                     'Movado'
-                                                ? 'MV4'
+                                                ? 'MV'
                                                             : widget.categoryScreenArgs
                                                                         .categoryName ==
                                                                     'Seiko'
-                                                                ? 'Sk5'
+                                                                ? 'Sk'
                                                                 : widget.categoryScreenArgs
                                                                             .categoryName ==
                                                                         'Hublot'
-                                                                    ? 'MV4'
-                                                                    : 'CS7',
+                                                                    ? 'MV'
+                                                                    : 'RL',
                               ),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==

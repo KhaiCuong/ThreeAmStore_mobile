@@ -5,6 +5,7 @@ import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
 import 'package:scarvs/app/routes/app.routes.dart';
 import 'package:scarvs/core/api/authentication.api.dart';
+import 'package:scarvs/core/notifiers/address.notifiter.dart';
 import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/cart.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_paypal/flutter_paypal.dart';
 import '../../../../app/routes/api.routes.dart';
 import '../../../../core/models/orders.dart';
 import '../../../app/constants/url_api.dart';
+import '../../../core/models/address.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -115,11 +117,11 @@ class _CartScreenState extends State<CartScreen> {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
     // final userNotifier = Provider.of<AuthenticationNotifier>(context, listen: false);
-  
-     final authNotifier =
+
+    final authNotifier =
         Provider.of<AuthenticationNotifier>(context, listen: false);
-          var useremail = authNotifier.auth.useremail ?? 'Wait';
-          var useraddress = authNotifier.auth.useraddress ;
+    var useremail = authNotifier.auth.useremail ?? 'Wait';
+    var useraddress = authNotifier.auth.useraddress;
     print(">>>>>>>>>>>>>>>> email: $useremail");
     return SafeArea(
       child: Scaffold(
@@ -178,7 +180,7 @@ class _CartScreenState extends State<CartScreen> {
                   Text('Adress: $useraddress'),
                   IconButton(
                     onPressed: () {
-                      _showEditDialog(context, "address", useraddress);
+                      _showEditDialog(context, "address");
                     },
                     icon: const Icon(Icons.edit),
                   ),
@@ -248,10 +250,11 @@ class _CartScreenState extends State<CartScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-         Text(
+        Text(
           'Total',
-           style: CustomTextWidget.bodyTextB2(
-            color: themeFlag ? AppColors.creamColor : AppColors.mirage,),
+          style: CustomTextWidget.bodyTextB2(
+            color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+          ),
         ),
         Text(
           '\$ $cartPrice',
@@ -355,52 +358,117 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Future<void> clearOrdersFromHive() async {
-       if (mounted) {
-    var ordersBox = await Hive.openBox<OrderData>('orders');
+    if (mounted) {
+      var ordersBox = await Hive.openBox<OrderData>('orders');
 
-    await ordersBox.clear();
-    setState(() {});
+      await ordersBox.clear();
+      setState(() {});
       Navigator.of(context).pushNamed('/succesOrder');
-       }
-       
+    }
   }
 
-  _showEditDialog(BuildContext context, String field, String value) {
-  TextEditingController _textEditingController =
-      TextEditingController(text: value);
-print("$_textEditingController");
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text("Edit $field"),
-        content: TextField(
-          controller: _textEditingController,
-          decoration: InputDecoration(labelText: "Enter new $field:"),
-     
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Đóng dialog nếu người dùng chọn "Huỷ"
-            },
-            child: Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              // Lưu giá trị mới và đóng dialog
-              String newValue = _textEditingController.text;
-              // TODO: Lưu giá trị mới vào người dùng hoặc nơi lưu trữ tương ứng
-              Navigator.pop(context);
-            },
-            child: Text("Save"),
-          ),
-        ],
-      );
-    },
-  );
-}
+  void _showEditDialog(BuildContext context, String field) async {
+    TextEditingController _textEditingController = TextEditingController();
+    var addressesBox = await Hive.openBox<Address>('addresses');
+    List<Address> addresses = addressesBox.values.toList();
+    AddressNotifier addressNotifier = AddressNotifier();
 
+    print(">>>>>>>>>>>> Address List From Hive: ${addresses.length}");
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: addresses.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(addresses[index].address),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      onPressed: () {
+                        // Xử lý khi người dùng nhấn vào biểu tượng xoá
+                        // Ví dụ: Xóa địa chỉ khỏi danh sách và cập nhật Hive
+                        // addressNotifier.deleteAddress(addresses[index]);
+                        addressNotifier
+                            .removeAddress(addresses[index]); // Xóa từ Hive
+                      },
+                    ),
+                    onTap: () {
+                      // Xử lý khi người dùng chọn một địa chỉ
+                      print('Selected Address: ${addresses[index].address}');
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+              TextField(
+                controller: _textEditingController,
+                decoration: InputDecoration(labelText: "Enter new address:"),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  // Thêm địa chỉ mới vào Hive
+                  String newAddress = _textEditingController.text;
+                  if (newAddress.isNotEmpty) {
+                    addressNotifier.addAddress(newAddress);
+                    Navigator.pop(context);
+                  } else {
+                    // Hiển thị thông báo hoặc xử lý khác nếu địa chỉ trống
+                  }
+                },
+                child: Text("Save"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+//   void _showEditDialog(BuildContext context, String field) async {
+//     var addressesBox = await Hive.openBox<Address>('addresses');
+//     List<Address> addresses = addressesBox.values.toList();
+  // AddressNotifier addressNotifier = AddressNotifier();
+
+// print(">>>>>>>>>>>> Address List From Hive: ${addresses.length}");
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: Text("Edit $field"),
+//           content: DropdownButtonFormField<Address>(
+//             items: addresses.map((address) {
+//               return DropdownMenuItem<Address>(
+//                 value: address,
+//                 child: Text(address.address),
+//               );
+//             }).toList(),
+//             onChanged: (value) {
+//               // Update the value here
+//               print('Selected Address: ${value!.address}');
+//               Navigator.pop(context);
+//             },
+//             decoration: InputDecoration(labelText: "Select new $field:"),
+//           ),
+//           actions: <Widget>[
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.pop(context); // Đóng dialog nếu người dùng chọn "Huỷ"
+//               },
+//               child: Text("Cancel"),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
 
   Widget _showCartData({
     required BuildContext context,
@@ -430,15 +498,21 @@ print("$_textEditingController");
         children: [
           GestureDetector(
             onTap: () {},
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                "$domain${order.image}",
-                alignment: Alignment.center,
-                width: MediaQuery.of(context).size.width / 4,
-                height: MediaQuery.of(context).size.width / 4,
-              ),
-            ),
+            child:ClipRRect(
+  borderRadius: BorderRadius.circular(10),
+  child: Container(
+    width: 90,
+    height: 90,
+    child: order.image != null
+        ? Image.network(
+            "$domain/${order.image}",
+            alignment: Alignment.center,
+            fit: BoxFit.cover, // Tuỳ chỉnh fit theo nhu cầu
+          )
+        : Placeholder(), // Hoặc một widget thay thế nếu không có ảnh
+  ),
+),
+
           ),
           const SizedBox(
             width: 10,

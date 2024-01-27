@@ -30,8 +30,9 @@ class ProductData {
   late final double? productPrice;
   late final bool? status;
   late final String? description;
-  late final String? category;
+  late final String? categoryId;
   late final String? productImage;
+  late final int? instock;
   late final DateTime? createdAt;
   late final DateTime? updatedAt;
 
@@ -42,22 +43,24 @@ class ProductData {
     required this.productPrice,
     required this.status,
     required this.description,
-    required this.category,
+    required this.categoryId,
     required this.productImage,
+    required this.instock,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory ProductData.fromJson(Map<String, dynamic> json) {
     return ProductData(
-      productId: json['product_id'],
+      productId: json['productId'],
       productName: json['produc_name'],
       productDescription: json['description'],
       productPrice: json['price']?.toDouble(),
       status: json['status'],
       description: json['description'],
-      category: json['category'],
+      categoryId: json['category_id'],
       productImage: json['image'],
+      instock: json['instock'],
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
@@ -67,13 +70,14 @@ class ProductData {
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'product_id': productId,
+      'productId': productId,
       'produc_name': productName,
       'description': productDescription,
       'price': productPrice,
       'status': status,
-      'category': category,
+      'category_id': categoryId,
       'image': productImage,
+      'instock': instock,
       'created_at': createdAt?.toIso8601String(),
       'update_at': updatedAt?.toIso8601String(),
     };

@@ -210,7 +210,6 @@ class _ProductScreenState extends State<ProductScreen> {
 class ProductCard extends StatefulWidget {
   final ProductData prod;
   final bool themeFlag;
-
   const ProductCard({
     Key? key,
     required this.prod,
@@ -225,6 +224,7 @@ class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     var domain = ApiRoutes.baseurl;
+print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.productImage}");
 
     return InkWell(
       onTap: () {
@@ -297,7 +297,7 @@ class _ProductCardState extends State<ProductCard> {
                     child: widget.prod.productImage != null &&
                             widget.prod.productImage!.isNotEmpty
                         ? Image.network(
-                            "$domain${widget.prod.productImage!}",
+                            "$domain/${widget.prod.productImage!}",
                             fit: BoxFit.cover,
                           )
                         : Container(),
