@@ -4,12 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
 import 'package:scarvs/app/routes/app.routes.dart';
-import 'package:scarvs/core/api/authentication.api.dart';
 import 'package:scarvs/core/notifiers/address.notifiter.dart';
 import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/cart.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
-import 'package:scarvs/core/notifiers/user.notifier.dart';
 import 'package:scarvs/presentation/widgets/custom.back.btn.dart';
 import 'package:scarvs/presentation/widgets/custom.loader.dart';
 import 'package:scarvs/presentation/widgets/custom.text.style.dart';
@@ -19,7 +17,7 @@ import '../../../../app/routes/api.routes.dart';
 import '../../../../core/models/orders.dart';
 import '../../../app/constants/url_api.dart';
 import '../../../core/models/address.dart';
-import 'widgets/edit_address_widget.dart';
+import '../../widgets/custom.text.field.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -30,11 +28,38 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   bool _isDisposed = false;
-  late String _selectedAddress = '';
+  late String _selectedAddress = "";
+  late TextEditingController receiverNameController = TextEditingController();
+  late TextEditingController phoneNumberController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _setSelectedAddressFromUserAddress();
+    final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+    var username = authNotifier.auth.username ?? 'Wait';
+    receiverNameController.text = username;
+
+    var phone = authNotifier.auth.userphoneNo ?? 'Wait';
+    phoneNumberController.text = phone;
+  }
+
+  void _setSelectedAddressFromUserAddress() {
+    final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+    if (authNotifier.auth.useraddress != null) {
+      setState(() {
+        _selectedAddress = authNotifier.auth.useraddress!;
+      });
+    }
+  }
 
   @override
   void dispose() {
     _isDisposed = true;
+    receiverNameController.dispose();
+    phoneNumberController.dispose();
     super.dispose();
   }
 
@@ -46,7 +71,6 @@ class _CartScreenState extends State<CartScreen> {
 
   void _decreaseOrderQuantity(OrderData order) async {
     if (order.quantity > 1) {
-      // Giảm số lượng khi số lượng lớn hơn 1
       setState(() {
         order.quantity--;
         _updateOrderQuantity(order);
@@ -54,8 +78,33 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
+  Widget _buildReceiverNameField() {
+    return
+        // CustomTextField.customTextField(
+        //   textEditingController: receiverNameController,
+        //   hintText: 'Receiver Name',
+        //   obscureText: false,
+        // );
+        TextFormField(
+      controller: receiverNameController,
+      decoration: InputDecoration(
+        labelText: 'Receiver Name',
+        // Add any other decoration properties as needed
+      ),
+    );
+  }
+
+  Widget _buildPhoneNumberField() {
+    return TextFormField(
+      controller: phoneNumberController,
+      decoration: InputDecoration(
+        labelText: 'Phone Number',
+        // Add any other decoration properties as needed
+      ),
+    );
+  }
+
   void _increaseOrderQuantity(OrderData order) async {
-    // Tăng số lượng
     setState(() {
       order.quantity++;
       _updateOrderQuantity(order);
@@ -122,18 +171,15 @@ class _CartScreenState extends State<CartScreen> {
     print(">>>>>>>>>>>>>>>>desiredKey : $desiredKey");
     if (desiredKey != null) {
       _addressesBox.delete(desiredKey);
-      setState(() {
-        // Cập nhật state hoặc thực hiện bất kỳ hành động nào cần thiết sau khi xoá
-      });
-      return true; // Trả về true nếu xóa thành công
+      setState(() {});
+      return true;
     } else {
       print('$address not found in Hive Box.');
-      return false; // Trả về false nếu không tìm thấy đối tượng cần xóa
+      return false;
     }
   }
 
   void showPayedSuccessSnackbar() {
-    // Check if the widget is still mounted before calling setState
     if (!_isDisposed) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -154,8 +200,9 @@ class _CartScreenState extends State<CartScreen> {
     final authNotifier =
         Provider.of<AuthenticationNotifier>(context, listen: false);
     var useremail = authNotifier.auth.useremail ?? 'Wait';
-    var useraddress = authNotifier.auth.useraddress;
-    print(">>>>>>>>>>>>>>>> email: $useremail");
+
+    print(">>>>>>>>>>>>>>>> useremail: $useremail");
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
@@ -180,7 +227,7 @@ class _CartScreenState extends State<CartScreen> {
                   ],
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.82,
+                  height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   child: Consumer<CartNotifier>(
                     builder: (context, notifier, _) {
@@ -304,11 +351,10 @@ class _CartScreenState extends State<CartScreen> {
               ),
               SizedBox(height: 20),
               Container(
-                margin: EdgeInsets.symmetric( horizontal: 14),
+                margin: EdgeInsets.symmetric(horizontal: 14),
                 child: TextFormField(
                   controller: _textEditingController,
                   style: TextStyle(color: Colors.black),
-                  
                   decoration: InputDecoration(
                     labelText: "Enter new address here:",
                     labelStyle: TextStyle(color: Colors.grey),
@@ -322,49 +368,34 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                     filled: true,
                     fillColor: Colors.white,
-                    
                   ),
-                  cursorColor: Colors.blue, // Đặt màu con trỏ khi nhập liệu
-                  cursorWidth: 3, // Đặt độ dày của con trỏ
-                  cursorHeight: 20, // Đặt chiều cao của con trỏ
-                  textAlignVertical: TextAlignVertical
-                      .center, // Căn chỉnh văn bản theo chiều dọc
-                  textInputAction: TextInputAction
-                      .done, // Hành động khi nhấn nút "Done" trên bàn phím
-                  keyboardType: TextInputType
-                      .text, // Kiểu bàn phím hiển thị (text, number, email, ...)
-                  textCapitalization: TextCapitalization
-                      .sentences, // Định dạng viết hoa chữ cái đầu câu
-                  maxLength: 80, // Đặt độ dài tối đa của văn bản nhập vào
-                  maxLines: 3, // Số lượng dòng tối đa cho phép nhập
-                  onChanged: (value) {
-                    // Xử lý sự kiện khi nội dung thay đổi
-                  },
-                  onEditingComplete: () {
-                    // Xử lý sự kiện khi hoàn thành chỉnh sửa
-                  },
-                  validator: (value) {
-                    // Kiểm tra giá trị nhập vào và trả về thông báo lỗi (nếu có)
-                  },
-                  
+                  cursorColor: Colors.blue,
+                  cursorWidth: 3,
+                  cursorHeight: 20,
+                  textAlignVertical: TextAlignVertical.center,
+                  textInputAction: TextInputAction.done,
+                  keyboardType: TextInputType.text,
+                  textCapitalization: TextCapitalization.sentences,
+                  maxLength: 80,
+                  maxLines: 3,
+                  onChanged: (value) {},
+                  onEditingComplete: () {},
+                  validator: (value) {},
                 ),
               ),
               ElevatedButton(
                 onPressed: () {
-                  // Thêm địa chỉ mới vào Hive
                   String newAddress = _textEditingController.text;
                   if (newAddress.isNotEmpty) {
                     addressNotifier.addAddress(newAddress);
+                    _selectedAddress = newAddress;
                     setState(() {});
                     Navigator.pop(context);
-                  } else {
-                    // Hiển thị thông báo hoặc xử lý khác nếu địa chỉ trống
-                  }
+                  } else {}
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color.fromARGB(
-                      255, 233, 153, 34), // Đặt màu nền thành màu cam
-                  onPrimary: Colors.white, // Đặt màu chữ thành trắng
+                  primary: Color.fromARGB(255, 233, 153, 34),
+                  onPrimary: Colors.white,
                 ),
                 child: Text("Save"),
               ),
@@ -445,7 +476,6 @@ class _CartScreenState extends State<CartScreen> {
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                // border: Border.all(color: Colors.black)
                 boxShadow: [
                   BoxShadow(
                     color: Color.fromARGB(255, 115, 115, 115).withOpacity(0.8),
@@ -455,37 +485,9 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                 ],
                 color: Colors.white),
-            child: Text(_selectedAddress)
-            //  FutureBuilder<List<String>>(
-            //   future: getAddressesFromHive(),
-            //   builder: (context, snapshot) {
-            //     if (snapshot.connectionState == ConnectionState.waiting) {
-            //       return CircularProgressIndicator();
-            //     } else if (snapshot.hasError) {
-            //       return Text('Error: ${snapshot.error}');
-            //     } else {
-            //       return DropdownButton<String>(
-            //         value: _selectedAddress,
-            //         onChanged: (String? newValue) {
-            //           if (newValue != null) {
-            //             setState(() {
-            //               _selectedAddress = newValue;
-            //             });
-            //           }
-            //         },
-            //         borderRadius: BorderRadius.circular(14),
-            //         iconSize: 0,
-            //         items: (snapshot.data as List<String>).map((address) {
-            //           return DropdownMenuItem<String>(
-            //             value: address,
-            //             child: Text(address),
-            //           );
-            //         }).toList(),
-            //       );
-            //     }
-            //   },
-            // ),
-            ),
+            child: Text(_selectedAddress)),
+        _buildReceiverNameField(),
+        _buildPhoneNumberField(),
         Align(
           alignment: FractionalOffset.bottomCenter,
           child: cartPrice(
@@ -600,6 +602,39 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
+  // Widget _buildReceiverNameField() {
+  //   final authNotifier =
+  //       Provider.of<AuthenticationNotifier>(context, listen: false);
+  //   var username = authNotifier.auth.username ?? 'Wait';
+  //   TextEditingController receiverNameController =
+  //       TextEditingController(text: username);
+  //   print(">>>>>>>>>>>>>>>> userName: $username");
+
+  //   return CustomTextField.customTextField(
+  //     textEditingController: receiverNameController,
+
+  //     hintText: 'Receiver Name', obscureText: false,
+  //     // validator: (val) =>
+  //     //     val!.isEmpty ? 'Enter FullName' : null,
+  //   );
+  // }
+
+  // Widget _buildPhoneNumberField() {
+  //   final authNotifier =
+  //       Provider.of<AuthenticationNotifier>(context, listen: false);
+  //   var phone = authNotifier.auth.userphoneNo ?? 'Wait';
+  //   TextEditingController phoneNumberController =
+  //       TextEditingController(text: phone);
+  //   print(">>>>>>>>>>>>>>>> userPhone: $phone");
+  //   return TextFormField(
+  //     controller: phoneNumberController,
+  //     decoration: InputDecoration(
+  //       labelText: 'Phone Number',
+  //       // Add any other decoration properties as needed
+  //     ),
+  //   );
+  // }
+
   void addOrderToApiCart(snapshot) async {
     if (mounted) {
       CartNotifier cartNotifier = context.read<CartNotifier>();
@@ -628,67 +663,6 @@ class _CartScreenState extends State<CartScreen> {
       Navigator.of(context).pushNamed('/succesOrder');
     }
   }
-
-  // void _showEditDialog(BuildContext context, String field) async {
-  //   TextEditingController _textEditingController = TextEditingController();
-  //   var addressesBox = await Hive.openBox<Address>('addresses');
-  //   List<Address> addresses = addressesBox.values.toList();
-  //   AddressNotifier addressNotifier = AddressNotifier();
-
-  //   print(">>>>>>>>>>>> Address List From Hive: ${addresses.length}");
-
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return SingleChildScrollView(
-  //         child: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             ListView.builder(
-  //               shrinkWrap: true,
-  //               itemCount: addresses.length,
-  //               itemBuilder: (context, index) {
-  //                 return ListTile(
-  //                   title: Text(addresses[index].address),
-  //                   trailing: IconButton(
-  //                     icon: Icon(Icons.delete),
-  //                     onPressed: () {
-  //                       deleteAdressFromHive(addresses[index].address); // Xóa từ Hive
-  //                     },
-  //                   ),
-  //                   onTap: () {
-  //                     // Xử lý khi người dùng chọn một địa chỉ
-  //                     print('Selected Address: ${addresses[index].address}');
-  //                     Navigator.pop(context);
-  //                   },
-  //                 );
-  //               },
-  //             ),
-  //             SizedBox(height: 20),
-  //             TextField(
-  //               controller: _textEditingController,
-  //               decoration: InputDecoration(labelText: "Enter new address:"),
-  //             ),
-  //             SizedBox(height: 20),
-  //             ElevatedButton(
-  //               onPressed: () {
-  //                 // Thêm địa chỉ mới vào Hive
-  //                 String newAddress = _textEditingController.text;
-  //                 if (newAddress.isNotEmpty) {
-  //                   addressNotifier.addAddress(newAddress);
-  //                   Navigator.pop(context);
-  //                 } else {
-  //                   // Hiển thị thông báo hoặc xử lý khác nếu địa chỉ trống
-  //                 }
-  //               },
-  //               child: Text("Save"),
-  //             ),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
 
   Widget _showCartData({
     required BuildContext context,
@@ -727,9 +701,9 @@ class _CartScreenState extends State<CartScreen> {
                     ? Image.network(
                         "$domain/${order.image}",
                         alignment: Alignment.center,
-                        fit: BoxFit.cover, // Tuỳ chỉnh fit theo nhu cầu
+                        fit: BoxFit.cover,
                       )
-                    : Placeholder(), // Hoặc một widget thay thế nếu không có ảnh
+                    : Placeholder(),
               ),
             ),
           ),
