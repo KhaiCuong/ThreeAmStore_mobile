@@ -19,6 +19,7 @@ import '../../../../app/routes/api.routes.dart';
 import '../../../../core/models/orders.dart';
 import '../../../app/constants/url_api.dart';
 import '../../../core/models/address.dart';
+import 'widgets/edit_address_widget.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
@@ -29,6 +30,7 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   bool _isDisposed = false;
+  late String _selectedAddress = '';
 
   @override
   void dispose() {
@@ -100,6 +102,36 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
+  Future<List<String>> getAddressesFromHive() async {
+    List<String> addresses = [];
+    var addressesBox = await Hive.openBox<Address>('addresses');
+    addresses = addressesBox.values.map((address) => address.address).toList();
+    return addresses;
+  }
+
+  deleteAdressFromHive(String address) async {
+    Box<Address> _addressesBox = Hive.box<Address>('addresses');
+
+    final Map<dynamic, Address> deliveriesMap = _addressesBox.toMap();
+    dynamic desiredKey;
+    deliveriesMap.forEach((key, value) {
+      if (value.address == address) {
+        desiredKey = key;
+      }
+    });
+    print(">>>>>>>>>>>>>>>>desiredKey : $desiredKey");
+    if (desiredKey != null) {
+      _addressesBox.delete(desiredKey);
+      setState(() {
+        // Cập nhật state hoặc thực hiện bất kỳ hành động nào cần thiết sau khi xoá
+      });
+      return true; // Trả về true nếu xóa thành công
+    } else {
+      print('$address not found in Hive Box.');
+      return false; // Trả về false nếu không tìm thấy đối tượng cần xóa
+    }
+  }
+
   void showPayedSuccessSnackbar() {
     // Check if the widget is still mounted before calling setState
     if (!_isDisposed) {
@@ -114,6 +146,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future<List<String>> addresses = getAddressesFromHive();
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
     // final userNotifier = Provider.of<AuthenticationNotifier>(context, listen: false);
@@ -128,68 +161,218 @@ class _CartScreenState extends State<CartScreen> {
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         body: Padding(
           padding: const EdgeInsets.fromLTRB(20, 2, 20, 0),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  CustomBackButton(
-                    route: AppRouter.homeRoute,
-                    themeFlag: themeFlag,
-                  ),
-                  Text(
-                    'Cart',
-                    style: CustomTextWidget.bodyTextB2(
-                      color:
-                          themeFlag ? AppColors.creamColor : AppColors.mirage,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    CustomBackButton(
+                      route: AppRouter.homeRoute,
+                      themeFlag: themeFlag,
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.75,
-                width: MediaQuery.of(context).size.width,
-                child: Consumer<CartNotifier>(
-                  builder: (context, notifier, _) {
-                    return FutureBuilder(
-                      future: getCartData(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData ||
-                            (snapshot.data as List<OrderData>).isEmpty) {
-                          return customLoader(
-                            context: context,
-                            themeFlag: themeFlag,
-                            text: 'Eww Cart is Empty',
-                            lottieAsset: AppAssets.nodata,
-                          );
-                        } else {
-                          var _snapshot = snapshot.data as List<OrderData>;
-                          return showCartData(
-                            height: MediaQuery.of(context).size.height * 0.17,
-                            snapshot: _snapshot,
-                            themeFlag: themeFlag,
-                            context: context,
-                          );
-                        }
-                      },
-                    );
-                  },
+                    Text(
+                      'Cart',
+                      style: CustomTextWidget.bodyTextB2(
+                        color:
+                            themeFlag ? AppColors.creamColor : AppColors.mirage,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Row(
-                children: [
-                  Text('Adress: $useraddress'),
-                  IconButton(
-                    onPressed: () {
-                      _showEditDialog(context, "address");
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.82,
+                  width: MediaQuery.of(context).size.width,
+                  child: Consumer<CartNotifier>(
+                    builder: (context, notifier, _) {
+                      return FutureBuilder(
+                        future: getCartData(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData ||
+                              (snapshot.data as List<OrderData>).isEmpty) {
+                            return customLoader(
+                              context: context,
+                              themeFlag: themeFlag,
+                              text: 'Eww Cart is Empty',
+                              lottieAsset: AppAssets.nodata,
+                            );
+                          } else {
+                            var _snapshot = snapshot.data as List<OrderData>;
+                            return showCartData(
+                              height: MediaQuery.of(context).size.height * 0.17,
+                              snapshot: _snapshot,
+                              themeFlag: themeFlag,
+                              context: context,
+                            );
+                          }
+                        },
+                      );
                     },
-                    icon: const Icon(Icons.edit),
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  void _onAddressSelected(String address) {
+    setState(() {
+      _selectedAddress = address;
+    });
+  }
+
+  void showAlertSnackBar(
+      BuildContext context, String title, String message, int duration) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$title: $message'),
+        duration: Duration(seconds: duration),
+      ),
+    );
+  }
+
+  void _showEditDialog(BuildContext context, String field) async {
+    TextEditingController _textEditingController = TextEditingController();
+    var addressesBox = await Hive.openBox<Address>('addresses');
+    List<Address> addresses = addressesBox.values.toList();
+    AddressNotifier addressNotifier = AddressNotifier();
+
+    print(">>>>>>>>>>>> Address List From Hive: ${addresses.length}");
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: addresses.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white, // Màu nền xám
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey[400]!, // Màu boxShadow xám
+                          blurRadius: 5,
+                          spreadRadius: 1,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    margin: EdgeInsets.only(
+                        left: 14, top: 14, right: 14, bottom: 0),
+                    child: ListTile(
+                      title: Text(addresses[index].address),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          if (addresses.length > 1) {
+                            if (_selectedAddress == addresses[index].address) {
+                              _selectedAddress =
+                                  addresses[addresses.length - 1].address;
+                              deleteAdressFromHive(addresses[index].address)
+                                  .then((success) {
+                                if (success) {
+                                  setState(() {});
+                                  Navigator.pop(context);
+                                  showAlertSnackBar(context, 'Delete Address',
+                                      addresses[index].address, 1);
+                                }
+                              });
+                            } else {
+                              deleteAdressFromHive(addresses[index].address);
+                              setState(() {});
+                              Navigator.pop(context);
+                            }
+                            showAlertSnackBar(context, 'Delete Address',
+                                addresses[index].address, 1);
+                          }
+                        },
+                      ),
+                      onTap: () {
+                        _onAddressSelected(addresses[index].address);
+                        Navigator.pop(context); // Đóng dialog sau khi chọn
+                      },
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+              Container(
+                margin: EdgeInsets.symmetric( horizontal: 14),
+                child: TextFormField(
+                  controller: _textEditingController,
+                  style: TextStyle(color: Colors.black),
+                  
+                  decoration: InputDecoration(
+                    labelText: "Enter new address here:",
+                    labelStyle: TextStyle(color: Colors.grey),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    
+                  ),
+                  cursorColor: Colors.blue, // Đặt màu con trỏ khi nhập liệu
+                  cursorWidth: 3, // Đặt độ dày của con trỏ
+                  cursorHeight: 20, // Đặt chiều cao của con trỏ
+                  textAlignVertical: TextAlignVertical
+                      .center, // Căn chỉnh văn bản theo chiều dọc
+                  textInputAction: TextInputAction
+                      .done, // Hành động khi nhấn nút "Done" trên bàn phím
+                  keyboardType: TextInputType
+                      .text, // Kiểu bàn phím hiển thị (text, number, email, ...)
+                  textCapitalization: TextCapitalization
+                      .sentences, // Định dạng viết hoa chữ cái đầu câu
+                  maxLength: 80, // Đặt độ dài tối đa của văn bản nhập vào
+                  maxLines: 3, // Số lượng dòng tối đa cho phép nhập
+                  onChanged: (value) {
+                    // Xử lý sự kiện khi nội dung thay đổi
+                  },
+                  onEditingComplete: () {
+                    // Xử lý sự kiện khi hoàn thành chỉnh sửa
+                  },
+                  validator: (value) {
+                    // Kiểm tra giá trị nhập vào và trả về thông báo lỗi (nếu có)
+                  },
+                  
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Thêm địa chỉ mới vào Hive
+                  String newAddress = _textEditingController.text;
+                  if (newAddress.isNotEmpty) {
+                    addressNotifier.addAddress(newAddress);
+                    setState(() {});
+                    Navigator.pop(context);
+                  } else {
+                    // Hiển thị thông báo hoặc xử lý khác nếu địa chỉ trống
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: Color.fromARGB(
+                      255, 233, 153, 34), // Đặt màu nền thành màu cam
+                  onPrimary: Colors.white, // Đặt màu chữ thành trắng
+                ),
+                child: Text("Save"),
+              ),
+              SizedBox(height: 25),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -205,34 +388,113 @@ class _CartScreenState extends State<CartScreen> {
     required BuildContext context,
     required double height,
   }) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 2, 2, 0),
-      child: Stack(
-        children: [
-          ListView.builder(
-            physics: const ScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: snapshot.length,
-            itemBuilder: (context, index) {
-              OrderData order = snapshot[index];
-              return _showCartData(
-                context: context,
-                order: order,
-                themeFlag: themeFlag,
-                height: height,
-              );
-            },
+    return Column(
+      children: [
+        Container(
+          height: MediaQuery.of(context).size.height * 0.58,
+          padding: const EdgeInsets.fromLTRB(2, 2, 2, 0),
+          child: Stack(
+            children: [
+              ListView.builder(
+                physics: const ScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: snapshot.length,
+                itemBuilder: (context, index) {
+                  OrderData order = snapshot[index];
+                  return _showCartData(
+                    context: context,
+                    order: order,
+                    themeFlag: themeFlag,
+                    height: height,
+                  );
+                },
+              ),
+            ],
           ),
-          Align(
-            alignment: FractionalOffset.bottomCenter,
-            child: cartPrice(
-              snapshot: snapshot,
-              themeFlag: themeFlag,
-              context: context,
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.07,
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Shipping Address: ',
+                style: TextStyle(
+                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                ),
+                textAlign: TextAlign.end,
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _showEditDialog(
+                    context,
+                    "Edit Address",
+                  );
+                },
+                child: Text('Edit'),
+              ),
+            ],
+          ),
+        ),
+        Container(
+            height: MediaQuery.of(context).size.height * 0.08,
+            width: MediaQuery.of(context).size.width * 0.9,
+            alignment: Alignment.centerLeft,
+            margin: EdgeInsets.all(8),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                // border: Border.all(color: Colors.black)
+                boxShadow: [
+                  BoxShadow(
+                    color: Color.fromARGB(255, 115, 115, 115).withOpacity(0.8),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+                color: Colors.white),
+            child: Text(_selectedAddress)
+            //  FutureBuilder<List<String>>(
+            //   future: getAddressesFromHive(),
+            //   builder: (context, snapshot) {
+            //     if (snapshot.connectionState == ConnectionState.waiting) {
+            //       return CircularProgressIndicator();
+            //     } else if (snapshot.hasError) {
+            //       return Text('Error: ${snapshot.error}');
+            //     } else {
+            //       return DropdownButton<String>(
+            //         value: _selectedAddress,
+            //         onChanged: (String? newValue) {
+            //           if (newValue != null) {
+            //             setState(() {
+            //               _selectedAddress = newValue;
+            //             });
+            //           }
+            //         },
+            //         borderRadius: BorderRadius.circular(14),
+            //         iconSize: 0,
+            //         items: (snapshot.data as List<String>).map((address) {
+            //           return DropdownMenuItem<String>(
+            //             value: address,
+            //             child: Text(address),
+            //           );
+            //         }).toList(),
+            //       );
+            //     }
+            //   },
+            // ),
             ),
+        Align(
+          alignment: FractionalOffset.bottomCenter,
+          child: cartPrice(
+            snapshot: snapshot,
+            themeFlag: themeFlag,
+            context: context,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -367,108 +629,66 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-  void _showEditDialog(BuildContext context, String field) async {
-    TextEditingController _textEditingController = TextEditingController();
-    var addressesBox = await Hive.openBox<Address>('addresses');
-    List<Address> addresses = addressesBox.values.toList();
-    AddressNotifier addressNotifier = AddressNotifier();
+  // void _showEditDialog(BuildContext context, String field) async {
+  //   TextEditingController _textEditingController = TextEditingController();
+  //   var addressesBox = await Hive.openBox<Address>('addresses');
+  //   List<Address> addresses = addressesBox.values.toList();
+  //   AddressNotifier addressNotifier = AddressNotifier();
 
-    print(">>>>>>>>>>>> Address List From Hive: ${addresses.length}");
+  //   print(">>>>>>>>>>>> Address List From Hive: ${addresses.length}");
 
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: addresses.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(addresses[index].address),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        // Xử lý khi người dùng nhấn vào biểu tượng xoá
-                        // Ví dụ: Xóa địa chỉ khỏi danh sách và cập nhật Hive
-                        // addressNotifier.deleteAddress(addresses[index]);
-                        addressNotifier
-                            .removeAddress(addresses[index]); // Xóa từ Hive
-                      },
-                    ),
-                    onTap: () {
-                      // Xử lý khi người dùng chọn một địa chỉ
-                      print('Selected Address: ${addresses[index].address}');
-                      Navigator.pop(context);
-                    },
-                  );
-                },
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: _textEditingController,
-                decoration: InputDecoration(labelText: "Enter new address:"),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  // Thêm địa chỉ mới vào Hive
-                  String newAddress = _textEditingController.text;
-                  if (newAddress.isNotEmpty) {
-                    addressNotifier.addAddress(newAddress);
-                    Navigator.pop(context);
-                  } else {
-                    // Hiển thị thông báo hoặc xử lý khác nếu địa chỉ trống
-                  }
-                },
-                child: Text("Save"),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-//   void _showEditDialog(BuildContext context, String field) async {
-//     var addressesBox = await Hive.openBox<Address>('addresses');
-//     List<Address> addresses = addressesBox.values.toList();
-  // AddressNotifier addressNotifier = AddressNotifier();
-
-// print(">>>>>>>>>>>> Address List From Hive: ${addresses.length}");
-//     showDialog(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return AlertDialog(
-//           title: Text("Edit $field"),
-//           content: DropdownButtonFormField<Address>(
-//             items: addresses.map((address) {
-//               return DropdownMenuItem<Address>(
-//                 value: address,
-//                 child: Text(address.address),
-//               );
-//             }).toList(),
-//             onChanged: (value) {
-//               // Update the value here
-//               print('Selected Address: ${value!.address}');
-//               Navigator.pop(context);
-//             },
-//             decoration: InputDecoration(labelText: "Select new $field:"),
-//           ),
-//           actions: <Widget>[
-//             TextButton(
-//               onPressed: () {
-//                 Navigator.pop(context); // Đóng dialog nếu người dùng chọn "Huỷ"
-//               },
-//               child: Text("Cancel"),
-//             ),
-//           ],
-//         );
-//       },
-//     );
-//   }
+  //   showModalBottomSheet(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return SingleChildScrollView(
+  //         child: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             ListView.builder(
+  //               shrinkWrap: true,
+  //               itemCount: addresses.length,
+  //               itemBuilder: (context, index) {
+  //                 return ListTile(
+  //                   title: Text(addresses[index].address),
+  //                   trailing: IconButton(
+  //                     icon: Icon(Icons.delete),
+  //                     onPressed: () {
+  //                       deleteAdressFromHive(addresses[index].address); // Xóa từ Hive
+  //                     },
+  //                   ),
+  //                   onTap: () {
+  //                     // Xử lý khi người dùng chọn một địa chỉ
+  //                     print('Selected Address: ${addresses[index].address}');
+  //                     Navigator.pop(context);
+  //                   },
+  //                 );
+  //               },
+  //             ),
+  //             SizedBox(height: 20),
+  //             TextField(
+  //               controller: _textEditingController,
+  //               decoration: InputDecoration(labelText: "Enter new address:"),
+  //             ),
+  //             SizedBox(height: 20),
+  //             ElevatedButton(
+  //               onPressed: () {
+  //                 // Thêm địa chỉ mới vào Hive
+  //                 String newAddress = _textEditingController.text;
+  //                 if (newAddress.isNotEmpty) {
+  //                   addressNotifier.addAddress(newAddress);
+  //                   Navigator.pop(context);
+  //                 } else {
+  //                   // Hiển thị thông báo hoặc xử lý khác nếu địa chỉ trống
+  //                 }
+  //               },
+  //               child: Text("Save"),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   Widget _showCartData({
     required BuildContext context,
@@ -498,21 +718,20 @@ class _CartScreenState extends State<CartScreen> {
         children: [
           GestureDetector(
             onTap: () {},
-            child:ClipRRect(
-  borderRadius: BorderRadius.circular(10),
-  child: Container(
-    width: 90,
-    height: 90,
-    child: order.image != null
-        ? Image.network(
-            "$domain/${order.image}",
-            alignment: Alignment.center,
-            fit: BoxFit.cover, // Tuỳ chỉnh fit theo nhu cầu
-          )
-        : Placeholder(), // Hoặc một widget thay thế nếu không có ảnh
-  ),
-),
-
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                width: 90,
+                height: 90,
+                child: order.image != null
+                    ? Image.network(
+                        "$domain/${order.image}",
+                        alignment: Alignment.center,
+                        fit: BoxFit.cover, // Tuỳ chỉnh fit theo nhu cầu
+                      )
+                    : Placeholder(), // Hoặc một widget thay thế nếu không có ảnh
+              ),
+            ),
           ),
           const SizedBox(
             width: 10,
