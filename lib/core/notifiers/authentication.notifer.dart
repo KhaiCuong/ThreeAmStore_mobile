@@ -149,21 +149,29 @@ class AuthenticationNotifier with ChangeNotifier {
       // print(">>>>>>>>>>>>>>>>>>>>>>>userData : ${userData}");
 
       final Map<String, dynamic> parseData = await jsonDecode(userData);
+// Check if the 'data' key exists in the JSON object
+      if (parseData.containsKey('data')) {
+        // If 'data' key exists, get its value which is another map
+        Map<String, dynamic> dataMap = parseData['data'];
 
-      if (parseData.containsKey('userToken')) {
-        final Map<String, dynamic> userToken = parseData['userToken'];
-        final Map<String, dynamic> kkk = {
-          "token": parseData['token'],
-          "id": userToken['userId'] ?? '',
-          "username": userToken['fullname'] ?? '',
-          "userphoneNo": userToken['phone_number'] ?? '',
-          "useraddress": userToken['address'] ?? '',
-          "useremail": userToken['email'] ?? '',
-          "userpassword": userToken['password'] ?? '',
-          "role": userToken['role'] ?? '',
-          "verify": userToken['verify'] ?? '',
-        };
-        _user = User.fromJson(kkk);
+        if (dataMap.containsKey('userToken')) {
+          final Map<String, dynamic> userToken = dataMap['userToken'];
+          final Map<String, dynamic> kkk = {
+            "token": dataMap['token'],
+            "id": userToken['userId'] ?? '',
+            "username": userToken['fullname'] ?? '',
+            "userphoneNo": userToken['phone_number'] ?? '',
+            "useraddress": userToken['address'] ?? '',
+            "useremail": userToken['email'] ?? '',
+            "userpassword": userToken['password'] ?? '',
+            "role": userToken['role'] ?? '',
+            "verify": userToken['verify'] ?? '',
+          };
+          print(">>>>>>>>>>>>>>>>>>>>>>>userData0:${kkk}");
+          _user = User.fromJson(kkk);
+        }
+      } else {
+        print('data key does not exist in the JSON object');
       }
 
       // bool isAuthenticated = parseData['authentication'];

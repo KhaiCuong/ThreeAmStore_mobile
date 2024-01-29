@@ -22,7 +22,7 @@ class AddressNotifier {
   }
 }
 
- Future<void> removeAddress(Address addressToRemove) async {
+ Future<void> removeAddress(String addressToRemove) async {
     try {
       // Lọc qua danh sách địa chỉ và xóa địa chỉ có giá trị giống với địa chỉ muốn xoá
       final addressIndex = addresses.indexWhere((address) => address.address == addressToRemove);
@@ -33,5 +33,28 @@ class AddressNotifier {
       print('Error removing address from Hive: $error');
     }
   }
+  
+  // deleteAdressFromHive(String address) async {
+
+  //   final Map<dynamic, Address> deliveriesMap = _addressesBox.toMap();
+  //   dynamic desiredKey;
+  //   deliveriesMap.forEach((key, value) {
+  //     if (value.address == address) {
+  //       desiredKey = key;
+  //     }
+  //   });
+  //   print(">>>>>>>>>>>>>>>>desiredKey : $desiredKey");
+  //   if (desiredKey != null) {
+  //     _addressesBox.delete(desiredKey);
+  //     setState(() {
+  //       // Cập nhật state hoặc thực hiện bất kỳ hành động nào cần thiết sau khi xoá
+  //     });
+  //     return true; // Trả về true nếu xóa thành công
+  //   } else {
+  //     print('Order with ID $id not found in Hive Box.');
+  //     return false; // Trả về false nếu không tìm thấy đối tượng cần xóa
+  //   }
+  // }
 }
+
 
