@@ -106,7 +106,7 @@ class AuthenticationNotifier with ChangeNotifier {
       // dynamic authData = parseData as String;
 
       // var response;
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         WriteCache.setString(key: AppKeys.userData, value: username)
             .whenComplete(
           () => Navigator.of(context)
@@ -116,6 +116,9 @@ class AuthenticationNotifier with ChangeNotifier {
         ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
             context: context, text: 'Register faill'));
       }
+      // if (parseData.verify == false) {
+        
+      // }
     } on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
           text: 'Oops No You Need A Good Internet Connection',
