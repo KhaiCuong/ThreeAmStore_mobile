@@ -11,7 +11,7 @@ class CartAPI {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'Access-Control-Allow-Origin': "*",
-       // "Authorization": token,
+    // "Authorization": token,
   };
 
 //  Future addToCart({
@@ -64,24 +64,34 @@ class CartAPI {
   }) async {
     const subUrl = '/api/Order/AddOrder';
     final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
+    // print(
+    //       "====================================================================");
+    //   print("phone_number : ${phone_number}");
+    //   print("address    : ${address}");
+    //   print("username     : ${username}");
+    //   print("user_id: ${user_id}");
 
     final http.Response response = await client.post(uri,
         headers: headers,
         body: jsonEncode({
-          "username": username,
-          "address": address,
           "phone_number": phone_number,
-          "userId": user_id,
+          "address": address,
+          "Status": "Preparing",
+          "username": username,
+          "user_id": user_id,
         }));
 
     print(
         ">>>>>>>>>>>>>>>>>>>>>>>>>> ADD Order APi response.statusCode : ${response.statusCode}");
+    print(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>> ADD Order APi response.body : ${response.body}");
 
     final dynamic orderBody = jsonDecode(response.body);
-    final int orderId = orderBody["order_id"];
-    print(">>>>>>>>>> orderId : ${orderId}");
+    final dynamic data = orderBody["data"];
+    final dynamic orderId = data["orderId"];
+    print("Order ID: $orderId");
 
-    const subUrl2 = '/api/OrderDetail/AddOrderDetail';
+    const subUrl2 = '/api/OrderDeTail/AddOrderDetail';
     final Uri uri2 = Uri.parse(ApiRoutes.baseurl + subUrl2);
 
     //Lặp qua danh sách orders để thêm từng OrderDetail
@@ -92,9 +102,9 @@ class CartAPI {
             "quantity": order.quantity,
             "price": order.price,
             "produc_name": order.productName,
-            "product_id": order.productId,
             "image": order.image,
             "order_id": orderId,
+            "product_id": order.productId,
           }));
       print(
           "====================================================================");
@@ -155,7 +165,7 @@ class CartAPI {
       phoneNumber: phoneNumber,
       userId: userId,
       quantity: quantity,
-      price: price ,
+      price: price,
       productName: productName,
       productId: productId,
       image: image,
