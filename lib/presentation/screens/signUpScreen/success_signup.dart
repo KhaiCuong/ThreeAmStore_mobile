@@ -21,12 +21,23 @@ class SuccessSignup extends StatelessWidget {
             Container(
               width: double.infinity,
               alignment: Alignment.center,
-              child: const Text(
-                'Register Successfully',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Column(
+                children: [
+                  const Text(
+                    'Register Successfully!',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                      const Text(
+                    'Let Check Your Mail',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
             SizedBox(height: 40,),

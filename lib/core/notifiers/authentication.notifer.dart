@@ -116,9 +116,6 @@ class AuthenticationNotifier with ChangeNotifier {
         ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
             context: context, text: 'Register faill'));
       }
-      // if (parseData.verify == false) {
-        
-      // }
     } on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
           text: 'Oops No You Need A Good Internet Connection',
@@ -138,6 +135,7 @@ class AuthenticationNotifier with ChangeNotifier {
     try {
       const subUrl = '/api/Auth/Login';
       final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
+
       // print(">>>>>>>>>>>>>>>>>>>>>>>userData: ${uri}");
       final http.Response response = await http.Client().post(uri,
           headers: headers,
@@ -145,50 +143,59 @@ class AuthenticationNotifier with ChangeNotifier {
       // var userData = await _authenticationAPI.userLogin(
       //     useremail: useremail, userpassword: userpassword);
       // print(userData);
-      var userData = response.body;
 
       print(
           ">>>>>>>>>>>>>>>>>>>>>>>userData statusCode: ${response.statusCode}");
       // print(">>>>>>>>>>>>>>>>>>>>>>>userData : ${userData}");
 
-      final Map<String, dynamic> parseData = await jsonDecode(userData);
-// Check if the 'data' key exists in the JSON object
-      if (parseData.containsKey('data')) {
-        // If 'data' key exists, get its value which is another map
-        Map<String, dynamic> dataMap = parseData['data'];
-
-        if (dataMap.containsKey('userToken')) {
-          final Map<String, dynamic> userToken = dataMap['userToken'];
-          final Map<String, dynamic> kkk = {
-            "token": dataMap['token'],
-            "id": userToken['userId'] ?? '',
-            "username": userToken['fullname'] ?? '',
-            "userphoneNo": userToken['phone_number'] ?? '',
-            "useraddress": userToken['address'] ?? '',
-            "useremail": userToken['email'] ?? '',
-            "userpassword": userToken['password'] ?? '',
-            "role": userToken['role'] ?? '',
-            "verify": userToken['verify'] ?? '',
-          };
-          print(">>>>>>>>>>>>>>>>>>>>>>>userData0:${kkk}");
-          _user = User.fromJson(kkk);
-        }
-      } else {
-        print('data key does not exist in the JSON object');
-      }
-
-      // bool isAuthenticated = parseData['authentication'];
-      // dynamic authData = parseData['data'];
-
       if (response.statusCode == 200) {
-        WriteCache.setString(key: AppKeys.userData, value: useremail)
-            .whenComplete(
-          () =>
-        Navigator.of(context).pushReplacementNamed(AppRouter.homeRoute),
-        );
+        var userData = response.body;
+        final Map<String, dynamic> parseData = await jsonDecode(userData);
+// Check if the 'data' key exists in the JSON object
+
+        // bool isAuthenticated = parseData['authentication'];
+        // dynamic authData = parseData['data'];
+        if (parseData.containsKey('data')) {
+          // If 'data' key exists, get its value which is another map
+          Map<String, dynamic> dataMap = parseData['data'];
+
+          if (dataMap.containsKey('userToken')) {
+            final Map<String, dynamic> userToken = dataMap['userToken'];
+            final Map<String, dynamic> kkk = {
+              "token": dataMap['token'],
+              "id": userToken['userId'] ?? '',
+              "username": userToken['fullname'] ?? '',
+              "userphoneNo": userToken['phone_number'] ?? '',
+              "useraddress": userToken['address'] ?? '',
+              "useremail": userToken['email'] ?? '',
+              "userpassword": userToken['password'] ?? '',
+              "role": userToken['role'] ?? '',
+              "verify": userToken['verify'] ?? '',
+            };
+            print(">>>>>>>>>>>>>>>>>>>>>>>userData0:${kkk}");
+            _user = User.fromJson(kkk);
+
+            if (_user.verify == true) {
+              WriteCache.setString(key: AppKeys.userData, value: useremail)
+                  .whenComplete(
+                () => Navigator.of(context)
+                    .pushReplacementNamed(AppRouter.homeRoute),
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackUtil.stylishSnackBar(
+                      context: context,
+                      text: 'UnVerify Account. Please Verify'));
+            }
+          }
+        } else {
+          print('data key does not exist in the JSON object');
+        }
+        ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+            context: context, text: 'Login SuccessFully'));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackUtil.stylishSnackBar(context: context, text: 'Check'));
+        ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+            context: context, text: 'UnVerify Account. Please Verify'));
       }
     } on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(

@@ -71,7 +71,7 @@ class User {
   late final String useremail;
   late final String userpassword;
    late final String role;
-
+late final bool verify;
   User.fromJson(Map<String, dynamic> json) {
     print("🚀 ~ User ~ User.fromJson ~ json: ${json}");
     token = json['token'];
@@ -82,6 +82,7 @@ class User {
     userphoneNo = json['userphoneNo'] ?? '';
     userpassword = json['userpassword'] ?? '';
      role = json['role'] ?? '';
+     verify =  json['verify'] ?? false;
   }
 
   Map<String, dynamic> toJson() {
