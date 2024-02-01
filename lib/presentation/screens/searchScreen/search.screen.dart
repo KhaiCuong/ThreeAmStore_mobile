@@ -215,20 +215,38 @@ class _SearchScreenState extends State<SearchScreen> {
                   productName: searchProductController.text,
                 ),
                 builder: (context, snapshot) {
+                  print("424324234?>>>>>" + snapshot.toString());
+
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return ShimmerEffects.buildCategoryShimmer(
                         context: context);
-                  } else if (!snapshot.hasData) {
+                  }
+
+                  if (snapshot?.data == null) {
+                    // Trường hợp snapshot null
                     return customLoader(
                       context: context,
                       themeFlag: themeFlag,
                       text: 'No Product Found !',
                       lottieAsset: AppAssets.error,
                     );
-                  } else {
-                    var _snapshot = snapshot.data as List<ProductData>;
-                    return ShowDataGrid(prods: _snapshot);
                   }
+
+                  var data = snapshot.data;
+
+                  if (data is List<ProductData> && data.isEmpty) {
+                    // Trường hợp snapshot.data là một danh sách rỗng
+                    return customLoader(
+                      context: context,
+                      themeFlag: themeFlag,
+                      text: 'No Product Found !',
+                      lottieAsset: AppAssets.error,
+                    );
+                  }
+
+                  // Trường hợp còn lại: snapshot.data không null và không rỗng
+                  var _snapshot = data as List<ProductData>;
+                  return ShowDataGrid(prods: _snapshot);
                 },
               );
             },
