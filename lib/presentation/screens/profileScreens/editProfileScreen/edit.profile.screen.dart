@@ -99,7 +99,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       CustomTextField.customTextField(
                         textEditingController: nameController,
-                        hintText: 'Enter FullName', obscureText: false,
+                        hintText: 'Enter FullName', labelText: 'Full Name:',
+                        obscureText: false,
+
                         // validator: (val) =>
                         //     val!.isEmpty ? 'Enter FullName' : null,
                       ),
@@ -108,7 +110,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         textEditingController: passwordController,
 
                         hintText: 'Enter New Password',
-                        obscureText: true,
+                        obscureText: true, labelText: 'PassWord:',
                         // validator: (val) =>
                         //     val!.isEmpty ? 'Enter New Password' : null,
                       ),
@@ -116,6 +118,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       CustomTextField.customTextField(
                         textEditingController: addressController,
                         hintText: 'Enter Address', obscureText: false,
+                        labelText: 'Address:',
                         // validator: (val) =>
                         //     val!.isEmpty ? 'Enter Address' : null,
                       ),
@@ -123,6 +126,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       CustomTextField.customTextField(
                         textEditingController: numberController,
                         hintText: 'Enter Phone No', obscureText: false,
+                        labelText: 'Phone No:',
                         // validator: (val) => !RegExp(patttern).hasMatch(val!)
                         //     ? 'Enter Phone No'
                         //     : null,
@@ -147,28 +151,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     password: passwordController.text,
                                     context: context)
                                 .then((value) {
-                              print(">>>>>>>>>>>>>>>>>>>>>>>value: ${value}");
-                              if (value.statusCode == 200) {
-                                print(
-                                    ">>>>>>>>>>>>>>>>>>>>>>>value.hashCode: ${value.hashCode}");
+                              print(">>>>>>>>>>>>>>>>>>>>>>>value: $value");
 
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackUtil.stylishSnackBar(
-                                    text: 'Info Updated',
-                                    context: context,
-                                  ),
-                                );
-                                Navigator.of(context).pop();
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackUtil.stylishSnackBar(
-                                    text:
-                                        'Error Please Try Again , After a While',
-                                    context: context,
-                                  ),
-                                );
-                                Navigator.of(context).pop();
-                              }
+                              // if (value.status == 200) {
+                              //   print(
+                              //       ">>>>>>>>>>>>>>>>>>>>>>>value.hashCode: ${value.hashCode}");
+
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     SnackUtil.stylishSnackBar(
+                              //       text: 'Info Updated',
+                              //       context: context,
+                              //     ),
+                              //   );
+                              //   Navigator.of(context).pop();
+                              // } else {
+                              //   ScaffoldMessenger.of(context).showSnackBar(
+                              //     SnackUtil.stylishSnackBar(
+                              //       text:
+                              //           'Error Please Try Again , After a While',
+                              //       context: context,
+                              //     ),
+                              //   );
+                              //   Navigator.of(context).pop();
+                              // }
                             });
                           }
                         },

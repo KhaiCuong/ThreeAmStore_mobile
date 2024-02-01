@@ -261,61 +261,82 @@ class AuthenticationNotifier with ChangeNotifier {
           "role": "User",
           "password": password
         }));
-    print(">>>>>>>>>>>>>>>>>>>>>>>body: ${jsonEncode({
-          "userId": user_id,
-          "fullname": fullname,
-          "email": email,
-          "address": address,
-          "phone_number": phone_number,
-          "role": "User",
-          "password": password
-        })}");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>body: ${jsonEncode({
+    //       "userId": user_id,
+    //       "fullname": fullname,
+    //       "email": email,
+    //       "address": address,
+    //       "phone_number": phone_number,
+    //       "role": "User",
+    //       "password": password
+    //     })}");
     var userData = response.body;
     print(">>>>>>>>>>>>>>>>>>>>>>>response.body: ${response.body}");
     final Map<String, dynamic> parseData = await jsonDecode(userData);
     print(">>>>>>>>>>>>>>>>>>>>>>>parseData: ${parseData}");
     final dynamic body = response.body;
-    final Map<String, dynamic> kkkupdate = {
-      "token": _user.token,
-      "id": parseData['data']['user_id'],
-      "username": parseData['data']['fullname'],
-      "userphoneNo": parseData['data']['phone_number'],
-      "useraddress": parseData['data']['address'],
-      "useremail": parseData['data']['email'],
-      "userpassword": parseData['data']['password'],
-      "role": parseData['data']['role'],
-    };
+    // final Map<String, dynamic> kkkupdate = {
+    //   "token": _user.token,
+    //   "id": parseData['data']['user_id'],
+    //   "username": parseData['data']['fullname'],
+    //   "userphoneNo": parseData['data']['phone_number'],
+    //   "useraddress": parseData['data']['address'],
+    //   "useremail": parseData['data']['email'],
+    //   "userpassword": parseData['data']['password'],
+    //   "role": parseData['data']['role'],
+    // };
 
-    _user = User.fromJson(kkkupdate);
+    // _user = User.fromJson(kkkupdate);
 
-    print(">>>>>>>>>>>>>>>>>>>>>>>parseData: ${parseData}");
-    print(">>>>>>>>>>>>>>>>>>>>>>>StatusCode: ${response.statusCode}");
-    if (response.statusCode == 200) {
-      // _user.username = fullname;
-      // _user.useremail = email;
-      // _user.userphoneNo = phone_number;
-      // _user.useraddress = address;
-      // _user.id = user_id;
-      // _user.userpassword = password;
-      await WriteCache.setString(key: AppKeys.userData, value: fullname);
-      await WriteCache.setInt(key: 'userId', value: user_id);
-      await WriteCache.setString(key: 'email', value: email);
+    if (parseData.containsKey('data')) {
+      // If 'data' key exists, get its value which is another ma
+      final Map<String, dynamic> userToken = parseData['data'];
+      final Map<String, dynamic> kkkupdate = {
+        "token": _user.token,
+        "id": userToken['userId'] ?? '',
+        "username": userToken['fullname'] ?? '',
+        "userphoneNo": userToken['phone_number'] ?? '',
+        "useraddress": userToken['address'] ?? '',
+        "useremail": userToken['email'] ?? '',
+        "userpassword": userToken['password'] ?? '',
+        "role": userToken['role'] ?? '',
+        "verify": userToken['verify'] ?? '',
+      };
+      print(">>>>>>>>>>>>>>>>>>>>>>>userData0:${kkkupdate}");
+      _user = User.fromJson(kkkupdate);
 
-      Navigator.of(context).pushReplacementNamed(AppRouter.successEditProfile);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
-          text: 'Please Check Infor Enter', context: context));
+      print(">>>>>>>>>>>>>>>>>>>>>>>parseData: ${parseData}");
+      print(">>>>>>>>>>>>>>>>>>>>>>>StatusCode: ${response.statusCode}");
+      if (response.statusCode == 200) {
+        // _user.username = fullname;
+        // _user.useremail = email;
+        // _user.userphoneNo = phone_number;
+        // _user.useraddress = address;
+        // _user.id = user_id;
+        // _user.userpassword = password;
+        await WriteCache.setString(key: AppKeys.userData, value: fullname);
+        await WriteCache.setInt(key: 'userId', value: user_id);
+        await WriteCache.setString(key: 'email', value: email);
+
+        Navigator.of(context)
+            .pushReplacementNamed(AppRouter.successEditProfile);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+            text: 'Please Check Infor Enter', context: context));
+      }
+      print(">>>>>>>>>>>>>>>>>>>>>>>userData: ${response.body}");
+
+      // } on SocketException catch (_) {
+      //   ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+      //       text: 'Oops No You Need A Good Internet Connection',
+      //       context: context));
+      // } catch (e) {
+      //   print("Error: $e");
+      //   ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+      //       text: 'Please check your Password & Email', context: context));
+      // }
+
+      return parseData;
     }
-    print(">>>>>>>>>>>>>>>>>>>>>>>userData: ${response.body}");
-    return body;
-    // } on SocketException catch (_) {
-    //   ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
-    //       text: 'Oops No You Need A Good Internet Connection',
-    //       context: context));
-    // } catch (e) {
-    //   print("Error: $e");
-    //   ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
-    //       text: 'Please check your Password & Email', context: context));
-    // }
   }
 }
