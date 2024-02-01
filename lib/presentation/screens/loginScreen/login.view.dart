@@ -124,6 +124,19 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                      GestureDetector(
+                    onTap: () =>
+                        Navigator.of(context).pushNamed(AppRouter.forgetPassword),
+                    child: Text(
+                      "Forget Password",
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color:
+                            themeFlag ? AppColors.creamColor : AppColors.mirage,
+                        fontSize: 14.0,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ],

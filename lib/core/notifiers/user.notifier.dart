@@ -121,7 +121,6 @@ class UserNotifier with ChangeNotifier {
   Future getUserDetails({
     required int userId,
     required BuildContext context,
-    
   }) async {
     try {
       var userData = await _userAPI.getUserDetails(id: userId);
@@ -172,24 +171,21 @@ class UserNotifier with ChangeNotifier {
     }
   }
 
-  Future changePassword({
+  Future forgetPassword({
     required String userEmail,
-    required String oluserpassword,
-    required String newuserpassword,
     required BuildContext context,
   }) async {
     try {
-      var userData = await _userAPI.changePassword(
-          userEmail: userEmail,
-          oluserpassword: oluserpassword,
-          newuserpassword: newuserpassword);
+      var userData = await _userAPI.forgetPassword(
+        userEmail: userEmail, context: context,
+      );
 
-      var response = ChangeUserPassword.fromJson(jsonDecode(userData));
-      final _updated = response.updated;
+      var response = ForgetUserPassword.fromJson(jsonDecode(userData));
+      final _userEmail = response.userEmail;
 
       notifyListeners();
 
-      return _updated;
+      return _userEmail;
     } on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackUtil.stylishSnackBar(
