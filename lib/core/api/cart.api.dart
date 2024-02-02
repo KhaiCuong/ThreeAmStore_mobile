@@ -171,16 +171,16 @@ class CartAPI {
       image: image,
     ));
 
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new orderId     : $orderId");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new orderId     : $username");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new address     : $address");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new phoneNumber : $phoneNumber");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new userId      : $userId");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new quantity    : $quantity");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new price       : $price");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $productName");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $productId");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $image");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new orderId     : $orderId");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new orderId     : $username");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new address     : $address");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new phoneNumber : $phoneNumber");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new userId      : $userId");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new quantity    : $quantity");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new price       : $price");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $productName");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $productId");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $image");
 
     print(
         ">>>>>>>>>>>>>>>>>>>>>>>>>>> ADD Order response.statusCode : ${orderBox.length}");

@@ -43,7 +43,7 @@ class AppRouter {
   static const String successOrder = "/succesOrder";
   static const String favoriteList = "/favoriteList";
   static const String successSignup = "/successSignup";
-  static const String orderManagerment = "/orderManagerment";
+  static const String orderManagerment = "/orderHistory";
     static const String successEditProfile = "/orderManagerment";
 
   static Route? generateRoute(RouteSettings settings) {
@@ -170,6 +170,12 @@ class AppRouter {
         {
           return MaterialPageRoute(
             builder: (_) => const SuccessEditProfile(),
+          );
+        }
+      case orderManagerment:
+        {
+          return MaterialPageRoute(
+            builder: (_) => const AppointmentPage(),
           );
         }
     }
