@@ -66,7 +66,6 @@ class UserAPI {
   Future forgetPassword({
     required String userEmail,
     required BuildContext context,
-     
   }) async {
     // const subUrl = '/api/User/ResetPassword';
     // final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl + "?" + userEmail);
@@ -82,7 +81,7 @@ class UserAPI {
         'GET',
         Uri.parse(
             'https://19c7-171-239-179-47.ngrok-free.app/api/User/ResetPassword'));
-    request.body =userEmail;
+    request.body = userEmail;
     print(">>>>>>>>>>>>>>>>>>>>>>>userEmail:${userEmail}");
 
     request.headers.addAll({
@@ -94,15 +93,15 @@ class UserAPI {
     http.StreamedResponse response = await request.send();
     print(">>>>>>>>>>>>>>>>>>>>>>>response:${response.statusCode}");
     if (response.statusCode == 200) {
-        WriteCache.setString(key: AppKeys.userData, value:userEmail)
-            .whenComplete(
-          () => Navigator.of(context)
-              .pushReplacementNamed(AppRouter.successForgetPassword),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
-            context: context, text: 'Forget Password faill'));
-      }
+      WriteCache.setString(key: AppKeys.userData, value: userEmail)
+          .whenComplete(
+        () => Navigator.of(context)
+            .pushReplacementNamed(AppRouter.successForgetPassword),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+          context: context, text: 'Forget Password faill'));
+    }
 
     return response.statusCode == 200;
   }

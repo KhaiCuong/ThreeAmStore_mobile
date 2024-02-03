@@ -120,14 +120,13 @@ class CartNotifier with ChangeNotifier {
     // notifyListeners();
   }
 
-
-
   Future addToApiCart({
     required String userEmail,
     required String userName,
     required String address,
     required String phoneNumber,
     required int userId,
+    
     // required String productPrice,
     // required String productName,
     // required String productId,
@@ -135,6 +134,7 @@ class CartNotifier with ChangeNotifier {
     // required BuildContext context,
     // required int quantity,
     required List<OrderData> orders,
+    required double totalPrice,
   }) async {
     try {
       var products = await _cartAPI.addToApiCart(
@@ -143,6 +143,7 @@ class CartNotifier with ChangeNotifier {
           address: address,
           phone_number: phoneNumber,
           user_id: userId,
+             totalPrice:totalPrice,
           // price: productPrice,
           // product_name: productName,
           // product_id: productId,

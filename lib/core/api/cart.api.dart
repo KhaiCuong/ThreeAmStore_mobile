@@ -11,7 +11,7 @@ class CartAPI {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'Access-Control-Allow-Origin': "*",
-       // "Authorization": token,
+    // "Authorization": token,
   };
 
 //  Future addToCart({
@@ -61,27 +61,40 @@ class CartAPI {
     required String phone_number,
     required int user_id,
     required List<OrderData> orders,
+    required double totalPrice,
   }) async {
     const subUrl = '/api/Order/AddOrder';
     final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
-
+    // Tính tổng số lượng của tất cả các order trong danh sách orders
+    int totalQuantity = orders.isNotEmpty
+        ? orders.map((order) => order.quantity).reduce((a, b) => a + b)
+        : 0;
+    // Truy cập image của order đầu tiên trong danh sách orders
+    String firstOrderImage = orders.isNotEmpty ? orders[0].image : '';
     final http.Response response = await client.post(uri,
         headers: headers,
         body: jsonEncode({
-          "username": username,
-          "address": address,
           "phone_number": phone_number,
-          "userId": user_id,
+          "address": address,
+          "Status": "Preparing",
+          "username": username,
+          "user_id": user_id,
+          "totalPrice": totalPrice,
+          "image": firstOrderImage,
+          "quantity": totalQuantity,
         }));
 
     print(
         ">>>>>>>>>>>>>>>>>>>>>>>>>> ADD Order APi response.statusCode : ${response.statusCode}");
+    print(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>> ADD Order APi response.body : ${response.body}");
 
     final dynamic orderBody = jsonDecode(response.body);
-    final int orderId = orderBody["order_id"];
-    print(">>>>>>>>>> orderId : ${orderId}");
+    final dynamic data = orderBody["data"];
+    final dynamic orderId = data["orderId"];
+    print("Order ID: $orderId");
 
-    const subUrl2 = '/api/OrderDetail/AddOrderDetail';
+    const subUrl2 = '/api/OrderDeTail/AddOrderDetail';
     final Uri uri2 = Uri.parse(ApiRoutes.baseurl + subUrl2);
 
     //Lặp qua danh sách orders để thêm từng OrderDetail
@@ -92,9 +105,9 @@ class CartAPI {
             "quantity": order.quantity,
             "price": order.price,
             "produc_name": order.productName,
-            "product_id": order.productId,
             "image": order.image,
             "order_id": orderId,
+            "product_id": order.productId,
           }));
       print(
           "====================================================================");
@@ -107,30 +120,8 @@ class CartAPI {
 
       print(
           "ADD OrderDetail APi response.statusCode : ${response2.statusCode}");
-
-      // In log trạng thái mã HTTP của mỗi yêu cầu POST
-
-      // final dynamic body = jsonDecode(response2.body);
-      // Thực hiện xử lý với phản hồi nếu cần
     }
-    return true; // hoặc giá trị khác tùy thuộc vào cần thiết
-
-// final List<Map<String, dynamic>> orderDetails = orders.map((order) => {
-//   "quantity": order.quantity,
-//   "price": order.price,
-//   "produc_name": order.productName,
-//   "product_id": order.productId,
-//   "image": order.image,
-//   "order_id": orderId, // orderId được trả về từ yêu cầu POST thứ nhất
-// }).toList();
-// final String orderDetailsJson = jsonEncode(orderDetails);
-// final http.Response response2 = await client.post(uri2,
-//     headers: headers,
-//     body: orderDetailsJson);
-//      final dynamic body = jsonDecode(response2.body);
-//      print(">>>>>>>>>>>>>>>>>>>>>>>>>> ADD OrderDetail APi response.statusCode : ${response2.statusCode}");
-
-    // return body; // hoặc giá trị khác tùy thuộc vào cần thiết
+    return true;
   }
 
   Future addToHiveCart({
@@ -155,22 +146,22 @@ class CartAPI {
       phoneNumber: phoneNumber,
       userId: userId,
       quantity: quantity,
-      price: price ,
+      price: price,
       productName: productName,
       productId: productId,
       image: image,
     ));
 
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new orderId     : $orderId");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new orderId     : $username");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new address     : $address");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new phoneNumber : $phoneNumber");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new userId      : $userId");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new quantity    : $quantity");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new price       : $price");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $productName");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $productId");
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $image");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new orderId     : $orderId");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new orderId     : $username");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new address     : $address");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new phoneNumber : $phoneNumber");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new userId      : $userId");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new quantity    : $quantity");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new price       : $price");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $productName");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $productId");
+    // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $image");
 
     print(
         ">>>>>>>>>>>>>>>>>>>>>>>>>>> ADD Order response.statusCode : ${orderBox.length}");

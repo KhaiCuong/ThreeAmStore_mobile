@@ -432,6 +432,16 @@ class _CartScreenState extends State<CartScreen> {
                 itemCount: snapshot.length,
                 itemBuilder: (context, index) {
                   OrderData order = snapshot[index];
+                  print(">>>>>>>>>>${order.orderId}");
+                  print(">>>>>>>>>>${order.address}");
+                  print(">>>>>>>>>>${order.image}");
+                  print(">>>>>>>>>>${order.phoneNumber}");
+                  print(">>>>>>>>>>${order.price}");
+                  print(">>>>>>>>>>${order.productId}");
+                  print(">>>>>>>>>>${order.productName}");
+                  print(">>>>>>>>>>${order.quantity}");
+                  print(">>>>>>>>>>${order.userId}");
+                  print(">>>>>>>>>>${order.username}");
                   return _showCartData(
                     context: context,
                     order: order,
@@ -505,11 +515,11 @@ class _CartScreenState extends State<CartScreen> {
     required themeFlag,
     required BuildContext context,
   }) {
-    double cartPrice = 0;
+    double totalPrice = 0;
     List<OrderData> cart = snapshot;
 
     for (int i = 0; i < cart.length; i++) {
-      cartPrice += (cart[i].price ?? 0.0) * cart[i].quantity;
+      totalPrice += (cart[i].price ?? 0.0) * cart[i].quantity;
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -521,7 +531,7 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ),
         Text(
-          '\$ $cartPrice',
+          '\$ $totalPrice',
           style: CustomTextWidget.bodyText2(
             color: themeFlag ? AppColors.creamColor : AppColors.mirage,
           ),
@@ -569,9 +579,9 @@ class _CartScreenState extends State<CartScreen> {
                         "Contact us 0909222009 for any questions on your order.",
                     onSuccess: (Map params) async {
                       print("onSuccess: $params");
-                      addOrderToApiCart(snapshot);
-                      showPayedSuccessSnackbar();
-                      clearOrdersFromHive();
+            addOrderToApiCart(snapshot, totalPrice);
+            showPayedSuccessSnackbar();
+            clearOrdersFromHive();
                     },
                     onError: (error) {
                       print("onError: $error");
@@ -635,15 +645,24 @@ class _CartScreenState extends State<CartScreen> {
   //   );
   // }
 
-  void addOrderToApiCart(snapshot) async {
+  void addOrderToApiCart(snapshot, double totalPrice) async {
     if (mounted) {
       CartNotifier cartNotifier = context.read<CartNotifier>();
+       final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+    var _userId = authNotifier.auth.id != null ? int.parse(authNotifier.auth.id.toString()) : 1;
+    var _username = authNotifier.auth.username ?? 'Wait';
+    var _userEmail = authNotifier.auth.useremail ?? 'exam@gmail.com';
+    var _phoneNumber = authNotifier.auth.userphoneNo ?? '0909090909';
+    
       await cartNotifier.addToApiCart(
-        address: 'TRan Van Dang',
-        userEmail: 'honag@tiwi.vn',
-        userName: 'Hoang Nguyen',
-        phoneNumber: '0909222009',
-        userId: 3,
+        userId: _userId,
+        userName: _username,
+        address: _selectedAddress,
+        userEmail: _userEmail,
+        phoneNumber: _phoneNumber,
+        totalPrice:totalPrice,
+    
         orders: snapshot,
       );
       // Tiếp tục xử lý xoá dữ liệu trong OrderData trống
