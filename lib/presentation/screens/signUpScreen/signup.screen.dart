@@ -64,7 +64,7 @@ class SignUpScreen extends StatelessWidget {
                                 textEditingController: userNameController,
                                 hintText: 'Enter User Name',
                                 validator: (val) =>
-                                    val!.isEmpty ? 'Enter an Username' : null, obscureText: false),
+                                    val!.isEmpty ? 'Enter an Username' : null, obscureText: false, labelText: 'User Name:'),
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(
@@ -76,7 +76,7 @@ class SignUpScreen extends StatelessWidget {
                                   !RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
                                           .hasMatch(val!)
                                       ? 'Enter an email'
-                                      : null, obscureText: false,
+                                      : null, obscureText: false, labelText: 'Email:',
                             ),
                           ),
                           Padding(
@@ -92,7 +92,7 @@ class SignUpScreen extends StatelessWidget {
                                   return "The phone starts with 0 and must have 10 numbers";
                                 }
                                 return null;
-                              }, obscureText: false,
+                              }, obscureText: false, labelText: 'Phone Nuber:',
                             ),
                           ),
                           Padding(
@@ -102,7 +102,7 @@ class SignUpScreen extends StatelessWidget {
                               textEditingController: userAddressController,
                               hintText: 'Enter a Youre Addresss',
                               validator: (val) =>
-                                  val!.isEmpty ? 'Enter a Youre Address' : null, obscureText: false,
+                                  val!.isEmpty ? 'Enter a Youre Address' : null, obscureText: false, labelText: 'Address:',
                             ),
                           ),
                           Padding(
@@ -116,7 +116,7 @@ class SignUpScreen extends StatelessWidget {
                               textEditingController: userPassController,
                               hintText: 'Enter a Password',
                               validator: (val) =>
-                                  val!.isEmpty ? 'Enter a password' : null, obscureText: true,
+                                  val!.isEmpty ? 'Enter a password' : null, obscureText: true, labelText: 'Password:',
                             ),
                           ),
                         ],

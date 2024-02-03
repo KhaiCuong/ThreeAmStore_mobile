@@ -61,16 +61,16 @@ class CartAPI {
     required String phone_number,
     required int user_id,
     required List<OrderData> orders,
+    required double totalPrice,
   }) async {
     const subUrl = '/api/Order/AddOrder';
     final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
-    // print(
-    //       "====================================================================");
-    //   print("phone_number : ${phone_number}");
-    //   print("address    : ${address}");
-    //   print("username     : ${username}");
-    //   print("user_id: ${user_id}");
-
+    // Tính tổng số lượng của tất cả các order trong danh sách orders
+    int totalQuantity = orders.isNotEmpty
+        ? orders.map((order) => order.quantity).reduce((a, b) => a + b)
+        : 0;
+    // Truy cập image của order đầu tiên trong danh sách orders
+    String firstOrderImage = orders.isNotEmpty ? orders[0].image : '';
     final http.Response response = await client.post(uri,
         headers: headers,
         body: jsonEncode({
@@ -79,6 +79,9 @@ class CartAPI {
           "Status": "Preparing",
           "username": username,
           "user_id": user_id,
+          "totalPrice": totalPrice,
+          "image": firstOrderImage,
+          "quantity": totalQuantity,
         }));
 
     print(
@@ -117,30 +120,8 @@ class CartAPI {
 
       print(
           "ADD OrderDetail APi response.statusCode : ${response2.statusCode}");
-
-      // In log trạng thái mã HTTP của mỗi yêu cầu POST
-
-      // final dynamic body = jsonDecode(response2.body);
-      // Thực hiện xử lý với phản hồi nếu cần
     }
-    return true; // hoặc giá trị khác tùy thuộc vào cần thiết
-
-// final List<Map<String, dynamic>> orderDetails = orders.map((order) => {
-//   "quantity": order.quantity,
-//   "price": order.price,
-//   "produc_name": order.productName,
-//   "product_id": order.productId,
-//   "image": order.image,
-//   "order_id": orderId, // orderId được trả về từ yêu cầu POST thứ nhất
-// }).toList();
-// final String orderDetailsJson = jsonEncode(orderDetails);
-// final http.Response response2 = await client.post(uri2,
-//     headers: headers,
-//     body: orderDetailsJson);
-//      final dynamic body = jsonDecode(response2.body);
-//      print(">>>>>>>>>>>>>>>>>>>>>>>>>> ADD OrderDetail APi response.statusCode : ${response2.statusCode}");
-
-    // return body; // hoặc giá trị khác tùy thuộc vào cần thiết
+    return true;
   }
 
   Future addToHiveCart({

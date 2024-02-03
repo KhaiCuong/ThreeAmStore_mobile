@@ -1,13 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:scarvs/core/models/order_status_enum.dart';
-
 import '../../../../app/constants/app.colors.dart';
-import '../../../../app/constants/url_api.dart';
 import '../../../../app/routes/api.routes.dart';
 import '../../../../core/models/api_order.dart';
 import '../../../../core/notifiers/authentication.notifer.dart';
@@ -23,11 +19,11 @@ class AppointmentPage extends StatefulWidget {
   State<AppointmentPage> createState() => _AppointmentPageState();
 }
 
-enum FilterStatus { upcoming, complete, cancel }
+enum FilterStatus { waiting, complete, cancel }
 
 class _AppointmentPageState extends State<AppointmentPage> {
   List<ApiOrder> schedules = [];
-  FilterStatus statusBooking = FilterStatus.upcoming;
+  FilterStatus statusBooking = FilterStatus.waiting;
   Alignment _alignment = Alignment.centerLeft;
   @override
   void initState() {
@@ -58,7 +54,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     try {
       final response = await http.get(url);
       print(
-          '>>>>>>>>>>>>>>>>>>>>> Order response.statusCode ${response.statusCode}');
+          '>>>>>>>>>>>>>>>>>>>>> Get Order response.statusCode ${response.statusCode}');
 
       if (response.statusCode == 200) {
         // Chuyển đổi JSON thành danh sách Booking và cập nhật state
@@ -102,7 +98,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
       FilterStatus scheduleStatus;
       switch (schedule.status) {
         case 'Preparing':
-          scheduleStatus = FilterStatus.upcoming;
+          scheduleStatus = FilterStatus.waiting;
           break;
         case 'Completed':
           scheduleStatus = FilterStatus.complete;
@@ -112,7 +108,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
           break;
         default:
           scheduleStatus = FilterStatus
-              .upcoming; // Xác định trạng thái mặc định nếu không khớp
+              .waiting; // Xác định trạng thái mặc định nếu không khớp
       }
       return scheduleStatus == statusBooking;
     }).toList();
@@ -131,7 +127,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 children: [
                   CustomBackPop(themeFlag: themeFlag),
                   Text(
-                    'Appointment Schedule',
+                    'Order History',
                     style: CustomTextWidget.bodyTextB2(
                       color:
                           themeFlag ? AppColors.creamColor : AppColors.mirage,
@@ -160,8 +156,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                 child: GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  if (filterStatus == FilterStatus.upcoming) {
-                                    statusBooking = FilterStatus.upcoming;
+                                  if (filterStatus == FilterStatus.waiting) {
+                                    statusBooking = FilterStatus.waiting;
                                     _alignment = Alignment.centerLeft;
                                   } else if (filterStatus ==
                                       FilterStatus.complete) {
@@ -330,11 +326,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                         width: 60,
                                         decoration: BoxDecoration(
                                           color: _schedule.status == 'Canceled'
-                                              ? Colors
-                                                  .red 
+                                              ? Colors.red
                                               : _schedule.status == 'Delivery'
-                                                  ? Colors
-                                                      .green
+                                                  ? Colors.green
                                                   : Color.fromARGB(
                                                       255, 227, 147, 62),
                                           borderRadius:
@@ -357,7 +351,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                                     color: Colors.white),
                                               ),
                                             // if (_schedule.status ==
-                                            //     'upcoming')
+                                            //     'waiting')
                                             //   Text(
                                             //     'Upcoming schedule',
                                             //     style: TextStyle(
@@ -386,57 +380,56 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          
-                                          SizedBox(
-                                            width: 20,
-                                          ),
+                                         
                                           // if (_schedule.status == 'Delivery'||_schedule.status == 'Completed' || _schedule.status == 'Canceled')
-                                            Expanded(
-                                              child: Row(
-                                                children: [
-                                                  OutlinedButton(
-                                                    onPressed: () {
-                                                     
-                                                    },
-                                                    child: Text(
-                                                      'Total Money: \$${_schedule.totalPrice}',
-                                                      style: TextStyle(
-                                                          color: Colors.black,
+                                          Expanded(
+                                            child: Row(
+                                              children: [
+                                                OutlinedButton(
+                                                  onPressed: () {},
+                                                  child: Text(
+                                                    'Total: \$${_schedule.totalPrice}',
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                                ),
+                                                if (_schedule.status ==
+                                                    'Preparing')
+                                                  Expanded(
+                                                    child: OutlinedButton(
+                                                      onPressed: () {
+                                                        // Gọi hàm để hiển thị hộp thoại xác nhận
+                                                        showCancelConfirmationDialog(
+                                                            context, _schedule);
+                                                      },
+                                                      style: ButtonStyle(
+                                                        backgroundColor:
+                                                            MaterialStateProperty.all<
+                                                                    Color>(
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    227,
+                                                                    147,
+                                                                    62)), // Màu nền là màu vàng
+                                                        // Các thuộc tính khác của nút có thể được thiết lập ở đây
+                                                      ),
+                                                      child: Text(
+                                                        'Cancel',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
                                                           fontSize: 16,
                                                           fontWeight:
-                                                              FontWeight.w600),
+                                                              FontWeight.w600,
+                                                        ),
+                                                      ),
                                                     ),
                                                   ),
-                                                  if (_schedule.status == 'Preparing')
-                                            Expanded(
-                                              child: OutlinedButton(
-                                                onPressed: () {
-                                                  // Gọi hàm để hiển thị hộp thoại xác nhận
-                                                  showCancelConfirmationDialog(
-                                                      context, _schedule);
-                                                },
-                                                style: ButtonStyle(
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all<
-                                                              Color>(
-                                                          Color.fromARGB(
-                                                      255, 227, 147, 62)), // Màu nền là màu vàng
-                                                  // Các thuộc tính khác của nút có thể được thiết lập ở đây
-                                                ),
-                                                child: Text(
-                                                  'Cancel',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                              ),
+                                              ],
                                             ),
-                                                ],
-                                              ),
-                                            ),
-                                            
+                                          ),
                                         ],
                                       )
                                     ],
@@ -475,9 +468,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
               onPressed: () async {
                 // Gọi hàm để hủy đặt hẹn
                 OrderNotifier orderService = OrderNotifier();
-                OrderStatus orderStatus = OrderStatus.Canceled;
                 bool success = await orderService.updateStatus(
-                    context: context, id: booking.userId, status:'Canceled');
+                    context: context, id: booking.orderId, status: 'Canceled');
 
                 if (success) {
                   // Xoá booking thành công, bạn có thể thực hiện các hành động cần thiết

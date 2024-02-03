@@ -1,3 +1,5 @@
+import 'package:scarvs/core/models/userDetails.model.dart';
+
 class UpdateUser {
   UpdateUser({
     required this.added,
@@ -48,26 +50,25 @@ class UpdatedData {
   }
 }
 
-class ChangeUserPassword {
-  ChangeUserPassword({
-    required this.changed,
-    required this.updated,
+class ForgetUserPassword {
+  ForgetUserPassword({
+    required this.userEmail,
     required this.data,
   });
-  late final bool changed;
-  late final bool updated;
-  late final String data;
+  late final String userEmail;
 
-  ChangeUserPassword.fromJson(Map<String, dynamic> json) {
-    changed = json['changed'];
-    updated = json['updated'];
+  late final Data data;
+
+  ForgetUserPassword.fromJson(Map<String, dynamic> json) {
+    userEmail = json['userEmail'] ?? '';
+
     data = json['data'];
   }
 
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
-    _data['changed'] = changed;
-    _data['updated'] = updated;
+    _data['useremail'] = userEmail;
+
     _data['data'] = data;
     return _data;
   }

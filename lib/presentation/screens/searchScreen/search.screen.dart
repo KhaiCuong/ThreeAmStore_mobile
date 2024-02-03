@@ -6,6 +6,7 @@ import 'package:scarvs/core/models/product.model.dart';
 import 'package:scarvs/core/notifiers/product.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:scarvs/presentation/screens/categoryScreen/widgets/category.widget.dart';
+import 'package:scarvs/presentation/screens/productScreen/product.screen.dart';
 import 'package:scarvs/presentation/widgets/custom.loader.dart';
 import 'package:scarvs/presentation/widgets/custom.text.style.dart';
 import 'package:scarvs/presentation/widgets/dimensions.widget.dart';
@@ -19,9 +20,10 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  final List<ProductData> products = [];
   final TextEditingController searchProductController = TextEditingController();
   final ProductNotifier notifier = ProductNotifier();
-  bool isExecuted = false;
+  bool isExecuted = true;
   @override
   Widget build(BuildContext context) {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
@@ -37,26 +39,89 @@ class _SearchScreenState extends State<SearchScreen> {
               1,
               MediaQuery.of(context).viewInsets.top,
             ),
-            child: Column(
-              children: [
-                buildSearchInput(searchContent: '', themeFlag: isExecuted),
-                vSizedBox2,
-                isExecuted
-                    ? searchData(
-                        searchContent: searchProductController.text,
-                        themeFlag: themeFlag,
-                      )
-                    : Center(
-                        child: Text(
-                          'Search Any Product',
-                          style: CustomTextWidget.bodyText2(
-                            color: themeFlag
-                                ? AppColors.creamColor
-                                : AppColors.mirage,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  buildSearchInput(searchContent: '', themeFlag: isExecuted),
+                  vSizedBox2,
+                  isExecuted
+                      ? searchData(
+                          searchContent: searchProductController.text,
+                          themeFlag: themeFlag,
+                        )
+                      : Center(
+                          child: Text(
+                            'Search Any Product',
+                            style: CustomTextWidget.bodyText2(
+                              color: themeFlag
+                                  ? AppColors.creamColor
+                                  : AppColors.mirage,
+                            ),
                           ),
-                        ),
-                      )
-              ],
+                        )
+                  //      vSizedBox1,
+                  // SizedBox(
+                  //   height: 200,
+                  //   width: MediaQuery.of(context).size.width,
+                  //   child: Consumer<ProductNotifier>(
+                  //     builder: (context, notifier, _) {
+                  //       return FutureBuilder<List<ProductData>>(
+                  //         future: notifier.fetchProducts(context: context),
+                  //         builder: (context, snapshot) {
+                  //           if (snapshot.connectionState ==
+                  //               ConnectionState.waiting) {
+                  //             return ShimmerEffects.loadShimmer(
+                  //                 context: context);
+                  //           } else {
+                  //             var _snapshot = snapshot.data;
+                  //             if (_snapshot == null) {
+                  //               return Center(
+                  //                 child: Text(
+                  //                   'Data is null...',
+                  //                   style: CustomTextWidget.bodyTextUltra(
+                  //                     color: themeFlag
+                  //                         ? AppColors.creamColor
+                  //                         : AppColors.mirage,
+                  //                   ),
+                  //                 ),
+                  //               );
+                  //             } else if (_snapshot is List) {
+                  //               return ListView.separated(
+                  //                 physics: const ScrollPhysics(),
+                  //                 shrinkWrap: true,
+                  //                 scrollDirection: Axis.horizontal,
+                  //                 separatorBuilder: (context, index) =>
+                  //                     const SizedBox(width: 8),
+                  //                 itemCount: _snapshot.length,
+                  //                 itemBuilder: (context, index) {
+                  //                   ProductData prod = _snapshot[index];
+                  //                   return ProductCard(
+                  //                     prod: prod,
+                  //                     themeFlag: themeFlag,
+                  //                   );
+                  //                 },
+                  //               );
+                  //             } else {
+                  //               return Center(
+                  //                 child: Text(
+                  //                   'Invalid data format...',
+                  //                   style: CustomTextWidget.bodyTextUltra(
+                  //                     color: themeFlag
+                  //                         ? AppColors.creamColor
+                  //                         : AppColors.mirage,
+                  //                   ),
+                  //                 ),
+                  //               );
+                  //             }
+                  //           }
+                  //         },
+                  //       );
+                  //     },
+                  //   ),
+                  // )
+                ],
+              ),
             ),
           ),
         ),
@@ -150,21 +215,38 @@ class _SearchScreenState extends State<SearchScreen> {
                   productName: searchProductController.text,
                 ),
                 builder: (context, snapshot) {
+                  print("424324234?>>>>>" + snapshot.toString());
+
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return ShimmerEffects.buildCategoryShimmer(
                         context: context);
-                  } else if (!snapshot.hasData) {
+                  }
+
+                  if (snapshot?.data == null) {
+                    // Trường hợp snapshot null
                     return customLoader(
                       context: context,
                       themeFlag: themeFlag,
                       text: 'No Product Found !',
                       lottieAsset: AppAssets.error,
                     );
-                  } else {
-                    var _snapshot = snapshot.data as List<ProductData>;
-                    return 
-                  ShowDataGrid(prods: _snapshot);
                   }
+
+                  var data = snapshot.data;
+
+                  if (data is List<ProductData> && data.isEmpty) {
+                    // Trường hợp snapshot.data là một danh sách rỗng
+                    return customLoader(
+                      context: context,
+                      themeFlag: themeFlag,
+                      text: 'No Product Found !',
+                      lottieAsset: AppAssets.error,
+                    );
+                  }
+
+                  // Trường hợp còn lại: snapshot.data không null và không rỗng
+                  var _snapshot = data as List<ProductData>;
+                  return ShowDataGrid(prods: _snapshot);
                 },
               );
             },

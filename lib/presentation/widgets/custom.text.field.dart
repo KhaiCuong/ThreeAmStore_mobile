@@ -9,7 +9,7 @@ class CustomTextField {
       String? Function(String?)? validator,
       String? value,
       Function(String)? onChanged,
-      required bool obscureText}) {
+      required bool obscureText, required String labelText}) {
     return TextFormField(
       obscureText: obscureText || false,
       keyboardType: TextInputType.visiblePassword,

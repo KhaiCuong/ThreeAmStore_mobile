@@ -650,17 +650,19 @@ class _CartScreenState extends State<CartScreen> {
       CartNotifier cartNotifier = context.read<CartNotifier>();
        final authNotifier =
         Provider.of<AuthenticationNotifier>(context, listen: false);
-    var _userId = authNotifier.auth.id ?? 'Wait';
+    var _userId = authNotifier.auth.id != null ? int.parse(authNotifier.auth.id.toString()) : 1;
     var _username = authNotifier.auth.username ?? 'Wait';
     var _userEmail = authNotifier.auth.useremail ?? 'exam@gmail.com';
     var _phoneNumber = authNotifier.auth.userphoneNo ?? '0909090909';
+    
       await cartNotifier.addToApiCart(
-        userId: 1,
+        userId: _userId,
         userName: _username,
         address: _selectedAddress,
         userEmail: _userEmail,
         phoneNumber: _phoneNumber,
-        // totalPrice:totalPrice,
+        totalPrice:totalPrice,
+    
         orders: snapshot,
       );
       // Tiếp tục xử lý xoá dữ liệu trong OrderData trống

@@ -60,7 +60,7 @@ class LoginScreen extends StatelessWidget {
                                   !RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
                                           .hasMatch(val!)
                                       ? 'Enter an email'
-                                      : null, obscureText: false,
+                                      : null, obscureText: false, labelText: 'Email',
                             ),
                           ),
                           vSizedBox1,
@@ -71,7 +71,7 @@ class LoginScreen extends StatelessWidget {
                               textEditingController: userPassController,
                               hintText: 'Enter a password',
                               validator: (val) =>
-                                  val!.isEmpty ? 'Enter a password' : null, obscureText: true,
+                                  val!.isEmpty ? 'Enter a password' : null, obscureText: true, labelText: 'Password',
                             ),
                           )
                         ],
@@ -116,6 +116,19 @@ class LoginScreen extends StatelessWidget {
                         Navigator.of(context).pushNamed(AppRouter.signUpRoute),
                     child: Text(
                       "Sign up",
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color:
+                            themeFlag ? AppColors.creamColor : AppColors.mirage,
+                        fontSize: 14.0,
+                      ),
+                    ),
+                  ),
+                      GestureDetector(
+                    onTap: () =>
+                        Navigator.of(context).pushNamed(AppRouter.forgetPassword),
+                    child: Text(
+                      "Forget Password",
                       style: TextStyle(
                         decoration: TextDecoration.underline,
                         color:

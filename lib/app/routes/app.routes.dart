@@ -14,6 +14,8 @@ import 'package:scarvs/presentation/screens/profileScreens/appSettingsScreen/app
 import 'package:scarvs/presentation/screens/profileScreens/changePasswordScreen/change.password.screen.dart';
 import 'package:scarvs/presentation/screens/profileScreens/editProfileScreen/edit.profile.screen.dart';
 import 'package:scarvs/presentation/screens/profileScreens/editProfileScreen/success_editProfile.dart';
+import 'package:scarvs/presentation/screens/profileScreens/forgetPassword/ForgetPasswordScreen.dart';
+import 'package:scarvs/presentation/screens/profileScreens/forgetPassword/success_signup.dart';
 import 'package:scarvs/presentation/screens/profileScreens/mainProfileScreen/profile.screen.dart';
 import 'package:scarvs/presentation/screens/profileScreens/ordersPage/appointment_page.dart';
 import 'package:scarvs/presentation/screens/searchScreen/search.screen.dart';
@@ -43,8 +45,10 @@ class AppRouter {
   static const String successOrder = "/succesOrder";
   static const String favoriteList = "/favoriteList";
   static const String successSignup = "/successSignup";
-  static const String orderManagerment = "/orderHistory";
-    static const String successEditProfile = "/orderManagerment";
+  static const String orderManagerment = "/orderManager";
+  static const String successEditProfile = "/orderManagerment";
+  static const String forgetPassword = "/forgetPassword";
+  static const String successForgetPassword = "/successForgetPassword";
 
   static Route? generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -176,6 +180,18 @@ class AppRouter {
         {
           return MaterialPageRoute(
             builder: (_) => const AppointmentPage(),
+          );
+        }
+      case forgetPassword:
+        {
+          return MaterialPageRoute(
+            builder: (_) => ForgetPasswordScreen(),
+          );
+        }
+          case successForgetPassword:
+        {
+          return MaterialPageRoute(
+            builder: (_) => SuccessForgetPassword(),
           );
         }
     }

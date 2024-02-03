@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:scarvs/app/theme/button.dart';
 
-import '../../../app/theme/button.dart';
 
 
-class SuccessSignup extends StatelessWidget {
-  const SuccessSignup({Key? key}) : super(key: key);
+
+class SuccessForgetPassword extends StatelessWidget {
+  const SuccessForgetPassword({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class SuccessSignup extends StatelessWidget {
               child: Column(
                 children: [
                   const Text(
-                    'Register Successfully!',
+                    'Send Mail Successfully!',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
