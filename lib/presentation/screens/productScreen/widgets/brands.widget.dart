@@ -34,7 +34,8 @@ class BrandWidget extends StatelessWidget {
       AppAssets.brandCitizen,
       AppAssets.brandMovado,
       AppAssets.brandOrient,
-      AppAssets.brandSeiko,AppAssets.brandDaniel
+      AppAssets.brandSeiko,
+      AppAssets.brandDaniel
     ];
     Map<String, int> brandToImageIndex = {
       "Rolex": 0,
@@ -48,7 +49,7 @@ class BrandWidget extends StatelessWidget {
       "Movado": 8,
       "Orient": 9,
       "Seiko": 10,
-      "Daniel Wellington":11
+      "Daniel Wellington": 11
     };
 
     // Widget showBrands không thay đổi

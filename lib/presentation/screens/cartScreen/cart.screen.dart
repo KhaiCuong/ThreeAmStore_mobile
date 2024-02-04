@@ -17,7 +17,6 @@ import '../../../../app/routes/api.routes.dart';
 import '../../../../core/models/orders.dart';
 import '../../../app/constants/url_api.dart';
 import '../../../core/models/address.dart';
-import '../../widgets/custom.text.field.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
