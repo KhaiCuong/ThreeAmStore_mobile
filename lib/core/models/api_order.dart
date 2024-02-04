@@ -30,7 +30,7 @@ class ApiOrder {
       quantity: json['quantity'] as int?,
       totalPrice: json['totalPrice'] as double?,
       image: json['image'] as String?,
-      userId: json['user_id'] as int,
+      userId: json['userId'] as int,
       status: json['status'] as String,
     );
   }
