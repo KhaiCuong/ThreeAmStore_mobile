@@ -28,13 +28,13 @@ class CartAPI {
 //         "username": 'nguyen minh hoang',
 //         "address": 'tran van dang q5',
 //         "phone_number": '0909090909',
-//         "user_id": 1,
+//         "userId": 1,
 //       }));
 
 //   print(">>>>>>>>>>>>>>>>>>>>>>>>>> ADD Order response.statusCode : ${response.statusCode}");
 
 //   final dynamic orderBody = jsonDecode(response.body);
-//   final int orderId = orderBody["order_id"];
+//   final int orderId = orderBody["orderId"];
 //   print(">>>>>>>>>>>>>>>>>>>>>>>>>>  orderId: ${orderId}");
 
 //   const subUrl2 = '/api/OrderDetail/AddOrderDetail';
@@ -46,9 +46,9 @@ class CartAPI {
 //         "quantity": 2,
 //         "price": 1223412,
 //         "produc_name": 'CALVIN KLEIN K8M216G6',
-//         "product_id": 'PD03',
+//         "productId": 'PD03',
 //         "image": '/uploads/lue14k4d.3i4PD1-1.jpg',
-//         "order_id": orderId,
+//         "orderId": orderId,
 //       }));
 //   print(">>>>>>>>>>>>>>>>>>>>>>>>>> ADD OrderDetail response.statusCode : ${response2.statusCode}");
 //   final dynamic body = jsonDecode(response2.body);
@@ -59,7 +59,7 @@ class CartAPI {
     required String username,
     required String address,
     required String phone_number,
-    required int user_id,
+    required int userId,
     required List<OrderData> orders,
     required double totalPrice,
   }) async {
@@ -78,7 +78,7 @@ class CartAPI {
           "address": address,
           "Status": "Preparing",
           "username": username,
-          "user_id": user_id,
+          "userId": userId,
           "totalPrice": totalPrice,
           "image": firstOrderImage,
           "quantity": totalQuantity,
@@ -106,8 +106,8 @@ class CartAPI {
             "price": order.price,
             "produc_name": order.productName,
             "image": order.image,
-            "order_id": orderId,
-            "product_id": order.productId,
+            "orderId": orderId,
+            "productId": order.productId,
           }));
       print(
           "====================================================================");

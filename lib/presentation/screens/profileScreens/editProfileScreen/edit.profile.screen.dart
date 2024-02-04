@@ -184,7 +184,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           if (_formKey.currentState!.validate()) {
                             authNotifier
                                 .updateUserDetails(
-                                    user_id: authNotifier.auth.id,
+                                    userId: authNotifier.auth.id,
                                     email: authNotifier.auth.useremail,
                                     address: addressController.text,
                                     phone_number: numberController.text,

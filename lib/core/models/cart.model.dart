@@ -40,7 +40,7 @@ class CartItems {
   late final String productSize;
 
   CartItems.fromJson(Map<String, dynamic> json) {
-    productId = json['product_id'];
+    productId = json['productId'];
     productName = json['product_name'];
     productPrice = json['product_price'];
     productCategory = json['product_category'];
@@ -50,7 +50,7 @@ class CartItems {
 
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
-    _data['product_id'] = productId;
+    _data['productId'] = productId;
     _data['product_name'] = productName;
     _data['product_price'] = productPrice;
     _data['product_category'] = productCategory;
