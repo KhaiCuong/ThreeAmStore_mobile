@@ -114,7 +114,11 @@ class _ProductDetailState extends State<ProductDetail> {
           ],
         ),
         vSizedBox2,
-        Padding(
+       
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+             Padding(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: Text(
             '\$ ${_snapshot.productPrice}',
@@ -123,9 +127,6 @@ class _ProductDetailState extends State<ProductDetail> {
             ),
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor:

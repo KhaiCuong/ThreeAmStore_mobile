@@ -32,97 +32,86 @@ class _SearchScreenState extends State<SearchScreen> {
       child: Scaffold(
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
         body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              1,
-              1,
-              1,
-              MediaQuery.of(context).viewInsets.top,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  buildSearchInput(searchContent: '', themeFlag: isExecuted),
-                  vSizedBox2,
-                  isExecuted
-                      ? searchData(
-                          searchContent: searchProductController.text,
-                          themeFlag: themeFlag,
-                        )
-                      : Center(
-                          child: Text(
-                            'Search Any Product',
-                            style: CustomTextWidget.bodyText2(
-                              color: themeFlag
-                                  ? AppColors.creamColor
-                                  : AppColors.mirage,
-                            ),
-                          ),
-                        )
-                  //      vSizedBox1,
-                  // SizedBox(
-                  //   height: 200,
-                  //   width: MediaQuery.of(context).size.width,
-                  //   child: Consumer<ProductNotifier>(
-                  //     builder: (context, notifier, _) {
-                  //       return FutureBuilder<List<ProductData>>(
-                  //         future: notifier.fetchProducts(context: context),
-                  //         builder: (context, snapshot) {
-                  //           if (snapshot.connectionState ==
-                  //               ConnectionState.waiting) {
-                  //             return ShimmerEffects.loadShimmer(
-                  //                 context: context);
-                  //           } else {
-                  //             var _snapshot = snapshot.data;
-                  //             if (_snapshot == null) {
-                  //               return Center(
-                  //                 child: Text(
-                  //                   'Data is null...',
-                  //                   style: CustomTextWidget.bodyTextUltra(
-                  //                     color: themeFlag
-                  //                         ? AppColors.creamColor
-                  //                         : AppColors.mirage,
-                  //                   ),
-                  //                 ),
-                  //               );
-                  //             } else if (_snapshot is List) {
-                  //               return ListView.separated(
-                  //                 physics: const ScrollPhysics(),
-                  //                 shrinkWrap: true,
-                  //                 scrollDirection: Axis.horizontal,
-                  //                 separatorBuilder: (context, index) =>
-                  //                     const SizedBox(width: 8),
-                  //                 itemCount: _snapshot.length,
-                  //                 itemBuilder: (context, index) {
-                  //                   ProductData prod = _snapshot[index];
-                  //                   return ProductCard(
-                  //                     prod: prod,
-                  //                     themeFlag: themeFlag,
-                  //                   );
-                  //                 },
-                  //               );
-                  //             } else {
-                  //               return Center(
-                  //                 child: Text(
-                  //                   'Invalid data format...',
-                  //                   style: CustomTextWidget.bodyTextUltra(
-                  //                     color: themeFlag
-                  //                         ? AppColors.creamColor
-                  //                         : AppColors.mirage,
-                  //                   ),
-                  //                 ),
-                  //               );
-                  //             }
-                  //           }
-                  //         },
-                  //       );
-                  //     },
-                  //   ),
-                  // )
-                ],
-              ),
-            ),
+          child: Column(
+            children: [
+              buildSearchInput(searchContent: '', themeFlag: isExecuted),
+              vSizedBox2,
+              isExecuted
+                  ? searchData(
+                      searchContent: searchProductController.text,
+                      themeFlag: themeFlag,
+                    )
+                  : Center(
+                      child: Text(
+                        'Search Any Product',
+                        style: CustomTextWidget.bodyText2(
+                          color: themeFlag
+                              ? AppColors.creamColor
+                              : AppColors.mirage,
+                        ),
+                      ),
+                    )
+              //      vSizedBox1,
+              // SizedBox(
+              //   height: 200,
+              //   width: MediaQuery.of(context).size.width,
+              //   child: Consumer<ProductNotifier>(
+              //     builder: (context, notifier, _) {
+              //       return FutureBuilder<List<ProductData>>(
+              //         future: notifier.fetchProducts(context: context),
+              //         builder: (context, snapshot) {
+              //           if (snapshot.connectionState ==
+              //               ConnectionState.waiting) {
+              //             return ShimmerEffects.loadShimmer(
+              //                 context: context);
+              //           } else {
+              //             var _snapshot = snapshot.data;
+              //             if (_snapshot == null) {
+              //               return Center(
+              //                 child: Text(
+              //                   'Data is null...',
+              //                   style: CustomTextWidget.bodyTextUltra(
+              //                     color: themeFlag
+              //                         ? AppColors.creamColor
+              //                         : AppColors.mirage,
+              //                   ),
+              //                 ),
+              //               );
+              //             } else if (_snapshot is List) {
+              //               return ListView.separated(
+              //                 physics: const ScrollPhysics(),
+              //                 shrinkWrap: true,
+              //                 scrollDirection: Axis.horizontal,
+              //                 separatorBuilder: (context, index) =>
+              //                     const SizedBox(width: 8),
+              //                 itemCount: _snapshot.length,
+              //                 itemBuilder: (context, index) {
+              //                   ProductData prod = _snapshot[index];
+              //                   return ProductCard(
+              //                     prod: prod,
+              //                     themeFlag: themeFlag,
+              //                   );
+              //                 },
+              //               );
+              //             } else {
+              //               return Center(
+              //                 child: Text(
+              //                   'Invalid data format...',
+              //                   style: CustomTextWidget.bodyTextUltra(
+              //                     color: themeFlag
+              //                         ? AppColors.creamColor
+              //                         : AppColors.mirage,
+              //                   ),
+              //                 ),
+              //               );
+              //             }
+              //           }
+              //         },
+              //       );
+              //     },
+              //   ),
+              // )
+            ],
           ),
         ),
       ),
@@ -131,70 +120,73 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget buildSearchInput(
       {required String searchContent, required bool themeFlag}) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
-          color: Colors.grey.withOpacity(0.5),
-          width: 1,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: Colors.grey.withOpacity(0.5),
+            width: 1,
+          ),
         ),
-      ),
-      elevation: 6,
-      color: themeFlag ? AppColors.mirage : AppColors.creamColor,
-      child: Padding(
-        padding: const EdgeInsets.all(5),
-        child: Row(
-          children: [
-            hSizedBox1,
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.07,
-              width: MediaQuery.of(context).size.width * 0.75,
-              child: TextField(
-                controller: searchProductController,
-                style: CustomTextWidget.bodyText2(
-                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                ),
-                decoration: InputDecoration(
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: AppColors.rawSienna,
-                    ),
-                  ),
-                  hintText: 'Search......',
-                  hintStyle: CustomTextWidget.bodyText2(
+        elevation: 6,
+        color: themeFlag ? AppColors.mirage : AppColors.creamColor,
+        child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Row(
+            children: [
+              hSizedBox1,
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.07,
+                width: MediaQuery.of(context).size.width * 0.7,
+                child: TextField(
+                  controller: searchProductController,
+                  style: CustomTextWidget.bodyText2(
                     color: themeFlag ? AppColors.creamColor : AppColors.mirage,
                   ),
+                  decoration: InputDecoration(
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: AppColors.rawSienna,
+                      ),
+                    ),
+                    hintText: 'Search......',
+                    hintStyle: CustomTextWidget.bodyText2(
+                      color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                    ),
+                  ),
+                  onSubmitted: (value) {
+                    setState(() {
+                      isExecuted = true;
+                    });
+                  },
+                  onChanged: (value) {
+                    setState(() {
+                      isExecuted = true;
+                    });
+                    notifier.searchProduct(
+                      context: context,
+                      query: value,
+                      productName: value,
+                    );
+                  },
                 ),
-                onSubmitted: (value) {
+              ),
+              hSizedBox1,
+              IconButton(
+                onPressed: () {
                   setState(() {
                     isExecuted = true;
                   });
                 },
-                onChanged: (value) {
-                  setState(() {
-                    isExecuted = true;
-                  });
-                  notifier.searchProduct(
-                    context: context,
-                    query: value,
-                    productName: value,
-                  );
-                },
+                icon: Icon(
+                  Icons.search,
+                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                ),
               ),
-            ),
-            hSizedBox1,
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  isExecuted = true;
-                });
-              },
-              icon: Icon(
-                Icons.search,
-                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

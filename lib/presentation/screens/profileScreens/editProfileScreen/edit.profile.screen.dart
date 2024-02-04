@@ -24,22 +24,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   late TextEditingController passwordController = TextEditingController();
   late TextEditingController addressController = TextEditingController();
-  late TextEditingController numberController= TextEditingController();
-  late TextEditingController nameController= TextEditingController();
+  late TextEditingController numberController = TextEditingController();
+  late TextEditingController nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+  
   @override
   void initState() {
     super.initState();
+
     final authNotifier =
         Provider.of<AuthenticationNotifier>(context, listen: false);
-    passwordController =
-        TextEditingController(text: authNotifier.auth.userpassword);
-    addressController =
-        TextEditingController(text: authNotifier.auth.useraddress);
-    numberController =
-        TextEditingController(text: authNotifier.auth.userphoneNo);
-    nameController = TextEditingController(text: authNotifier.auth.username);
+    var password = authNotifier.auth.userpassword ?? 'password demo';
+    passwordController.text = password;
+    var adress = authNotifier.auth.useraddress ?? 'adress demo';
+    addressController.text = adress;
+    var phone = authNotifier.auth.userphoneNo ?? '0909090909';
+    numberController.text = phone;
+    var username = authNotifier.auth.username ?? 'Wait';
+    nameController.text = username;
   }
 
   @override
@@ -96,6 +99,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   padding: const EdgeInsets.fromLTRB(35.0, 45.0, 35.0, 2.0),
                   child: Column(
                     children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Full Name',
+                          style: TextStyle(
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
                       CustomTextField.customTextField(
                         textEditingController: nameController,
                         hintText: 'Enter FullName', labelText: 'Full Name:',
@@ -104,16 +120,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         // validator: (val) =>
                         //     val!.isEmpty ? 'Enter FullName' : null,
                       ),
-                      vSizedBox3,
-                      CustomTextField.customTextField(
-                        textEditingController: passwordController,
+                      // vSizedBox3,
+                      // CustomTextField.customTextField(
+                      //   textEditingController: passwordController,
 
-                        hintText: 'Enter New Password',
-                        obscureText: true, labelText: 'PassWord:',
-                        // validator: (val) =>
-                        //     val!.isEmpty ? 'Enter New Password' : null,
-                      ),
+                      //   hintText: 'Enter New Password',
+                      //   obscureText: true, labelText: 'PassWord:',
+                      //   // validator: (val) =>
+                      //   //     val!.isEmpty ? 'Enter New Password' : null,
+                      // ),
                       vSizedBox3,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Address',
+                          style: TextStyle(
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
                       CustomTextField.customTextField(
                         textEditingController: addressController,
                         hintText: 'Enter Address', obscureText: false,
@@ -122,6 +151,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         //     val!.isEmpty ? 'Enter Address' : null,
                       ),
                       vSizedBox3,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Phone Number',
+                          style: TextStyle(
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
                       CustomTextField.customTextField(
                         textEditingController: numberController,
                         hintText: 'Enter Phone No', obscureText: false,
@@ -147,10 +189,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     address: addressController.text,
                                     phone_number: numberController.text,
                                     fullname: nameController.text,
-                                    password: passwordController.text,
+                                    password: authNotifier.auth.userpassword,
                                     context: context)
                                 .then((value) {
-                              print(">>>>>>>>>>>>>>>>>>>>>>>value: $value");
+                              print(">>>>>>>>>>>>>>>>>>>>>>>password: ${authNotifier.auth.userpassword}");
 
                               // if (value.status == 200) {
                               //   print(

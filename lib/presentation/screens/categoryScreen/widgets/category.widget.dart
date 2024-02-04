@@ -27,7 +27,6 @@ class _ShowDataGridState extends State<ShowDataGrid> {
   Widget build(BuildContext context) {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
-    var height = MediaQuery.of(context).size.height * 0.20;
     var domain = ApiRoutes.baseurl;
     CartNotifier cartNotifier =
         Provider.of<CartNotifier>(context, listen: false);
@@ -77,7 +76,7 @@ class _ShowDataGridState extends State<ShowDataGrid> {
                       tag: Key(prod.productId.toString()),
                       child: SizedBox(
                         height:
-                            height, // Đặt chiều cao của SizedBox là chiều cao mong muốn của hình ảnh
+                            MediaQuery.of(context).size.width * 0.40, // Đặt chiều cao của SizedBox là chiều cao mong muốn của hình ảnh
                         width: double
                             .infinity, // Đặt chiều rộng của SizedBox là vô hạn để đảm bảo lấp đầy không gian
                         child: prod.productImage != null &&
@@ -94,10 +93,45 @@ class _ShowDataGridState extends State<ShowDataGrid> {
 
                   //Favorite Icon
                   Positioned(
+                    top: -8,
+                    right: -6,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            toggleFavoriteStatus(context, prod.productId);
+                          },
+                          icon: Icon(
+                            isProductFavorite(prod.productId)
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 16,
+                    left: 8,
+                    child: Text(
+                      '\$ ${prod.productPrice}',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                  //cart Icon
+                  Positioned(
                     bottom: 10,
                     right: 0,
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
+                        SizedBox(width: 10),
                         Container(
                           width: 60,
                           height: 40,
@@ -154,47 +188,35 @@ class _ShowDataGridState extends State<ShowDataGrid> {
                             ),
                           ),
                         ),
-                        IconButton(
-                          onPressed: () {
-                            toggleFavoriteStatus(context, prod.productId);
-                          },
-                          icon: Icon(
-                            isProductFavorite(prod.productId)
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: themeFlag
-                                ? AppColors.creamColor
-                                : AppColors.mirage,
-                          ),
-                        ),
                       ],
                     ),
                   ),
-                  // Giá sản phẩm
-                  Positioned(
-                    top: height - 18,
-                    left: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '\$ ${prod.productPrice}',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ),
+
+                  // // Giá sản phẩm
+                  // Positioned(
+                  //   top: height - 18,
+                  //   left: 8,
+                  //   right: 8,
+                  //   child: Container(
+                  //     padding: const EdgeInsets.all(4),
+                  //     decoration: BoxDecoration(
+                  //       color: Colors.black.withOpacity(0.9),
+                  //       borderRadius: BorderRadius.circular(8),
+                  //     ),
+                  //     child: Text(
+                  //       '\$ ${prod.productPrice}',
+                  //       style: TextStyle(
+                  //         color: Colors.white,
+                  //         fontSize: 12,
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   // Tên sản phẩm
                   Positioned(
-                    bottom: 42,
-                    left: 8,
-                    right: 8,
+                    bottom: 36,
+                    left: 2,
+                    right: 2,
                     child: Container(
                       padding: EdgeInsets.only(top: 10),
                       height: 60,

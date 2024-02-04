@@ -62,25 +62,15 @@ class UserAPI {
     final dynamic body = response.body;
     return body;
   }
-
-  Future forgetPassword({
+Future forgetPassword({
     required String userEmail,
     required BuildContext context,
   }) async {
-    // const subUrl = '/api/User/ResetPassword';
-    // final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl + "?" + userEmail);
-    // final http.Response response = await client.get(uri, headers: {
-    //   'Content-Type': 'application/json',
-    //   'Accept': 'application/json',
-    //   'Access-Control-Allow-Origin': "*",
-    // });
-    // final dynamic body = response.body;
-    // print(">>>>>>>>>>>>>>>>>>>>>>>response:${response.body}");
+    var subUrl = '/api/User/ResetPassword';
+    final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
 
-    var request = http.Request(
-        'GET',
-        Uri.parse(
-            'https://19c7-171-239-179-47.ngrok-free.app/api/User/ResetPassword'));
+    var request = http.Request('GET', uri);
+    print(">>>>>>>>>>>>>>>>>>>>>>>uri:${uri}");
     request.body = userEmail;
     print(">>>>>>>>>>>>>>>>>>>>>>>userEmail:${userEmail}");
 
