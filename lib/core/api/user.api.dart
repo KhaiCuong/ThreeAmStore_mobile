@@ -62,8 +62,7 @@ class UserAPI {
     final dynamic body = response.body;
     return body;
   }
-
-  Future forgetPassword({
+Future forgetPassword({
     required String userEmail,
     required BuildContext context,
   }) async {

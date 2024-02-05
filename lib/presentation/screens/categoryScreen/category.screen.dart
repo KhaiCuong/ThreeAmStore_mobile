@@ -110,8 +110,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                                                 : widget.categoryScreenArgs
                                                                             .categoryName ==
                                                                         'Hublot'
-                                                                    ? 'MV'
-                                                                    : 'RL',
+                                                                    ? 'HL'
+                                                                    : 'HL',
                               ),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==

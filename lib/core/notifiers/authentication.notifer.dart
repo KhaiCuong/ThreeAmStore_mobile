@@ -236,14 +236,14 @@ class AuthenticationNotifier with ChangeNotifier {
 
   Future updateUserDetails(
       {required BuildContext context,
-      required int user_id,
+      required int userId,
       required String password,
       required String fullname,
       required String phone_number,
       required String address,
       required String email}) async {
     // try {
-    final subUrl = '/api/User/UpdateUser/$user_id';
+    final subUrl = '/api/User/UpdateUser/$userId';
     final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
     print(">>>>>>>>>>>>>>>>>>>>>>>uri: ${uri}");
     final http.Response response = await http.Client().put(uri,
@@ -253,7 +253,7 @@ class AuthenticationNotifier with ChangeNotifier {
           'Access-Control-Allow-Origin': "*",
         },
         body: jsonEncode({
-          "userId": user_id,
+          "userId": userId,
           "fullname": fullname,
           "email": email,
           "address": address,
@@ -262,7 +262,7 @@ class AuthenticationNotifier with ChangeNotifier {
           "password": password
         }));
     // print(">>>>>>>>>>>>>>>>>>>>>>>body: ${jsonEncode({
-    //       "userId": user_id,
+    //       "userId": userId,
     //       "fullname": fullname,
     //       "email": email,
     //       "address": address,
@@ -277,7 +277,7 @@ class AuthenticationNotifier with ChangeNotifier {
     final dynamic body = response.body;
     // final Map<String, dynamic> kkkupdate = {
     //   "token": _user.token,
-    //   "id": parseData['data']['user_id'],
+    //   "id": parseData['data']['userId'],
     //   "username": parseData['data']['fullname'],
     //   "userphoneNo": parseData['data']['phone_number'],
     //   "useraddress": parseData['data']['address'],
@@ -312,10 +312,10 @@ class AuthenticationNotifier with ChangeNotifier {
         // _user.useremail = email;
         // _user.userphoneNo = phone_number;
         // _user.useraddress = address;
-        // _user.id = user_id;
+        // _user.id = userId;
         // _user.userpassword = password;
         await WriteCache.setString(key: AppKeys.userData, value: fullname);
-        await WriteCache.setInt(key: 'userId', value: user_id);
+        await WriteCache.setInt(key: 'userId', value: userId);
         await WriteCache.setString(key: 'email', value: email);
 
         Navigator.of(context)

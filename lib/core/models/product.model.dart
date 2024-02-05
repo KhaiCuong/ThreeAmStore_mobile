@@ -58,7 +58,7 @@ class ProductData {
       productPrice: json['price']?.toDouble(),
       status: json['status'],
       description: json['description'],
-      categoryId: json['category_id'],
+      categoryId: json['categoryId'],
       productImage: json['image'],
       instock: json['instock'],
       createdAt: json['created_at'] != null
@@ -75,7 +75,7 @@ class ProductData {
       'description': productDescription,
       'price': productPrice,
       'status': status,
-      'category_id': categoryId,
+      'categoryId': categoryId,
       'image': productImage,
       'instock': instock,
       'created_at': createdAt?.toIso8601String(),
