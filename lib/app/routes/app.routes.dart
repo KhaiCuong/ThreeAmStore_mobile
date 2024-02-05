@@ -45,7 +45,7 @@ class AppRouter {
   static const String successOrder = "/succesOrder";
   static const String favoriteList = "/favoriteList";
   static const String successSignup = "/successSignup";
-  static const String orderManagerment = "/orderManagerment";
+  static const String orderManagerment = "/orderManager";
   static const String successEditProfile = "/orderManagerment";
   static const String forgetPassword = "/forgetPassword";
   static const String successForgetPassword = "/successForgetPassword";
@@ -174,6 +174,12 @@ class AppRouter {
         {
           return MaterialPageRoute(
             builder: (_) => const SuccessEditProfile(),
+          );
+        }
+      case orderManagerment:
+        {
+          return MaterialPageRoute(
+            builder: (_) => const AppointmentPage(),
           );
         }
       case forgetPassword:

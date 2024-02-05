@@ -22,11 +22,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // final authNotifier =
   //     Provider.of<AuthenticationNotifier>( BuildContext context, listen: false);
 
-  late TextEditingController passwordController;
-  late TextEditingController addressController;
-  late TextEditingController numberController;
-  late TextEditingController nameController;
-
+  late TextEditingController passwordController = TextEditingController();
+  late TextEditingController addressController = TextEditingController();
+  late TextEditingController numberController= TextEditingController();
+  late TextEditingController nameController= TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
