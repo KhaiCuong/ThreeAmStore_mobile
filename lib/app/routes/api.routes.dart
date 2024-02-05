@@ -1,5 +1,5 @@
 class ApiRoutes {
-  static const String baseurl = "https://8a6c-2001-ee0-4f0d-9ef0-8ea-5bdb-c88f-8a3a.ngrok-free.app";
+  static const String baseurl ="https://1d39-2402-800-631c-77bc-4d7e-a949-8d80-96b7.ngrok-free.app";
 }
 
 String domain = ApiRoutes.baseurl;
