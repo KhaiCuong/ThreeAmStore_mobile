@@ -244,7 +244,7 @@ class _CartScreenState extends State<CartScreen> {
                           } else {
                             var _snapshot = snapshot.data as List<OrderData>;
                             return showCartData(
-                              height: MediaQuery.of(context).size.height * 0.17,
+                              // height: MediaQuery.of(context).size.height * 0.17,
                               snapshot: _snapshot,
                               themeFlag: themeFlag,
                               context: context,
@@ -416,12 +416,12 @@ class _CartScreenState extends State<CartScreen> {
     required snapshot,
     required themeFlag,
     required BuildContext context,
-    required double height,
+    // required double height,
   }) {
     return Column(
       children: [
         Container(
-          height: MediaQuery.of(context).size.height * 0.58,
+          // height: MediaQuery.of(context).size.height * 0.58,
           padding: const EdgeInsets.fromLTRB(2, 2, 2, 0),
           child: Stack(
             children: [
@@ -445,13 +445,14 @@ class _CartScreenState extends State<CartScreen> {
                     context: context,
                     order: order,
                     themeFlag: themeFlag,
-                    height: height,
+                    // height: height,
                   );
                 },
               ),
             ],
           ),
         ),
+        SizedBox(height: 20,),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.07,
           width: MediaQuery.of(context).size.width,
@@ -542,60 +543,60 @@ class _CartScreenState extends State<CartScreen> {
             borderRadius: BorderRadius.circular(8),
           ),
           onPressed: () async {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (BuildContext context) => UsePaypal(
-                    sandboxMode: true,
-                    clientId: Constants.clientId,
-                    secretKey: Constants.secretKey,
-                    returnURL: Constants.returnURL,
-                    cancelURL: Constants.cancelURL,
-                    transactions: const [
-                      {
-                        "amount": {
-                          "total": 10,
-                          "currency": "USD",
-                        },
-                        "description": "The payment transaction description.",
-                        // "item_list": {
-                        //           "items": cart,
+            // Navigator.of(context).push(
+            //   MaterialPageRoute(
+            //     builder: (BuildContext context) => UsePaypal(
+            //         sandboxMode: true,
+            //         clientId: Constants.clientId,
+            //         secretKey: Constants.secretKey,
+            //         returnURL: Constants.returnURL,
+            //         cancelURL: Constants.cancelURL,
+            //         transactions: const [
+            //           {
+            //             "amount": {
+            //               "total": 10,
+            //               "currency": "USD",
+            //             },
+            //             "description": "The payment transaction description.",
+            //             // "item_list": {
+            //             //           "items": cart,
 
-                        //           // shipping address is not required though
-                        //           // "shipping_address": {
-                        //           //   "recipient_name": "Jane Foster",
-                        //           //   "line1": "Travis County",
-                        //           //   "line2": "",
-                        //           //   "city": "Austin",
-                        //           //   "country_code": "US",
-                        //           //   "postal_code": "73301",
-                        //           //   "phone": "+00000000",
-                        //           //   "state": "Texas"
-                        //           // },
-                        //         },
-                      }
-                    ],
-                    note:
-                        "Contact us 0909222009 for any questions on your order.",
-                    onSuccess: (Map params) async {
-                      print("onSuccess: $params");
+            //             //           // shipping address is not required though
+            //             //           // "shipping_address": {
+            //             //           //   "recipient_name": "Jane Foster",
+            //             //           //   "line1": "Travis County",
+            //             //           //   "line2": "",
+            //             //           //   "city": "Austin",
+            //             //           //   "country_code": "US",
+            //             //           //   "postal_code": "73301",
+            //             //           //   "phone": "+00000000",
+            //             //           //   "state": "Texas"
+            //             //           // },
+            //             //         },
+            //           }
+            //         ],
+            //         note:
+            //             "Contact us 0909222009 for any questions on your order.",
+            //         onSuccess: (Map params) async {
+            //           print("onSuccess: $params");
             addOrderToApiCart(snapshot, totalPrice);
             showPayedSuccessSnackbar();
             clearOrdersFromHive();
-                    },
-                    onError: (error) {
-                      print("onError: $error");
-                      // UIHelper.showAlertDialog(
-                      //     'Unable to completet the Payment',
-                      //     title: 'Error',
-                      //     context: context);
-                    },
-                    onCancel: (params) {
-                      print('cancelled: $params');
-                      // UIHelper.showAlertDialog('Payment Cannceled',
-                      //     title: 'Cancel', context: context);
-                    }),
-              ),
-            );
+            //         },
+            //         onError: (error) {
+            //           print("onError: $error");
+            //           // UIHelper.showAlertDialog(
+            //           //     'Unable to completet the Payment',
+            //           //     title: 'Error',
+            //           //     context: context);
+            //         },
+            //         onCancel: (params) {
+            //           print('cancelled: $params');
+            //           // UIHelper.showAlertDialog('Payment Cannceled',
+            //           //     title: 'Cancel', context: context);
+            //         }),
+            //   ),
+            // );
           },
           color: AppColors.rawSienna,
           child: const Text(
@@ -686,7 +687,7 @@ class _CartScreenState extends State<CartScreen> {
     required BuildContext context,
     required OrderData order,
     required bool themeFlag,
-    required double height,
+    // required double height,
   }) {
     var domain = ApiRoutes.baseurl;
     return Container(

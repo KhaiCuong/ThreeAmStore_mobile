@@ -27,7 +27,7 @@ class ProductDetail extends StatefulWidget {
 
 class _ProductDetailState extends State<ProductDetail> {
   var domain = ApiRoutes.baseurl;
-  int _currentIndex = 0; 
+  int _currentIndex = 0;
   CartNotifier cartNotifier = CartNotifier();
   UserNotifier userNotifier = UserNotifier();
   // SizeNotifier sizeNotifier =
@@ -38,7 +38,18 @@ class _ProductDetailState extends State<ProductDetail> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomBackPop(themeFlag: themeFlag),
+     Row(
+                children: [
+                  CustomBackPop(themeFlag: themeFlag),
+                  Text(
+                    'Order Detail',
+                    style: CustomTextWidget.bodyTextB2(
+                      color:
+                          themeFlag ? AppColors.creamColor : AppColors.mirage,
+                    ),
+                  ),
+                ],
+              ),
         Column(
           children: [
             Center(
@@ -64,14 +75,14 @@ class _ProductDetailState extends State<ProductDetail> {
                   tag: Key(_snapshot.productId.toString()),
                   child: InteractiveViewer(
                     child: SizedBox(
-                    //   height: MediaQuery.of(context).size.height * 0.3,
-                    //   width: MediaQuery.of(context).size.width * 0.7,
-                    //   child: _snapshot.productImage != null &&
-                    //           _snapshot.productImage!.isNotEmpty
-                    //       ? Image.network("$domain${_snapshot.productImage!}",
-                    //           alignment: Alignment.center)
-                    //       : Container(),
-                    ),
+                        //   height: MediaQuery.of(context).size.height * 0.3,
+                        //   width: MediaQuery.of(context).size.width * 0.7,
+                        //   child: _snapshot.productImage != null &&
+                        //           _snapshot.productImage!.isNotEmpty
+                        //       ? Image.network("$domain${_snapshot.productImage!}",
+                        //           alignment: Alignment.center)
+                        //       : Container(),
+                        ),
                   ),
                 ),
               ],
@@ -103,7 +114,7 @@ class _ProductDetailState extends State<ProductDetail> {
                 ),
               ],
             ),
-             vSizedBox2,
+            vSizedBox2,
             Text(
               _snapshot.productDescription!,
               style: CustomTextWidget.bodyText3(
@@ -114,19 +125,18 @@ class _ProductDetailState extends State<ProductDetail> {
           ],
         ),
         vSizedBox2,
-       
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-             Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-          child: Text(
-            '\$ ${_snapshot.productPrice}',
-            style: CustomTextWidget.bodyTextUltra(
-              color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Text(
+                '\$ ${_snapshot.productPrice}',
+                style: CustomTextWidget.bodyTextUltra(
+                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                ),
+              ),
             ),
-          ),
-        ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor:

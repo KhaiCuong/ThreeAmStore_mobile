@@ -18,6 +18,7 @@ import 'package:scarvs/presentation/screens/profileScreens/forgetPassword/Forget
 import 'package:scarvs/presentation/screens/profileScreens/forgetPassword/success_signup.dart';
 import 'package:scarvs/presentation/screens/profileScreens/mainProfileScreen/profile.screen.dart';
 import 'package:scarvs/presentation/screens/profileScreens/ordersPage/appointment_page.dart';
+import 'package:scarvs/presentation/screens/profileScreens/ordersPage/order_detail_page.dart';
 import 'package:scarvs/presentation/screens/searchScreen/search.screen.dart';
 import 'package:scarvs/presentation/screens/signUpScreen/signup.screen.dart';
 import 'package:scarvs/presentation/screens/signUpScreen/success_signup.dart';
@@ -49,6 +50,7 @@ class AppRouter {
   static const String successEditProfile = "/orderManagerment";
   static const String forgetPassword = "/forgetPassword";
   static const String successForgetPassword = "/successForgetPassword";
+  static const String orderDetailPage = "/orderDetailPage";
 
   static Route? generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -188,10 +190,21 @@ class AppRouter {
             builder: (_) => ForgetPasswordScreen(),
           );
         }
-          case successForgetPassword:
+      case successForgetPassword:
         {
           return MaterialPageRoute(
             builder: (_) => SuccessForgetPassword(),
+          );
+        }
+      case orderDetailPage:
+        {
+          return MaterialPageRoute(
+              builder: (context) => OrderDetailPage(
+              orderDetailPageArgs: ModalRoute.of(context)!
+                  .settings
+                  .arguments as OrderDetailPageArgs,
+            ),
+            settings: settings,
           );
         }
     }
