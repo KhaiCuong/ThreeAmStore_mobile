@@ -5,12 +5,14 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../../../../app/constants/app.colors.dart';
 import '../../../../app/routes/api.routes.dart';
+import '../../../../app/routes/app.routes.dart';
 import '../../../../core/models/api_order.dart';
 import '../../../../core/notifiers/authentication.notifer.dart';
 import '../../../../core/notifiers/order.notifier.dart';
 import '../../../../core/notifiers/theme.notifier.dart';
 import '../../../widgets/custom.back.btn.dart';
 import '../../../widgets/custom.text.style.dart';
+import 'order_detail_page.dart';
 
 class AppointmentPage extends StatefulWidget {
   const AppointmentPage({Key? key}) : super(key: key);
@@ -28,11 +30,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
   @override
   void initState() {
     super.initState();
-    // Gọi hàm để lấy dữ liệu từ API và cập nhật danh sách bookings
     fetchBookings();
   }
 
-  // Thay đổi hàm fetchBookings trong _AppointmentPageState
   void fetchBookings() async {
     final url = Uri.parse('$domain/api/Order/GetOrderList');
 
@@ -60,7 +60,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
         // Chuyển đổi JSON thành danh sách Booking và cập nhật state
         setState(() {
           // đoạn mã này để lọc danh sách booking theo patientId
-          //  int patientId = 2; // Thay thế bằng patient["id"] cụ thể
           schedules = List<ApiOrder>.from(jsonDecode(response.body)['data']
                   .map((booking) => ApiOrder.fromJson(booking)))
               .where((booking) => booking.userId == (patientsId))
@@ -92,6 +91,13 @@ class _AppointmentPageState extends State<AppointmentPage> {
     });
   }
 
+  void _navigateToOrderDetailPage(ApiOrder _order) {
+    Navigator.of(context).pushNamed(
+      AppRouter.orderDetailPage,
+      arguments: OrderDetailPageArgs(order: _order),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<dynamic> filterSchedules = schedules.where((var schedule) {
@@ -107,8 +113,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
           scheduleStatus = FilterStatus.cancel;
           break;
         default:
-          scheduleStatus = FilterStatus
-              .waiting; // Xác định trạng thái mặc định nếu không khớp
+          scheduleStatus = FilterStatus.waiting;
       }
       return scheduleStatus == statusBooking;
     }).toList();
@@ -119,13 +124,16 @@ class _AppointmentPageState extends State<AppointmentPage> {
         child: Scaffold(
       backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
       body: Padding(
-        padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
+        padding: const EdgeInsets.only(left: 20, right: 20),
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Row(
                 children: [
-                  CustomBackPop(themeFlag: themeFlag),
+                  CustomBackButton(
+                    route: AppRouter.profileRoute,
+                    themeFlag: themeFlag,
+                  ),
                   Text(
                     'Order History',
                     style: CustomTextWidget.bodyTextB2(
@@ -150,7 +158,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          // this is  the filter tabs
                           for (FilterStatus filterStatus in FilterStatus.values)
                             Expanded(
                                 child: GestureDetector(
@@ -208,233 +215,303 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
                             bool isLastElement =
                                 filterSchedules.length + 1 == index;
-                            return Card(
-                                shape: RoundedRectangleBorder(
-                                  side: const BorderSide(
-                                    color: Color.fromARGB(255, 49, 16, 16),
+                            return GestureDetector(
+                              onTap: () {
+                                _navigateToOrderDetailPage(_schedule);
+                              },
+                              child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    side: const BorderSide(
+                                      color: Color.fromARGB(255, 49, 16, 16),
+                                    ),
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                margin: !isLastElement
-                                    ? const EdgeInsets.only(bottom: 20)
-                                    : EdgeInsets.zero,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 34.0,
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(13)),
-                                              child: Container(
-                                                height: 55,
-                                                width: 55,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(15),
-                                                  color: Colors
-                                                      .blue, // Update with your color logic
+                                  margin: !isLastElement
+                                      ? const EdgeInsets.only(bottom: 20)
+                                      : EdgeInsets.zero,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 34.0,
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(13)),
+                                                child: Container(
+                                                  height: 55,
+                                                  width: 55,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                    color: Colors.blue,
+                                                  ),
+                                                  child: _schedule.image != null
+                                                      ? Image.network(
+                                                          "$domain/${_schedule?.image}",
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                      : Container(),
                                                 ),
-                                                child: _schedule.image != null
-                                                    ? Image.network(
-                                                        "$domain/${_schedule?.image}",
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : Container(),
                                               ),
                                             ),
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text("To "),
-                                                  FaIcon(
-                                                    FontAwesomeIcons.user,
-                                                    color: Colors.black,
-                                                    size: 18,
-                                                  ),
-                                                  SizedBox(width: 8),
-                                                  Text(
-                                                    _schedule!.username,
-                                                    style: TextStyle(
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Text("To "),
+                                                    FaIcon(
+                                                      FontAwesomeIcons.user,
                                                       color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.w700,
+                                                      size: 18,
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: 5,
-                                              ),
-                                              Text(
-                                                  'Phone: ${_schedule.phoneNumber}',
-                                                  style: TextStyle(
-                                                      color: Colors.grey,
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w600)),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Column(
-                                            children: [
-                                              Text('Code: ${_schedule.orderId}',
-                                                  style: TextStyle(
-                                                      color: Colors.grey,
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w600)),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      Container(
-                                        height: 40,
-                                        width: 60,
-                                        decoration: BoxDecoration(
-                                          color: Color.fromARGB(
-                                              255, 245, 242, 239),
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                        ),
-                                        child: Text(
-                                          'Address: ${_schedule.address}',
-                                          style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                      ),
-                                      Container(
-                                        height: 20,
-                                        width: 60,
-                                        decoration: BoxDecoration(
-                                          color: _schedule.status == 'Canceled'
-                                              ? Colors.red
-                                              : _schedule.status == 'Delivery'
-                                                  ? Colors.green
-                                                  : Color.fromARGB(
-                                                      255, 227, 147, 62),
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            if (_schedule.status == 'Preparing')
-                                              Text(
-                                                'Saler is preparing',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            if (_schedule.status == 'Delivery')
-                                              Text(
-                                                "Product is Delivering",
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            // if (_schedule.status ==
-                                            //     'waiting')
-                                            //   Text(
-                                            //     'Upcoming schedule',
-                                            //     style: TextStyle(
-                                            //         color: Colors.white),
-                                            //   ),
-                                            if (_schedule.status == 'Completed')
-                                              Text(
-                                                'Order has completed',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
-                                            if (_schedule.status == 'Canceled')
-                                              Text(
-                                                'Order has canceled',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
+                                                    SizedBox(width: 8),
+                                                    Text(
+                                                      _schedule!.username,
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(
+                                                    'Phone: ${_schedule.phoneNumber}',
+                                                    style: TextStyle(
+                                                        color: Colors.grey,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w600)),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Column(
+                                              children: [
+                                                Text(
+                                                    'Code: ${_schedule.orderId}',
+                                                    style: TextStyle(
+                                                        color: Colors.grey,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w600)),
+                                              ],
+                                            ),
                                           ],
                                         ),
-                                      ),
-                                      ScheduleCard(booking: _schedule),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                         
-                                          // if (_schedule.status == 'Delivery'||_schedule.status == 'Completed' || _schedule.status == 'Canceled')
-                                          Expanded(
-                                            child: Row(
-                                              children: [
-                                                OutlinedButton(
-                                                  onPressed: () {},
-                                                  child: Text(
-                                                    'Total: \$${_schedule.totalPrice}',
-                                                    style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                  ),
+                                        Container(
+                                          height: 40,
+                                          width: 60,
+                                          decoration: BoxDecoration(
+                                            color: Color.fromARGB(
+                                                255, 245, 242, 239),
+                                            borderRadius:
+                                                BorderRadius.circular(5.0),
+                                          ),
+                                          child: Text(
+                                            'Address: ${_schedule.address}',
+                                            style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                        ),
+                                        Container(
+                                          height: 20,
+                                          width: 60,
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade200,
+                                            borderRadius:
+                                                BorderRadius.circular(5.0),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              if (_schedule.status ==
+                                                  'Preparing')
+                                                Text(
+                                                  'Saler is preparing',
+                                                  style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w700),
                                                 ),
-                                                if (_schedule.status ==
-                                                    'Preparing')
-                                                  Expanded(
-                                                    child: OutlinedButton(
-                                                      onPressed: () {
-                                                        // Gọi hàm để hiển thị hộp thoại xác nhận
-                                                        showCancelConfirmationDialog(
-                                                            context, _schedule);
-                                                      },
-                                                      style: ButtonStyle(
-                                                        backgroundColor:
-                                                            MaterialStateProperty.all<
-                                                                    Color>(
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    227,
-                                                                    147,
-                                                                    62)), // Màu nền là màu vàng
-                                                        // Các thuộc tính khác của nút có thể được thiết lập ở đây
-                                                      ),
-                                                      child: Text(
-                                                        'Cancel',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 16,
+                                              if (_schedule.status ==
+                                                  'Delivery')
+                                                Text(
+                                                  "Product is Delivering",
+                                                  style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                              if (_schedule.status ==
+                                                  'Completed')
+                                                Text(
+                                                  'Order has completed',
+                                                  style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                              if (_schedule.status ==
+                                                  'Canceled')
+                                                Text(
+                                                  'Order has canceled',
+                                                  style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                        ScheduleCard(booking: _schedule),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            // if (_schedule.status == 'Delivery'||_schedule.status == 'Completed' || _schedule.status == 'Canceled')
+                                            Expanded(
+                                              child: Row(
+                                                children: [
+                                                  OutlinedButton(
+                                                    onPressed: () {},
+                                                    child: Text(
+                                                      'Total: \$${_schedule.totalPrice}',
+                                                      style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 15,
                                                           fontWeight:
-                                                              FontWeight.w600,
+                                                              FontWeight.w600),
+                                                    ),
+                                                  ),
+                                                  if (_schedule.status ==
+                                                      'Preparing')
+                                                    Expanded(
+                                                      child: OutlinedButton(
+                                                        onPressed: () {
+                                                          showCancelConfirmationDialog(
+                                                              context,
+                                                              _schedule);
+                                                        },
+                                                        style: ButtonStyle(
+                                                          backgroundColor:
+                                                              MaterialStateProperty
+                                                                  .all<Color>(Color
+                                                                      .fromARGB(
+                                                                          255,
+                                                                          227,
+                                                                          147,
+                                                                          62)),
+                                                        ),
+                                                        child: Text(
+                                                          'Cancel',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                  ),
-                                              ],
+                                                  if (_schedule.status ==
+                                                      'Delivery')
+                                                    Expanded(
+                                                      child: OutlinedButton(
+                                                        onPressed: () {
+                                                          showRevievedConfirmationDialog(
+                                                              context,
+                                                              _schedule);
+                                                        },
+                                                        style: ButtonStyle(
+                                                          backgroundColor:
+                                                              MaterialStateProperty
+                                                                  .all<Color>(Color
+                                                                      .fromARGB(
+                                                                          255,
+                                                                          227,
+                                                                          147,
+                                                                          62)),
+                                                        ),
+                                                        child: Text(
+                                                          'Recieved',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  if (_schedule.status ==
+                                                          'Completed' ||
+                                                      _schedule.status ==
+                                                          'Canceled')
+                                                    Expanded(
+                                                      child: OutlinedButton(
+                                                        onPressed: () {
+                                                          showRevievedConfirmationDialog(
+                                                              context,
+                                                              _schedule);
+                                                        },
+                                                        style: ButtonStyle(
+                                                          backgroundColor:
+                                                              MaterialStateProperty
+                                                                  .all<Color>(Color
+                                                                      .fromARGB(
+                                                                          255,
+                                                                          227,
+                                                                          147,
+                                                                          62)),
+                                                        ),
+                                                        child: Text(
+                                                          'Buy Again',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ));
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  )),
+                            );
                           }))),
             ]),
       ),
@@ -445,7 +522,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
       BuildContext context, ApiOrder booking) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // Click ngoài không đóng hộp thoại
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Confirm canceling'),
@@ -453,6 +530,53 @@ class _AppointmentPageState extends State<AppointmentPage> {
             child: ListBody(
               children: <Widget>[
                 Text('Are you sure to cancel this Order?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Yes'),
+              onPressed: () async {
+                OrderNotifier orderService = OrderNotifier();
+                bool success = await orderService.updateStatus(
+                    context: context, id: booking.orderId, status: 'Canceled');
+
+                if (success) {
+                  print('Order canceled successfully.');
+
+                  reloadBookings();
+                  showDeleteSuccessSnackbar(context);
+                } else {
+                  print('Failed to cancel booking.');
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> showRevievedConfirmationDialog(
+      BuildContext context, ApiOrder booking) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Revieved ?'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Are you sure that you have recieved the Order? If Yes, you can leave Review to the Saler'),
               ],
             ),
           ),
@@ -469,21 +593,16 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 // Gọi hàm để hủy đặt hẹn
                 OrderNotifier orderService = OrderNotifier();
                 bool success = await orderService.updateStatus(
-                    context: context, id: booking.orderId, status: 'Canceled');
+                    context: context, id: booking.orderId, status: 'Completed');
 
                 if (success) {
-                  // Xoá booking thành công, bạn có thể thực hiện các hành động cần thiết
-                  print('Order canceled successfully.');
-                  // sendCancelNotification(booking);
-
+                  print('Order Change to Completed successfully.');
                   reloadBookings();
-                  showDeleteSuccessSnackbar(
-                      context); // Hiển thị thông báo thành công
+                  showRecievedSuccessSnackbar(context);
                 } else {
-                  // Xử lý khi cancel booking không thành công
-                  print('Failed to cancel booking.');
+                  print('Failed to Confirm Recieved order.');
                 }
-                Navigator.of(context).pop(); // Đóng hộp thoại
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -492,27 +611,20 @@ class _AppointmentPageState extends State<AppointmentPage> {
     );
   }
 
-  // Hàm để gửi thông báo khi bệnh nhân hủy lịch hẹn
-  // void sendCancelNotification(Booking booking) async {
-  //   String title = 'Lịch hẹn đã bị hủy';
-  //   String body =
-  //       'Cuộc hẹn vào ngày ${booking.appointmentDate} lúc ${booking.appointmentTime} đã bị hủy.';
-
-  //   await AwesomeNotifications().createNotification(
-  //     content: NotificationContent(
-  //       id: booking.id.hashCode,
-  //       channelKey: 'key_channel_booking',
-  //       title: title,
-  //       body: body,
-  //     ),
-  //   );
-  // }
-
   void showDeleteSuccessSnackbar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Đã hủy đặt hẹn thành công!'),
-        duration: Duration(seconds: 2), // Thời gian hiển thị của snackbar
+        content: Text('Canceled successful !'),
+        duration: Duration(seconds: 2), // Thời gian
+      ),
+    );
+  }
+
+  void showRecievedSuccessSnackbar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('You have Revieved an Order!'),
+        duration: Duration(seconds: 2), // Thời gian
       ),
     );
   }
@@ -521,7 +633,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Đã Thanh toán thành công!'),
-        duration: Duration(seconds: 3), // Thời gian hiển thị của snackbar
+        duration: Duration(seconds: 3), // Thời gian
       ),
     );
   }
@@ -550,8 +662,7 @@ class ScheduleCard extends StatelessWidget {
           ),
           Flexible(
             child: Text(
-              booking.quantity?.toString() ??
-                  'null', // Sử dụng toán tử null-aware (??) để kiểm tra và hiển thị một giá trị mặc định nếu booking.quantity là null
+              booking.quantity?.toString() ?? 'null',
               style: TextStyle(
                 color: Color.fromARGB(255, 1, 78, 141),
               ),
@@ -576,4 +687,3 @@ class ScheduleCard extends StatelessWidget {
   }
 }
 /////
-

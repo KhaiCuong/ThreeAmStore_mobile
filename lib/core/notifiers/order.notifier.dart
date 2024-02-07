@@ -16,7 +16,7 @@ class OrderNotifier with ChangeNotifier {
       var request = http.Request('PUT', uri);
       print(">>>>>>>>>>>>>>>>>>>>>>>uri:${uri}");
 
-      request.body = json.encode("Canceled");
+      request.body = json.encode(status);
       request.headers.addAll(headers);
 
       http.StreamedResponse response = await request.send();
