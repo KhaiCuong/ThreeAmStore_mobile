@@ -127,7 +127,7 @@ class _ProductScreenState extends State<ProductScreen> {
                       ),
                     ),
                     vSizedBox2,
-                     BrandWidget(),
+                    BrandWidget(),
                     vSizedBox2,
                     Text(
                       'New Watches',
@@ -195,73 +195,6 @@ class _ProductScreenState extends State<ProductScreen> {
                           );
                         },
                       ),
-                    ),
-                         Text(
-                      'New Watches',
-                      style: CustomTextWidget.bodyTextB2(
-                        color:
-                            themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      ),
-                    ),
-                    vSizedBox1,
-                    SizedBox(
-                      height: 200,
-                      width: MediaQuery.of(context).size.width,
-                      child: Consumer<ProductNotifier>(
-                        builder: (context, notifier, _) {
-                          return FutureBuilder(
-                            future: notifier.fetchProducts(context: context),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return ShimmerEffects.loadShimmer(
-                                    context: context);
-                              } else {
-                                var _snapshot = snapshot.data;
-                                if (_snapshot == null) {
-                                  return Center(
-                                    child: Text(
-                                      'Data is null...',
-                                      style: CustomTextWidget.bodyTextUltra(
-                                        color: themeFlag
-                                            ? AppColors.creamColor
-                                            : AppColors.mirage,
-                                      ),
-                                    ),
-                                  );
-                                } else if (_snapshot is List) {
-                                  return ListView.separated(
-                                    physics: const ScrollPhysics(),
-                                    shrinkWrap: true,
-                                    scrollDirection: Axis.horizontal,
-                                    separatorBuilder: (context, index) =>
-                                        const SizedBox(width: 8),
-                                    itemCount: _snapshot.length,
-                                    itemBuilder: (context, index) {
-                                      ProductData prod = _snapshot[index];
-                                      return ProductCard1(
-                                        prod: prod,
-                                        themeFlag: themeFlag,
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  return Center(
-                                    child: Text(
-                                      'Invalid data format...',
-                                      style: CustomTextWidget.bodyTextUltra(
-                                        color: themeFlag
-                                            ? AppColors.creamColor
-                                            : AppColors.mirage,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              }
-                            },
-                          );
-                        },
-                      ),
                     )
                   ],
                 )
@@ -291,7 +224,8 @@ class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     var domain = ApiRoutes.baseurl;
-print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.productImage}");
+    print(
+        ">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.productImage}");
 
     return InkWell(
       onTap: () {
@@ -304,8 +238,7 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
         width: 190,
         height: 120,
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child:
-         Card(
+        child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
@@ -348,8 +281,9 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
                     isProductFavorite(widget.prod.productId)
                         ? Icons.favorite
                         : Icons.favorite_border,
-                    color:
-                        widget.themeFlag ? AppColors.creamColor : AppColors.mirage,
+                    color: widget.themeFlag
+                        ? AppColors.creamColor
+                        : AppColors.mirage,
                   ),
                 ),
               ),
@@ -409,6 +343,8 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
         ),
       ),
     );
+
+    
   }
 
   bool isProductFavorite(String productId) {
@@ -446,24 +382,12 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
   }
 }
 
-class ProductCard1 extends StatefulWidget {
-  final ProductData prod;
-  final bool themeFlag;
-  const ProductCard1({
-    Key? key,
-    required this.prod,
-    required this.themeFlag,
-  }) : super(key: key);
-
-  @override
-  State<ProductCard1> createState() => _ProductCardState1();
-}
-
-class _ProductCardState1 extends State<ProductCard1> {
+class _ProductCardState1 extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     var domain = ApiRoutes.baseurl;
-print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.productImage}");
+    print(
+        ">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.productImage}");
 
     return InkWell(
       onTap: () {
@@ -476,8 +400,7 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
         width: 190,
         height: 120,
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child:
-         Card(
+        child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
@@ -520,8 +443,9 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
                     isProductFavorite(widget.prod.productId)
                         ? Icons.favorite
                         : Icons.favorite_border,
-                    color:
-                        widget.themeFlag ? AppColors.creamColor : AppColors.mirage,
+                    color: widget.themeFlag
+                        ? AppColors.creamColor
+                        : AppColors.mirage,
                   ),
                 ),
               ),
@@ -581,6 +505,8 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
         ),
       ),
     );
+
+    
   }
 
   bool isProductFavorite(String productId) {

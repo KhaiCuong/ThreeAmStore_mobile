@@ -120,15 +120,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         // validator: (val) =>
                         //     val!.isEmpty ? 'Enter FullName' : null,
                       ),
-                      // vSizedBox3,
-                      // CustomTextField.customTextField(
-                      //   textEditingController: passwordController,
+                      vSizedBox3,
+                         Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Password',
+                          style: TextStyle(
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
+                      CustomTextField.customTextField(
+                        textEditingController: passwordController,
 
-                      //   hintText: 'Enter New Password',
-                      //   obscureText: true, labelText: 'PassWord:',
-                      //   // validator: (val) =>
-                      //   //     val!.isEmpty ? 'Enter New Password' : null,
-                      // ),
+                        hintText: 'Enter New Password',
+                        obscureText: true, labelText: 'PassWord:',
+                        // validator: (val) =>
+                        //     val!.isEmpty ? 'Enter New Password' : null,
+                      ),
                       vSizedBox3,
                       Align(
                         alignment: Alignment.centerLeft,
