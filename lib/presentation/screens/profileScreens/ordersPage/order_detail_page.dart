@@ -122,7 +122,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         Provider.of<AuthenticationNotifier>(context, listen: false);
     var useremail = authNotifier.auth.useremail ?? 'Wait';
 
-    print(">>>>>>>>>>>>>>>> useremail: $useremail");
+    print(">>>>>>>>>>>>>>>> Order Id in Detail Page: ${widget.orderDetailPageArgs.order.orderId}");
 
     return SafeArea(
       child: Scaffold(
@@ -153,7 +153,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   child: Consumer<CartNotifier>(
                     builder: (context, notifier, _) {
                       return FutureBuilder(
-                        future: getCartData(14),
+                        future: getCartData(widget.orderDetailPageArgs.order.orderId),
                         builder: (context, snapshot) {
                           if (!snapshot.hasData ||
                               (snapshot.data as List<OrderDetail>).isEmpty) {

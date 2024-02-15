@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:scarvs/core/notifiers/cart.notifier.dart';
 import '../../../../app/constants/app.colors.dart';
 import '../../../../app/routes/api.routes.dart';
 import '../../../../app/routes/app.routes.dart';
 import '../../../../core/models/api_order.dart';
+import '../../../../core/models/api_order_detail.dart';
 import '../../../../core/notifiers/authentication.notifer.dart';
 import '../../../../core/notifiers/order.notifier.dart';
 import '../../../../core/notifiers/theme.notifier.dart';
@@ -27,12 +29,16 @@ class _AppointmentPageState extends State<AppointmentPage> {
   List<ApiOrder> schedules = [];
   FilterStatus statusBooking = FilterStatus.waiting;
   Alignment _alignment = Alignment.centerLeft;
+
+  
   @override
   void initState() {
     super.initState();
     fetchBookings();
   }
 
+ 
+  
   void fetchBookings() async {
     final url = Uri.parse('$domain/api/Order/GetOrderList');
 
@@ -119,6 +125,13 @@ class _AppointmentPageState extends State<AppointmentPage> {
     }).toList();
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
+  CartNotifier cartNotifier = CartNotifier();
+    final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+    var _userId = authNotifier.auth.id != null ? int.parse(authNotifier.auth.id.toString()) : 1;
+    var _username = authNotifier.auth.username ?? 'Wait';
+    var _userEmail = authNotifier.auth.useremail ?? 'exam@gmail.com';
+    var _phoneNumber = authNotifier.auth.userphoneNo ?? '0909090909';
     // print('>>>>>>>>>>>>>>>>>>>>>>fillerschedule: ${filterSchedules}');
     return SafeArea(
         child: Scaffold(
@@ -477,10 +490,19 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                                           'Canceled')
                                                     Expanded(
                                                       child: OutlinedButton(
-                                                        onPressed: () {
-                                                          showRevievedConfirmationDialog(
-                                                              context,
-                                                              _schedule);
+                                                        onPressed: () async {
+                                                     
+                                                        // var orderDetailList = getOrderDetailList(_schedule.orderId);
+                                                        int addToCart = await cartNotifier.addOrderDetailsToHiveCart(_schedule.orderId,_userId);
+                                                        if(addToCart ==1){
+                                                          showSnackbar(context, 'added to Cart', 2);
+                                                        }
+                                                          if(addToCart ==2){
+                                                          showSnackbar(context, 'added More to Cart', 2);
+                                                        }
+                                                          if(addToCart ==0){
+                                                          showSnackbar(context, 'Someting wrong', 2);
+                                                        }
                                                         },
                                                         style: ButtonStyle(
                                                           backgroundColor:
@@ -616,6 +638,14 @@ class _AppointmentPageState extends State<AppointmentPage> {
       SnackBar(
         content: Text('Canceled successful !'),
         duration: Duration(seconds: 2), // Thời gian
+      ),
+    );
+  }
+   void showSnackbar(BuildContext context,String message,int time) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: time), // Thời gian
       ),
     );
   }
