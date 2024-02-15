@@ -153,7 +153,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   child: Consumer<CartNotifier>(
                     builder: (context, notifier, _) {
                       return FutureBuilder(
-                        future: getCartData(14),
+                        future: getCartData(2),
                         builder: (context, snapshot) {
                           if (!snapshot.hasData ||
                               (snapshot.data as List<OrderDetail>).isEmpty) {
