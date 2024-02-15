@@ -226,7 +226,7 @@ class _CartScreenState extends State<CartScreen> {
                   ],
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height,
+                  // height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
                   child: Consumer<CartNotifier>(
                     builder: (context, notifier, _) {
@@ -431,16 +431,16 @@ class _CartScreenState extends State<CartScreen> {
                 itemCount: snapshot.length,
                 itemBuilder: (context, index) {
                   OrderData order = snapshot[index];
-                  print(">>>>>>>>>>${order.orderId}");
-                  print(">>>>>>>>>>${order.address}");
-                  print(">>>>>>>>>>${order.image}");
-                  print(">>>>>>>>>>${order.phoneNumber}");
-                  print(">>>>>>>>>>${order.price}");
-                  print(">>>>>>>>>>${order.productId}");
-                  print(">>>>>>>>>>${order.productName}");
-                  print(">>>>>>>>>>${order.quantity}");
-                  print(">>>>>>>>>>${order.userId}");
-                  print(">>>>>>>>>>${order.username}");
+                  // print(">>>>>>>>>>${order.orderId}");
+                  // print(">>>>>>>>>>${order.address}");
+                  // print(">>>>>>>>>>${order.image}");
+                  // print(">>>>>>>>>>${order.phoneNumber}");
+                  // print(">>>>>>>>>>${order.price}");
+                  // print(">>>>>>>>>>${order.productId}");
+                  // print(">>>>>>>>>>${order.productName}");
+                  // print(">>>>>>>>>>${order.quantity}");
+                  // print(">>>>>>>>>>${order.userId}");
+                  // print(">>>>>>>>>>${order.username}");
                   return _showCartData(
                     context: context,
                     order: order,
@@ -580,7 +580,7 @@ class _CartScreenState extends State<CartScreen> {
             //         onSuccess: (Map params) async {
             //           print("onSuccess: $params");
             addOrderToApiCart(snapshot, totalPrice);
-            showPayedSuccessSnackbar();
+            // showPayedSuccessSnackbar();
             clearOrdersFromHive();
             //         },
             //         onError: (error) {

@@ -25,6 +25,7 @@ import 'package:scarvs/presentation/screens/signUpScreen/success_signup.dart';
 import 'package:scarvs/presentation/screens/splashScreen/splash.screen.dart';
 
 import '../../presentation/screens/cartScreen/success_booked.dart';
+import '../../presentation/screens/profileScreens/auctionPage/auction_list_page.dart';
 import '../../presentation/screens/profileScreens/favoriteListScreen/favoriteList.screen.dart';
 
 class AppRouter {
@@ -51,6 +52,7 @@ class AppRouter {
   static const String forgetPassword = "/forgetPassword";
   static const String successForgetPassword = "/successForgetPassword";
   static const String orderDetailPage = "/orderDetailPage";
+  static const String auction = "/auction";
 
   static Route? generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -194,6 +196,12 @@ class AppRouter {
         {
           return MaterialPageRoute(
             builder: (_) => SuccessForgetPassword(),
+          );
+        }
+      case auction:
+        {
+          return MaterialPageRoute(
+            builder: (_) => AuctionPage(),
           );
         }
       case orderDetailPage:

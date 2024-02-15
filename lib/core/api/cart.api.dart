@@ -137,7 +137,7 @@ class CartAPI {
     required String image,
   }) async {
     // Tạo đối tượng OrderData và lưu vào Hive
-    final orderBox = Hive.box<OrderData>('orders');
+    final orderBox =  Hive.box<OrderData>('orders');
     final orderId = orderBox.values.length + 1; // Tăng orderId tự động
     await orderBox.add(OrderData(
       orderId: orderId,

@@ -46,4 +46,8 @@ class OrderData {
     required this.productId,
     required this.image,
   });
+  void save() {
+    var box = Hive.box<OrderData>('orders');
+    box.put(orderId, this);
+  }
 }

@@ -13,6 +13,7 @@ import 'package:scarvs/presentation/widgets/custom.back.btn.dart';
 import 'package:scarvs/presentation/widgets/custom.text.style.dart';
 import 'package:scarvs/presentation/widgets/dimensions.widget.dart';
 import '../../../../app/routes/api.routes.dart';
+import '../../../core/notifiers/authentication.notifer.dart';
 
 class ProductDetail extends StatefulWidget {
   final ProductDetailsArgs productDetailsArguements;
@@ -34,7 +35,7 @@ class _ProductDetailState extends State<ProductDetail> {
   ProductNotifier productNotifier = ProductNotifier();
 
   Widget _buildProductUI(
-      BuildContext context, bool themeFlag, dynamic _snapshot) {
+      BuildContext context, bool themeFlag, dynamic _snapshot, int _userId) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -175,12 +176,12 @@ class _ProductDetailState extends State<ProductDetail> {
                     productName: _snapshot.productName,
                     productId: _snapshot.productId,
                     image: _snapshot.productImage!,
-                    userId: 2,
+                    userId: _userId,
                     quantity: 1,
                     context: context,
                     productSize: '40',
                   );
-
+print(">>>>>>>>>>>>>>> _userId $_userId");
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackUtil.stylishSnackBar(
                       text: 'Added To Cart',
@@ -206,6 +207,9 @@ class _ProductDetailState extends State<ProductDetail> {
   Widget build(BuildContext context) {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
+      var myAuthProvider =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+       var userId = myAuthProvider.auth.id;
     return Scaffold(
       backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
       body: SingleChildScrollView(
@@ -219,7 +223,7 @@ class _ProductDetailState extends State<ProductDetail> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   var _snapshot = snapshot.data;
-                  return _buildProductUI(context, themeFlag, _snapshot);
+                  return _buildProductUI(context, themeFlag, _snapshot,userId);
                 } else {
                   return Center(
                     child: customLoader(

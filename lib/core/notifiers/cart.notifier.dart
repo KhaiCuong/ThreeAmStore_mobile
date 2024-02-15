@@ -6,7 +6,10 @@ import 'package:scarvs/core/api/cart.api.dart';
 import 'package:scarvs/core/models/cart.model.dart';
 import 'package:scarvs/core/utils/snackbar.util.dart';
 
+import '../../app/routes/api.routes.dart';
+import '../models/api_order_detail.dart';
 import '../models/orders.dart';
+import 'package:http/http.dart' as http;
 
 class CartNotifier with ChangeNotifier {
   final CartAPI _cartAPI = CartAPI();
@@ -126,7 +129,7 @@ class CartNotifier with ChangeNotifier {
     required String address,
     required String phoneNumber,
     required int userId,
-    
+
     // required String productPrice,
     // required String productName,
     // required String productId,
@@ -143,7 +146,7 @@ class CartNotifier with ChangeNotifier {
           address: address,
           phone_number: phoneNumber,
           userId: userId,
-             totalPrice:totalPrice,
+          totalPrice: totalPrice,
           // price: productPrice,
           // product_name: productName,
           // productId: productId,
@@ -186,6 +189,136 @@ class CartNotifier with ChangeNotifier {
       );
 
       return false;
+    }
+  }
+
+  Future<List<OrderDetail>> getOrderDetailList(int orderId) async {
+    final Uri url = Uri.parse(
+        '$domain/api/OrderDeTail/GetOrderDetailListByOrderId/$orderId');
+
+    print(">>>>>>>>>>>>>>>>>>>>>url ${url}");
+    try {
+      final response = await http.get(url);
+      print(">>>>>>>>>>>>>>>>>>>>>response ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        // Nếu kết quả trả về thành công (status code 200)
+        final List<dynamic> data = json.decode(response.body)['data'];
+        // Dữ liệu được trả về dưới dạng một danh sách các đối tượng JSON
+
+        // Chuyển đổi dữ liệu JSON thành danh sách các đối tượng OrderDetail
+        final List<OrderDetail> orderDetails =
+            data.map((json) => OrderDetail.fromJson(json)).toList();
+
+        print(
+            ">>>>>>>>>>>>>>>>>>>>>orderDetails.length ${orderDetails.length}");
+        return orderDetails;
+      } else {
+        // Nếu không thành công, ném một ngoại lệ để xử lý lỗi
+        throw Exception('Failed to load order details');
+      }
+    } catch (e) {
+      // Xử lý các ngoại lệ nếu có
+      throw Exception('Error: $e');
+    }
+  }
+// Future<void> addOrderDetailsToHiveCart(_orderId,_userId) async {
+//   // Mở hộp Hive Cart
+//      final cartBox = Hive.box<OrderData>('orders');
+//   final orderId = cartBox.values.length + 1;
+//   print(">>>>>>>>>>>>>>>>>>>>>>>>>>> orderId in addOrderDetailsToHiveCart    : $orderId");
+
+//   // Lấy danh sách chi tiết đơn hàng từ hàm getOrderDetailList
+//   List<OrderDetail> orderDetails = await getOrderDetailList(_orderId);
+
+//   print(">>>>>>>>>>>>>>>>>>>>>>>>>>> orderDetails    : ${orderDetails.length}");
+
+//   // Duyệt qua danh sách chi tiết đơn hàng và thêm vào Hive Cart
+//   for (var detail in orderDetails) {
+//     await cartBox.add(OrderData(
+//       orderId: orderId,
+//       quantity: detail.quantity,
+//       price: detail.price,
+//       productName: detail.productName,
+//       productId: detail.productId,
+//       image: detail.image,
+//          username: "username",
+//       address: "address",
+//       phoneNumber: "phoneNumber",
+//       userId: _userId,
+//     ));
+
+//     print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new orderId     : $_orderId");
+//     print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new quantity     : ${detail.quantity}");
+//     print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new price     : ${detail.price}");
+//     print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : ${detail.productName}");
+//     print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productId      : ${detail.productId}");
+//     print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new image    : ${detail.image}");
+//     print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new _userId       : $_userId");
+//     // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $productName");
+//     // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $productId");
+//     // print(">>>>>>>>>>>>>>>>>>>>>>>>>>> new productName : $image");
+//   }
+
+//   // Đóng hộp Hive Cart
+//   await cartBox.close();
+// }
+// ///
+  Future<int> addOrderDetailsToHiveCart(int _orderId, int _userId) async {
+    int addedSuccessfully = 0;
+    try {
+      // Mở hộp Hive Cart
+      final cartBox = Hive.box<OrderData>('orders');
+      final orderId = cartBox.values.length + 1;
+      print(
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>> orderId in addOrderDetailsToHiveCart    : $orderId");
+
+      // Lấy danh sách chi tiết đơn hàng từ hàm getOrderDetailList
+      List<OrderDetail> orderDetails = await getOrderDetailList(_orderId);
+      print(
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>> orderDetails    : ${orderDetails.length}");
+
+      // Biến cờ để kiểm tra xem đã thêm sản phẩm thành công hay chưa
+
+      // Duyệt qua danh sách chi tiết đơn hàng và thêm vào Hive Cart
+      for (var detail in orderDetails) {
+        // Kiểm tra xem sản phẩm đã tồn tại trong Hive Cart hay chưa
+        bool productExists = cartBox.values
+            .any((item) => item.productName == detail.productName);
+
+        // Nếu sản phẩm đã tồn tại, không thêm mới mà chỉ cập nhật số lượng
+        if (productExists) {
+          // Tăng số lượng của sản phẩm trong Hive Cart
+          final existingProduct = cartBox.values
+              .firstWhere((item) => item.productName == detail.productName);
+          existingProduct.quantity += detail.quantity;
+          // existingProduct.save();
+          addedSuccessfully = 2;
+          // Sản phẩm đã được cập nhật
+        } else {
+          // Thêm sản phẩm mới vào Hive Cart
+          await cartBox.add(OrderData(
+            orderId: orderId,
+            quantity: detail.quantity,
+            price: detail.price,
+            productName: detail.productName,
+            productId: detail.productId,
+            image: detail.image,
+            username: "username",
+            address: "address",
+            phoneNumber: "phoneNumber",
+            userId: _userId,
+          ));
+          addedSuccessfully = 1; // Sản phẩm đã được thêm mới
+        }
+      }
+
+      // Đóng hộp Hive Cart
+      // await cartBox.close();
+      return addedSuccessfully;
+    } catch (e) {
+      print("Error adding order details to Hive Cart: $e");
+      return addedSuccessfully; // Thêm thất bại
     }
   }
 }
