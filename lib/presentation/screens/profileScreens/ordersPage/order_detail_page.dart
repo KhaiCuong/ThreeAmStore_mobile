@@ -71,7 +71,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   Future<List<OrderDetail>> getCartData(int orderId) async {
     final Uri url = Uri.parse(
-        '$domain/api/OrderDeTail/GetOrderDetailListByOrderId/$orderId');
+        '$domain/api/OrderDeTail/GetDetailListByOrder/$orderId');
 
       print(">>>>>>>>>>>>>>>>>>>>>url ${url}");
     try {
