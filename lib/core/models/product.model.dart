@@ -35,6 +35,9 @@ class ProductData {
   late final int? instock;
   late final DateTime? createdAt;
   late final DateTime? updatedAt;
+  late final bool? isWaterproof;
+  late final double? diameter;
+  late final String? gender;
 
   ProductData({
     required this.productId,
@@ -48,6 +51,9 @@ class ProductData {
     required this.instock,
     required this.createdAt,
     required this.updatedAt,
+    required this.isWaterproof,
+    required this.diameter,
+    required this.gender,
   });
 
   factory ProductData.fromJson(Map<String, dynamic> json) {
@@ -61,6 +67,9 @@ class ProductData {
       categoryId: json['categoryId'],
       productImage: json['image'],
       instock: json['instock'],
+      isWaterproof: json['isWaterproof'] ?? true, 
+      diameter: json['diameter']?.toDouble(),
+      gender: json['gender'],
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
@@ -78,6 +87,9 @@ class ProductData {
       'categoryId': categoryId,
       'image': productImage,
       'instock': instock,
+      'isWaterproof': isWaterproof,
+      'diameter': diameter,
+      'gender': gender,
       'created_at': createdAt?.toIso8601String(),
       'update_at': updatedAt?.toIso8601String(),
     };

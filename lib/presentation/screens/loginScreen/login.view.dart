@@ -13,8 +13,8 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController userEmailController = TextEditingController();
   final TextEditingController userPassController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-   var _email='nguyenminhbrian95@gmail.com';
-    var _password = '1234567';  
+   var _email='a@a.com';
+    var _password = '123456';  
   @override
   Widget build(BuildContext context) {
     userEmailController.text = _email;

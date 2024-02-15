@@ -38,18 +38,17 @@ class _ProductDetailState extends State<ProductDetail> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-     Row(
-                children: [
-                  CustomBackPop(themeFlag: themeFlag),
-                  Text(
-                    'Order Detail',
-                    style: CustomTextWidget.bodyTextB2(
-                      color:
-                          themeFlag ? AppColors.creamColor : AppColors.mirage,
-                    ),
-                  ),
-                ],
+        Row(
+          children: [
+            CustomBackPop(themeFlag: themeFlag),
+            Text(
+              'Product Detail',
+              style: CustomTextWidget.bodyTextB2(
+                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
               ),
+            ),
+          ],
+        ),
         Column(
           children: [
             Center(
@@ -122,6 +121,21 @@ class _ProductDetailState extends State<ProductDetail> {
               ),
               textAlign: TextAlign.justify,
             ),
+            vSizedBox2,
+            Text(
+              _snapshot.isWaterproof.toString(),
+              style: CustomTextWidget.bodyText3(
+                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+              ),
+              textAlign: TextAlign.justify,
+            ),
+               Text(
+              _snapshot.gender,
+              style: CustomTextWidget.bodyText3(
+                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+              ),
+              textAlign: TextAlign.justify,
+            ),
           ],
         ),
         vSizedBox2,
@@ -132,6 +146,15 @@ class _ProductDetailState extends State<ProductDetail> {
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
               child: Text(
                 '\$ ${_snapshot.productPrice}',
+                style: CustomTextWidget.bodyTextUltra(
+                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Text(
+                ' ${_snapshot.diameter}mm',
                 style: CustomTextWidget.bodyTextUltra(
                   color: themeFlag ? AppColors.creamColor : AppColors.mirage,
                 ),
