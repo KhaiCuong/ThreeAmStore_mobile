@@ -1,14 +1,20 @@
 import 'dart:convert';
+import 'dart:ffi';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
 import 'package:scarvs/app/routes/app.routes.dart';
+import 'package:scarvs/core/models/address.dart';
 import 'package:scarvs/core/models/api_order.dart';
 import 'package:scarvs/core/models/orders.dart';
+import 'package:scarvs/core/notifiers/address.notifiter.dart';
 import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/cart.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
+import 'package:scarvs/core/utils/snackbar.util.dart';
 import 'package:scarvs/presentation/widgets/custom.back.btn.dart';
 import 'package:scarvs/presentation/widgets/custom.loader.dart';
 import 'package:scarvs/presentation/widgets/custom.text.style.dart';
@@ -17,9 +23,10 @@ import '../../../../core/models/api_order_detail.dart';
 import 'package:http/http.dart' as http;
 
 class OrderDetailPage extends StatefulWidget {
- final  OrderDetailPageArgs orderDetailPageArgs ;
+  final OrderDetailPageArgs orderDetailPageArgs;
 
-  const OrderDetailPage({Key? key, required this.orderDetailPageArgs}) : super(key: key);
+  const OrderDetailPage({Key? key, required this.orderDetailPageArgs})
+      : super(key: key);
 
   @override
   State<OrderDetailPage> createState() => _OrderDetailPageState();
@@ -28,7 +35,10 @@ class OrderDetailPage extends StatefulWidget {
 class _OrderDetailPageState extends State<OrderDetailPage> {
   bool _isDisposed = false;
   late int orderId;
- @override
+  late String _selectedAddress = "";
+  late TextEditingController receiverNameController = TextEditingController();
+  late TextEditingController phoneNumberController = TextEditingController();
+  @override
   void initState() {
     super.initState();
     // Gọi hàm để lấy dữ liệu đơn hàng từ API sử dụng orderId
@@ -61,19 +71,18 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   // }
   // }
 
-
   @override
   void dispose() {
     _isDisposed = true;
-  
+
     super.dispose();
   }
 
   Future<List<OrderDetail>> getCartData(int orderId) async {
-    final Uri url = Uri.parse(
-        '$domain/api/OrderDeTail/GetDetailListByOrder/$orderId');
+    final Uri url =
+        Uri.parse('$domain/api/OrderDeTail/GetDetailListByOrder/$orderId');
 
-      print(">>>>>>>>>>>>>>>>>>>>>url ${url}");
+    print(">>>>>>>>>>>>>>>>>>>>>url ${url}");
     try {
       final response = await http.get(url);
       print(">>>>>>>>>>>>>>>>>>>>>response ${response.statusCode}");
@@ -87,7 +96,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         final List<OrderDetail> orderDetails =
             data.map((json) => OrderDetail.fromJson(json)).toList();
 
-        print(">>>>>>>>>>>>>>>>>>>>>orderDetails.length ${orderDetails.length}");
+        print(
+            ">>>>>>>>>>>>>>>>>>>>>orderDetails.length ${orderDetails.length}");
         return orderDetails;
       } else {
         // Nếu không thành công, ném một ngoại lệ để xử lý lỗi
@@ -98,7 +108,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       throw Exception('Error: $e');
     }
   }
- 
 
   void showPayedSuccessSnackbar() {
     if (!_isDisposed) {
@@ -112,7 +121,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   @override
-  Widget build(BuildContext context,) {
+  Widget build(
+    BuildContext context,
+  ) {
     // Future<List<String>> addresses = getAddressesFromHive();
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
@@ -122,7 +133,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         Provider.of<AuthenticationNotifier>(context, listen: false);
     var useremail = authNotifier.auth.useremail ?? 'Wait';
 
-    print(">>>>>>>>>>>>>>>> Order Id in Detail Page: ${widget.orderDetailPageArgs.order.orderId}");
+    print(
+        ">>>>>>>>>>>>>>>> Order Id in Detail Page: ${widget.orderDetailPageArgs.order.orderId}");
 
     return SafeArea(
       child: Scaffold(
@@ -153,7 +165,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   child: Consumer<CartNotifier>(
                     builder: (context, notifier, _) {
                       return FutureBuilder(
-                        future: getCartData(widget.orderDetailPageArgs.order.orderId),
+                        future: getCartData(
+                            widget.orderDetailPageArgs.order.orderId),
                         builder: (context, snapshot) {
                           if (!snapshot.hasData ||
                               (snapshot.data as List<OrderDetail>).isEmpty) {
@@ -209,7 +222,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }) {
     return Column(
       children: [
-         SizedBox(
+        SizedBox(
           height: MediaQuery.of(context).size.height * 0.05,
           width: MediaQuery.of(context).size.width,
           child: Text(
@@ -242,7 +255,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             textAlign: TextAlign.start,
           ),
         ),
-         SizedBox(
+        SizedBox(
           height: MediaQuery.of(context).size.height * 0.05,
           width: MediaQuery.of(context).size.width,
           child: Text(
@@ -264,9 +277,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             textAlign: TextAlign.start,
           ),
         ),
-        SizedBox(height: 14,),
-       
-         SizedBox(
+        SizedBox(
+          height: 14,
+        ),
+        SizedBox(
           height: MediaQuery.of(context).size.height * 0.05,
           width: MediaQuery.of(context).size.width,
           child: Text(
@@ -282,7 +296,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           padding: const EdgeInsets.fromLTRB(2, 2, 2, 0),
           child: Stack(
             children: [
-              
               ListView.builder(
                 physics: const ScrollPhysics(),
                 shrinkWrap: true,
@@ -310,8 +323,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ],
           ),
         ),
-       
-         SizedBox(height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         Align(
           alignment: FractionalOffset.bottomCenter,
           child: cartPrice(
@@ -320,7 +334,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             context: context,
           ),
         ),
-
       ],
     );
   }
@@ -442,6 +455,16 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               fontWeight: FontWeight.w300,
                             ),
                           ),
+                          ElevatedButton(
+                            onPressed: () {
+                              _showFeedbackDialog(
+                                order,
+                                context,
+                                "Feed Back",
+                              );
+                            },
+                            child: Text('Feed Back'),
+                          ),
                         ],
                       ),
                     )
@@ -453,6 +476,155 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         ],
       ),
     );
+  }
+}
+
+void _showFeedbackDialog(OrderDetail order, BuildContext context, String field) async {
+  TextEditingController _textEditingController = TextEditingController();
+  // var addressesBox = await Hive.openBox<Address>('addresses');
+  // List<Address> addresses = addressesBox.values.toList();
+  // AddressNotifier addressNotifier = AddressNotifier();
+  // bool _isDisposed = false;
+  // late String _selectedAddress = "";
+  late TextEditingController receiverNameController = TextEditingController();
+  late TextEditingController phoneNumberController = TextEditingController();
+   var authNotifier =
+            Provider.of<AuthenticationNotifier>(context, listen: false);
+  
+
+
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 20),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 14),
+              child: TextFormField(
+                controller: _textEditingController,
+                style: TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                  labelText: "Enter Your FeedBack:",
+                  labelStyle: TextStyle(color: Colors.grey),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                cursorColor: Colors.blue,
+                cursorWidth: 3,
+                cursorHeight: 20,
+                textAlignVertical: TextAlignVertical.center,
+                textInputAction: TextInputAction.done,
+                keyboardType: TextInputType.text,
+                textCapitalization: TextCapitalization.sentences,
+                maxLength: 80,
+                maxLines: 3,
+                onChanged: (value) {},
+                onEditingComplete: () {},
+                validator: (value) {},
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                sendFeedBackToApi(productId:order.productId, context: context, title: 'FeedBack', content:_textEditingController.text, userId:authNotifier.auth.id, start: 5, );
+              },
+              style: ElevatedButton.styleFrom(
+                primary: Color.fromARGB(255, 233, 153, 34),
+                onPrimary: Colors.white,
+              ),
+              child: Text("Save"),
+            ),
+            SizedBox(height: 25),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+final headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Access-Control-Allow-Origin': "*",
+};
+Future sendFeedBackToApi({
+  required String productId,
+  required BuildContext context,
+  required String title,
+  required String content,
+  required int start,
+  required int userId,
+}) async {
+  try {
+    const subUrl ='/api/Feedback/AddFeedback';
+    final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
+    print(">>>>>>>>>>>>>>>>>>>>>>>userData: ${uri}");
+    final http.Response response = await http.Client().post(uri,
+        headers: headers,
+        body: jsonEncode({
+          "title": title,
+          "content": content,
+          "start": start,
+          "userId": userId,
+          "productId": productId
+         
+        }));
+
+    var userData = response.body;
+
+    print(">>>>>>>>>>>>>>>>>>>>>>>statusCode: ${response.statusCode}");
+
+    final Map<String, dynamic> parseData = await jsonDecode(userData);
+    print(">>>>>>>>>>>>>>>>>>>>>>>parseData: ${parseData}");
+
+    // bool isAuthenticated = parseData['authentication'];
+    // dynamic authData = parseData as String;
+
+    // var response;
+    if (response.statusCode == 201) {
+    
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackUtil.stylishSnackBar(context: context, text: 'Register faill'));
+    }
+  } on SocketException catch (_) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+        text: 'Oops No You Need A Good Internet Connection', context: context));
+  } catch (e) {
+    print("Error: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackUtil.stylishSnackBar(text: 'An error occurred', context: context));
+  }
+}
+
+deleteAdressFromHive(String address) async {
+  Box<Address> _addressesBox = Hive.box<Address>('addresses');
+
+  final Map<dynamic, Address> deliveriesMap = _addressesBox.toMap();
+  dynamic desiredKey;
+  deliveriesMap.forEach((key, value) {
+    if (value.address == address) {
+      desiredKey = key;
+    }
+  });
+  print(">>>>>>>>>>>>>>>>desiredKey : $desiredKey");
+  if (desiredKey != null) {
+    _addressesBox.delete(desiredKey);
+    // setState(() {});
+    return true;
+  } else {
+    print('$address not found in Hive Box.');
+    return false;
   }
 }
 
