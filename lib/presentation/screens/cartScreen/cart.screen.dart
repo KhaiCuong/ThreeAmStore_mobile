@@ -1,8 +1,19 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:cache_manager/core/write_cache_service.dart';
+import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:http/http.dart';
+import 'package:http/http.dart';
+import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
+import 'package:scarvs/app/constants/app.keys.dart';
 import 'package:scarvs/app/routes/app.routes.dart';
 import 'package:scarvs/core/notifiers/address.notifiter.dart';
 import 'package:scarvs/core/notifiers/authentication.notifer.dart';
@@ -186,6 +197,52 @@ class _CartScreenState extends State<CartScreen> {
           duration: Duration(seconds: 4),
         ),
       );
+    }
+  }
+
+  final headers = {'Content-Type': 'application/json'};
+  void sendSuccessDataToBackend({
+    required String orderId,
+    required BuildContext context,
+    required String username,
+  }) async {
+    try {
+      const subUrl = '/api/Payment/AddPayment';
+      final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
+      print(">>>>>>>>>>>>>>>>>>>>>>>userData: ${uri}");
+      final http.Response response = await http.Client().post(uri,
+          headers: headers,
+          body: jsonEncode({"fullname": username, "orderId": orderId}));
+
+      var userData = response.body;
+
+      print(">>>>>>>>>>>>>>>>>>>>>>>statusCode1: ${response.statusCode}");
+
+      final Map<String, dynamic> parseData = await jsonDecode(userData);
+      print(">>>>>>>>>>>>>>>>>>>>>>>parseData: ${parseData}");
+
+      // bool isAuthenticated = parseData['authentication'];
+      // dynamic authData = parseData as String;
+
+      // var response;
+      if (response.statusCode == 201) {
+        WriteCache.setString(key: AppKeys.userData, value: username)
+            .whenComplete(
+          () => Navigator.of(context)
+              .pushReplacementNamed(AppRouter.successSignup),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+            context: context, text: 'Register faill'));
+      }
+    } on SocketException catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+          text: 'Oops No You Need A Good Internet Connection',
+          context: context));
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+          text: 'An error occurred', context: context));
     }
   }
 
@@ -519,6 +576,8 @@ class _CartScreenState extends State<CartScreen> {
   }) {
     double totalPrice = 0;
     List<OrderData> cart = snapshot;
+     final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
 
     for (int i = 0; i < cart.length; i++) {
       totalPrice += (cart[i].price ?? 0.0) * cart[i].quantity;
@@ -545,60 +604,65 @@ class _CartScreenState extends State<CartScreen> {
             borderRadius: BorderRadius.circular(8),
           ),
           onPressed: () async {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (BuildContext context) => UsePaypal(
-                    sandboxMode: true,
-                    clientId: Constants.clientId,
-                    secretKey: Constants.secretKey,
-                    returnURL: Constants.returnURL,
-                    cancelURL: Constants.cancelURL,
-                    transactions: const [
-                      {
-                        "amount": {
-                          "total": 10,
-                          "currency": "USD",
-                        },
-                        "description": "The payment transaction description.",
-                        // "item_list": {
-                        //   "items": '',
+            // Navigator.of(context).push(
+            //   MaterialPageRoute(
+            //     builder: (BuildContext context) => UsePaypal(
+            //         sandboxMode: true,
+            //         clientId: Constants.clientId,
+            //         secretKey: Constants.secretKey,
+            //         returnURL: Constants.returnURL,
+            //         cancelURL: Constants.cancelURL,
+            //         transactions: const [
+            //           {
+            //             "amount": {
+            //               "total": 10,
+            //               "currency": "USD",
+            //             },
+            //             "description": "The payment transaction description.",
+            //             // "item_list": {
+            //             //   "items": '',
 
-                        //   // shipping address is not required though
-                        //   // "shipping_address": {
-                        //   //   "recipient_name": "Jane Foster",
-                        //   //   "line1": "Travis County",
-                        //   //   "line2": "",
-                        //   //   "city": "Austin",
-                        //   //   "country_code": "US",
-                        //   //   "postal_code": "73301",
-                        //   //   "phone": "+00000000",
-                        //   //   "state": "Texas"
-                        //   // },
-                        // },
-                      }
-                    ],
-                    note:
-                        "Contact us 0909222009 for any questions on your order.",
-                    onSuccess: (Map params) async {
-                      print("onSuccess: $params");
+            //             //   // shipping address is not required though
+            //             //   // "shipping_address": {
+            //             //   //   "recipient_name": "Jane Foster",
+            //             //   //   "line1": "Travis County",
+            //             //   //   "line2": "",
+            //             //   //   "city": "Austin",
+            //             //   //   "country_code": "US",
+            //             //   //   "postal_code": "73301",
+            //             //   //   "phone": "+00000000",
+            //             //   //   "state": "Texas"
+            //             //   // },
+            //             // },
+            //           }
+            //         ],
+            //         note:
+            //             "Contact us 0909222009 for any questions on your order.",
+            //         onSuccess: (Map params) async {
+            //           print("onSuccess: $params");
                       addOrderToApiCart(snapshot, totalPrice);
-                      showPayedSuccessSnackbar();
-                      clearOrdersFromHive();
-                    },
-                    onError: (error) {
-                      print("onError: $error");
-                      // UIHelper.showAlertDialog(
-                      //     'Unable to completet the Payment',
-                      //     title: 'Error',
-                      //     context: context);
-                    },
-                    onCancel: (params) {
-                      print('cancelled: $params');
-                      // UIHelper.showAlertDialog('Payment Cannceled',
-                      //     title: 'Cancel', context: context);
-                    }),
-              ),
-            );
+            //           showPayedSuccessSnackbar();
+            //           clearOrdersFromHive();
+                      sendSuccessDataToBackend(
+                        orderId: '',
+                        context: context,
+                        username: authNotifier.auth.username ,
+                      );
+                    // },
+                    // onError: (error) {
+                    //   print("onError: $error");
+                    //   // UIHelper.showAlertDialog(
+                    //   //     'Unable to completet the Payment',
+                    //   //     title: 'Error',
+                    //   //     context: context);
+                    // },
+                    // onCancel: (params) {
+                    //   print('cancelled: $params');
+                    //   // UIHelper.showAlertDialog('Payment Cannceled',
+                    //   //     title: 'Cancel', context: context);
+                    // }),
+            //   ),
+            // );
           },
           color: AppColors.rawSienna,
           child: const Text(
@@ -647,7 +711,7 @@ class _CartScreenState extends State<CartScreen> {
   //   );
   // }
 
-  void addOrderToApiCart(snapshot, double totalPrice) async {
+  Future addOrderToApiCart(snapshot, double totalPrice) async {
     if (mounted) {
       CartNotifier cartNotifier = context.read<CartNotifier>();
       final authNotifier =
@@ -673,6 +737,8 @@ class _CartScreenState extends State<CartScreen> {
       // await clearOrdersFromHive();
       //   setState(() {});
       // }
+
+
     }
   }
 
