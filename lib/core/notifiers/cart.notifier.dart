@@ -194,7 +194,7 @@ class CartNotifier with ChangeNotifier {
 
   Future<List<OrderDetail>> getOrderDetailList(int orderId) async {
     final Uri url = Uri.parse(
-        '$domain/api/OrderDeTail/GetOrderDetailListByOrderId/$orderId');
+        '$domain/api/OrderDeTail/GetDetailListByOrder/$orderId');
 
     print(">>>>>>>>>>>>>>>>>>>>>url ${url}");
     try {

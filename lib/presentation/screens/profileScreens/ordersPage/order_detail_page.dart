@@ -1,12 +1,10 @@
-import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
 import 'package:scarvs/app/routes/app.routes.dart';
 import 'package:scarvs/core/models/api_order.dart';
-import 'package:scarvs/core/models/orders.dart';
-import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/cart.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:scarvs/presentation/widgets/custom.back.btn.dart';
@@ -14,7 +12,7 @@ import 'package:scarvs/presentation/widgets/custom.loader.dart';
 import 'package:scarvs/presentation/widgets/custom.text.style.dart';
 import '../../../../app/routes/api.routes.dart';
 import '../../../../core/models/api_order_detail.dart';
-import 'package:http/http.dart' as http;
+
 
 class OrderDetailPage extends StatefulWidget {
  final  OrderDetailPageArgs orderDetailPageArgs ;
@@ -31,35 +29,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
  @override
   void initState() {
     super.initState();
-    // Gọi hàm để lấy dữ liệu đơn hàng từ API sử dụng orderId
-
-    // fetchOrderById(orderId);
   }
-  //   Future<ApiOrder> fetchOrderById(int orderId) async {
-  //  final Uri url = Uri.parse('$domain/api/Order/GetOrderByOrderId/$orderId');
-
-  // print(">>>>>>>>>>>>>>>>>>>>>url ${url}");
-  // try {
-  //   final response = await http.get(url);
-  //   print(">>>>>>>>>>>>>>>>>>>>>response Order By ID ${response.statusCode}");
-
-  //   if (response.statusCode == 200) {
-  //     // Nếu kết quả trả về thành công (status code 200)
-  //     final dynamic data = json.decode(response.body)['data'];
-  //     // Dữ liệu được trả về dưới dạng một đối tượng JSON
-  //     final ApiOrder order = ApiOrder.fromJson(data);
-
-  //     print(">>>>>>>>>>>>>>>>>>>>>order.address ${order.address}");
-  //     return order;
-  //   } else {
-  //     // Nếu không thành công, ném một ngoại lệ để xử lý lỗi
-  //     throw Exception('Failed to load order details');
-  //   }
-  // } catch (e) {
-  //   // Xử lý các ngoại lệ nếu có
-  //   throw Exception('Error: $e');
-  // }
-  // }
+  
 
 
   @override
@@ -69,35 +40,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     super.dispose();
   }
 
-  Future<List<OrderDetail>> getCartData(int orderId) async {
-    final Uri url = Uri.parse(
-        '$domain/api/OrderDeTail/GetDetailListByOrder/$orderId');
-
-      print(">>>>>>>>>>>>>>>>>>>>>url ${url}");
-    try {
-      final response = await http.get(url);
-      print(">>>>>>>>>>>>>>>>>>>>>response ${response.statusCode}");
-
-      if (response.statusCode == 200) {
-        // Nếu kết quả trả về thành công (status code 200)
-        final List<dynamic> data = json.decode(response.body)['data'];
-        // Dữ liệu được trả về dưới dạng một danh sách các đối tượng JSON
-
-        // Chuyển đổi dữ liệu JSON thành danh sách các đối tượng OrderDetail
-        final List<OrderDetail> orderDetails =
-            data.map((json) => OrderDetail.fromJson(json)).toList();
-
-        print(">>>>>>>>>>>>>>>>>>>>>orderDetails.length ${orderDetails.length}");
-        return orderDetails;
-      } else {
-        // Nếu không thành công, ném một ngoại lệ để xử lý lỗi
-        throw Exception('Failed to load order details');
-      }
-    } catch (e) {
-      // Xử lý các ngoại lệ nếu có
-      throw Exception('Error: $e');
-    }
-  }
  
 
   void showPayedSuccessSnackbar() {
@@ -117,10 +59,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
     // final userNotifier = Provider.of<AuthenticationNotifier>(context, listen: false);
+CartNotifier cartNotifier = CartNotifier();
+ 
 
-    final authNotifier =
-        Provider.of<AuthenticationNotifier>(context, listen: false);
-    var useremail = authNotifier.auth.useremail ?? 'Wait';
 
     print(">>>>>>>>>>>>>>>> Order Id in Detail Page: ${widget.orderDetailPageArgs.order.orderId}");
 
@@ -153,7 +94,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   child: Consumer<CartNotifier>(
                     builder: (context, notifier, _) {
                       return FutureBuilder(
-                        future: getCartData(widget.orderDetailPageArgs.order.orderId),
+                        future:cartNotifier.getOrderDetailList(widget.orderDetailPageArgs.order.orderId),
                         builder: (context, snapshot) {
                           if (!snapshot.hasData ||
                               (snapshot.data as List<OrderDetail>).isEmpty) {

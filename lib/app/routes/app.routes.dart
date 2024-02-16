@@ -25,6 +25,9 @@ import 'package:scarvs/presentation/screens/signUpScreen/success_signup.dart';
 import 'package:scarvs/presentation/screens/splashScreen/splash.screen.dart';
 
 import '../../presentation/screens/cartScreen/success_booked.dart';
+
+import '../../presentation/screens/profileScreens/auctionPage/auction_bidding_page.dart';
+import '../../presentation/screens/profileScreens/auctionPage/auction_detail_page.dart';
 import '../../presentation/screens/profileScreens/auctionPage/auction_list_page.dart';
 import '../../presentation/screens/profileScreens/favoriteListScreen/favoriteList.screen.dart';
 
@@ -53,6 +56,8 @@ class AppRouter {
   static const String successForgetPassword = "/successForgetPassword";
   static const String orderDetailPage = "/orderDetailPage";
   static const String auction = "/auction";
+  static const String auctionDetailPage = "/auctionDetailPage";
+  static const String auctionBiddingPage = "/auctionBiddingPage";
 
   static Route? generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -207,10 +212,29 @@ class AppRouter {
       case orderDetailPage:
         {
           return MaterialPageRoute(
-              builder: (context) => OrderDetailPage(
-              orderDetailPageArgs: ModalRoute.of(context)!
-                  .settings
-                  .arguments as OrderDetailPageArgs,
+            builder: (context) => OrderDetailPage(
+              orderDetailPageArgs: ModalRoute.of(context)!.settings.arguments
+                  as OrderDetailPageArgs,
+            ),
+            settings: settings,
+          );
+        }
+      case auctionDetailPage:
+        {
+          return MaterialPageRoute(
+            builder: (context) => AuctionDetailPage(
+              auctionDetailsPageArgs: ModalRoute.of(context)!.settings.arguments
+                  as AuctionDetailsPageArgs,
+            ),
+            settings: settings,
+          );
+        }
+      case auctionBiddingPage:
+        {
+          return MaterialPageRoute(
+            builder: (context) => AuctionBiddingPage(
+              auctionDetailsPageArgs: ModalRoute.of(context)!.settings.arguments
+                  as AuctionBiddingPageArgs,
             ),
             settings: settings,
           );
