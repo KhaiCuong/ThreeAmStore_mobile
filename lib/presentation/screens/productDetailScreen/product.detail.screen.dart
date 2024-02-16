@@ -59,6 +59,17 @@ class _ProductDetailState extends State<ProductDetail> {
             ),
           ],
         ),
+        Row(
+          children: [
+            CustomBackPop(themeFlag: themeFlag),
+            Text(
+              'Product Detail',
+              style: CustomTextWidget.bodyTextB2(
+                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+              ),
+            ),
+          ],
+        ),
         Column(
           children: [
             Center(
@@ -123,87 +134,297 @@ class _ProductDetailState extends State<ProductDetail> {
                 ),
               ],
             ),
-            vSizedBox2,
-            Text(
-              _snapshot.productDescription!,
-              style: CustomTextWidget.bodyText3(
-                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-              ),
-              textAlign: TextAlign.justify,
-            ),
-          ],
-        ),
-        vSizedBox2,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-              child: Text(
-                '\$ ${_snapshot.productPrice}',
-                style: CustomTextWidget.bodyTextUltra(
-                  color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    themeFlag ? AppColors.creamColor : AppColors.mirage,
-                enableFeedback: true,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 25,
-                  vertical: 8,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              onPressed: () async {
-                bool isInCart =
-                    await cartNotifier.isProductInCart(_snapshot.productId);
+            //     vSizedBox2,
+            //     Text(
+            //       _snapshot.productDescription!,
+            //       style: CustomTextWidget.bodyText3(
+            //         color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+            //       ),
+            //       textAlign: TextAlign.justify,
+            //     ),
+            //     vSizedBox2,
+            //     Text(
+            //       _snapshot.isWaterproof.toString(),
+            //       style: CustomTextWidget.bodyText3(
+            //         color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+            //       ),
+            //       textAlign: TextAlign.justify,
+            //     ),
+            //     Text(
+            //       '\$ ${_snapshot.productPrice}',
+            //       style: CustomTextWidget.bodyText3(
+            //         color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+            //       ),
+            //       textAlign: TextAlign.justify,
+            //     ),
+            //   ],
+            // ),
+            // vSizedBox2,
+            // Column(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     Padding(
+            //       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            //       child: Text(
+            //         '\$ ${_snapshot.productPrice}',
+            //         style: CustomTextWidget.bodyTextUltra(
+            //           color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+            //         ),
+            //       ),
+            //     ),
+            //     Padding(
+            //       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            //       child: Text(
+            //         '\duong kinh: ${_snapshot.diameter}mm',
+            //         textAlign: TextAlign
+            //             .center, // hoặc TextAlign.left hoặc TextAlign.right tùy thuộc vào yêu cầu của bạn
+            //         style: CustomTextWidget.bodyTextUltra(
+            //           color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+            //         ),
+            //       ),
+            //     ),
 
-                if (isInCart) {
-                  bool updateQuantity = await cartNotifier.updateQuantityInCart(
-                      _snapshot.productId, 1);
-                  if (updateQuantity) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackUtil.stylishSnackBar(
-                        text: 'Added More To Cart',
-                        context: context,
-                      ),
-                    );
-                  }
-                } else {
-                  cartNotifier.addToHiveCart(
-                    userEmail: _userEmail,
-                    username: _username,
-                    address: _userAddress,
-                    phoneNumber: _userPhone,
-                    price: _snapshot.productPrice!,
-                    productName: _snapshot.productName,
-                    productId: _snapshot.productId,
-                    image: _snapshot.productImage!,
-                    userId: _userId,
-                    quantity: 1,
-                    context: context,
-                    productSize: '40',
-                  );
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackUtil.stylishSnackBar(
-                      text: 'Added To Cart',
-                      context: context,
-                    ),
-                  );
-                }
+            Table(
+              border: TableBorder.all(), // Tùy chỉnh border của bảng
+              columnWidths: {
+                // Đặt độ rộng của cột
+                0: FractionColumnWidth(
+                    0.4), // Cột trái chiếm 30% chiều rộng của bảng
+                1: FractionColumnWidth(
+                    0.6), // Cột phải chiếm 70% chiều rộng của bảng
               },
-              child: Text(
-                'Add To Cart',
-                style: CustomTextWidget.bodyTextB2(
-                  color: themeFlag ? AppColors.mirage : AppColors.creamColor,
+              children: [
+                // Dòng 1: Tên trường và dữ liệu tương ứng
+                TableRow(
+                  children: [
+                    // Cột 1: Tên trường
+                    TableCell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Product Name', // Tên trường
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Cột 2: Dữ liệu
+                    TableCell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          _snapshot.productName,
+                          style: CustomTextWidget.bodyText3(
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                          ),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+                // Dòng 2: Tên trường và dữ liệu tương ứng
+                TableRow(
+                  children: [
+                    // Cột 1: Tên trường
+                    TableCell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Waterproof', // Tên trường
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Cột 2: Dữ liệu
+                    TableCell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          _snapshot.isWaterproof.toString(),
+                          style: CustomTextWidget.bodyText3(
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                          ),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    TableCell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Face size', // Tên trường
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    TableCell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          '${_snapshot.diameter}mm',
+                          style: CustomTextWidget.bodyText3(
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                          ),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                TableRow(
+                  children: [
+                    TableCell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Gender', // Tên trường
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    TableCell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          _snapshot.gender!,
+                          style: CustomTextWidget.bodyText3(
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                          ),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                TableRow(
+                  children: [
+                    // Cột 1: Tên trường
+                    TableCell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'description', // Tên trường
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Cột 2: Dữ liệu
+                    TableCell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          _snapshot.productDescription!,
+                          style: CustomTextWidget.bodyText3(
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                          ),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: Text(
+                    '\$ ${_snapshot.productPrice}',
+                    style: CustomTextWidget.bodyTextUltra(
+                      color:
+                          themeFlag ? AppColors.creamColor : AppColors.mirage,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        themeFlag ? AppColors.creamColor : AppColors.mirage,
+                    enableFeedback: true,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 25,
+                      vertical: 8,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  onPressed: () async {
+                    bool isInCart =
+                        await cartNotifier.isProductInCart(_snapshot.productId);
+
+                    if (isInCart) {
+                      bool updateQuantity = await cartNotifier
+                          .updateQuantityInCart(_snapshot.productId, 1);
+                      if (updateQuantity) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackUtil.stylishSnackBar(
+                            text: 'Added More To Cart',
+                            context: context,
+                          ),
+                        );
+                      }
+                    } else {
+                      cartNotifier.addToHiveCart(
+                        userEmail: _userEmail,
+                        username: _username,
+                        address: _userAddress,
+                        phoneNumber: _userPhone,
+                        price: _snapshot.productPrice!,
+                        productName: _snapshot.productName,
+                        productId: _snapshot.productId,
+                        image: _snapshot.productImage!,
+                        userId: _userId,
+                        quantity: 1,
+                        context: context,
+                        productSize: '40',
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackUtil.stylishSnackBar(
+                          text: 'Added To Cart',
+                          context: context,
+                        ),
+                      );
+                    }
+                  },
+                  child: Text(
+                    'Add To Cart',
+                    style: CustomTextWidget.bodyTextB2(
+                      color:
+                          themeFlag ? AppColors.mirage : AppColors.creamColor,
+                    ),
+                  ),
+                )
+              ],
             ),
           ],
         ),
