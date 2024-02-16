@@ -128,10 +128,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
     // final userNotifier = Provider.of<AuthenticationNotifier>(context, listen: false);
-
-    final authNotifier =
-        Provider.of<AuthenticationNotifier>(context, listen: false);
-    var useremail = authNotifier.auth.useremail ?? 'Wait';
+    CartNotifier cartNotifier = CartNotifier();
 
     print(
         ">>>>>>>>>>>>>>>> Order Id in Detail Page: ${widget.orderDetailPageArgs.order.orderId}");
@@ -479,7 +476,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 }
 
-void _showFeedbackDialog(OrderDetail order, BuildContext context, String field) async {
+void _showFeedbackDialog(
+    OrderDetail order, BuildContext context, String field) async {
   TextEditingController _textEditingController = TextEditingController();
   // var addressesBox = await Hive.openBox<Address>('addresses');
   // List<Address> addresses = addressesBox.values.toList();
@@ -488,10 +486,8 @@ void _showFeedbackDialog(OrderDetail order, BuildContext context, String field) 
   // late String _selectedAddress = "";
   late TextEditingController receiverNameController = TextEditingController();
   late TextEditingController phoneNumberController = TextEditingController();
-   var authNotifier =
-            Provider.of<AuthenticationNotifier>(context, listen: false);
-  
-
+  var authNotifier =
+      Provider.of<AuthenticationNotifier>(context, listen: false);
 
   showModalBottomSheet(
     context: context,
@@ -536,7 +532,14 @@ void _showFeedbackDialog(OrderDetail order, BuildContext context, String field) 
             ),
             ElevatedButton(
               onPressed: () {
-                sendFeedBackToApi(productId:order.productId, context: context, title: 'FeedBack', content:_textEditingController.text, userId:authNotifier.auth.id, start: 5, );
+                sendFeedBackToApi(
+                  productId: order.productId,
+                  context: context,
+                  title: 'FeedBack',
+                  content: _textEditingController.text,
+                  userId: authNotifier.auth.id,
+                  start: 5,
+                );
               },
               style: ElevatedButton.styleFrom(
                 primary: Color.fromARGB(255, 233, 153, 34),
@@ -566,7 +569,7 @@ Future sendFeedBackToApi({
   required int userId,
 }) async {
   try {
-    const subUrl ='/api/Feedback/AddFeedback';
+    const subUrl = '/api/Feedback/AddFeedback';
     final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
     print(">>>>>>>>>>>>>>>>>>>>>>>userData: ${uri}");
     final http.Response response = await http.Client().post(uri,
@@ -577,7 +580,6 @@ Future sendFeedBackToApi({
           "start": start,
           "userId": userId,
           "productId": productId
-         
         }));
 
     var userData = response.body;
@@ -592,7 +594,6 @@ Future sendFeedBackToApi({
 
     // var response;
     if (response.statusCode == 201) {
-    
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackUtil.stylishSnackBar(context: context, text: 'Register faill'));

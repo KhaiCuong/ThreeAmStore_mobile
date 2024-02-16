@@ -11,12 +11,7 @@ import 'package:scarvs/presentation/widgets/custom.text.style.dart';
 import 'package:scarvs/presentation/widgets/custom.loader.dart';
 import 'package:scarvs/presentation/widgets/dimensions.widget.dart';
 import 'package:scarvs/presentation/widgets/shimmer.effects.dart';
-
-import '../../../app/routes/api.routes.dart';
-import '../../../core/models/favorite_product.dart';
 import '../../../core/models/product.model.dart';
-import '../../../core/service/favorite_product_box.dart';
-import '../productDetailScreen/product.detail.screen.dart';
 
 class CategoryScreen extends StatefulWidget {
   final CategoryScreenArgs categoryScreenArgs;

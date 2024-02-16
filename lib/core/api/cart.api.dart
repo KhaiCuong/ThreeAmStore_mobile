@@ -119,8 +119,30 @@ class CartAPI {
       print("order id : ${orderId}");
 
       print(
-          "ADD OrderDetail APi response.statusCode : ${response2.statusCode}");
+          "ADD OrderDetail APi response2.statusCode : ${response2.statusCode}");
     }
+
+    const subUrl3 = '/api/Payment/AddPayment';
+    final Uri uri3 = Uri.parse(ApiRoutes.baseurl + subUrl3);
+    // print(">>>>>>>>>>>>>>>>>>>>>>>Payment Uri: ${uri3}");
+    final http.Response response3 = await http.Client().post(uri3,
+        headers: headers,
+        body: jsonEncode(
+            {"fullname": username, "orderId": orderId, "status": true}));
+
+    var userData3 = response3.body;
+
+    print(
+        ">>>>>>>>>>>>>>>>>>>>>>>Payment statusCode3: ${response3.statusCode}");
+
+    final Map<String, dynamic> parseData = await jsonDecode(userData3);
+    print(">>>>>>>>>>>>>>>>>>>>>>> Payment parseData: ${parseData}");
+
+    // bool isAuthenticated = parseData['authentication'];
+    // dynamic authData = parseData as String;
+
+    // var response;
+
     return true;
   }
 
@@ -137,7 +159,7 @@ class CartAPI {
     required String image,
   }) async {
     // Tạo đối tượng OrderData và lưu vào Hive
-    final orderBox =  Hive.box<OrderData>('orders');
+    final orderBox = Hive.box<OrderData>('orders');
     final orderId = orderBox.values.length + 1; // Tăng orderId tự động
     await orderBox.add(OrderData(
       orderId: orderId,
