@@ -1,238 +1,10 @@
-import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:scarvs/presentation/screens/profileScreens/auctionPage/auction_detail_page.dart';
 
-// class AuctionPage extends StatelessWidget {
-  
-// // Sample data for auctioned watches (JSON format)
-// List<Map<String, dynamic>> auctionedWatches = [
-//   {
-//     'name': 'Rolex Submariner',
-//     'description': 'Iconic dive watch with ceramic bezel',
-//     'startingPrice': 5000,
-//     'endTime': '2024-02-01 18:00:00',
-//     'image': 'assets/rolex_submariner.jpg',
-//   },
-//   {
-//     'name': 'Omega Speedmaster',
-//     'description': 'Classic chronograph watch with moonphase',
-//     'startingPrice': 4000,
-//     'endTime': '2024-02-02 20:00:00',
-//     'image': 'assets/omega_speedmaster.jpg',
-//   },
-//   {
-//     'name': 'Tag Heuer Monaco',
-//     'description': 'Iconic square-shaped chronograph watch',
-//     'startingPrice': 4500,
-//     'endTime': '2024-02-03 22:00:00',
-//     'image': 'assets/tag_heuer_monaco.jpg',
-//   },
-// ];
-
-//   List<Map<String, dynamic>> _upcomingAuctions(List<Map<String, dynamic>> watches) {
-//   // Lấy thời gian hiện tại
-//   DateTime now = DateTime.now();
-
-//   // Lọc danh sách để chỉ lấy những đồng hồ với thời gian bắt đầu đấu giá trong tương lai
-//   List<Map<String, dynamic>> upcomingAuctions = watches.where((watch) {
-//     DateTime startTime = DateFormat('yyyy-MM-dd HH:mm').parse(watch['startTime']);
-//     return startTime.isAfter(now);
-//   }).toList();
-
-//   return upcomingAuctions;
-// }
-
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Auction Page'),
-//       ),
-//       body: SingleChildScrollView(
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.stretch,
-//           children: [
-//             Padding(
-//               padding: const EdgeInsets.all(16.0),
-//               child: Text(
-//                 'Auction Rules:',
-//                 style: TextStyle(
-//                   fontSize: 20,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//             ),
-//             Padding(
-//               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-//               child: Text(
-//                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vehicula nulla eget augue pulvinar, ut posuere nulla commodo. Aenean rhoncus felis eget tellus egestas, in sodales mauris ultricies. Integer feugiat, nulla vel tristique consectetur, turpis dui interdum magna, nec scelerisque sapien dui nec enim.',
-//                 style: TextStyle(fontSize: 16),
-//               ),
-//             ),
-//             SizedBox(height: 20),
-//             Padding(
-//               padding: const EdgeInsets.all(16.0),
-//               child: Text(
-//                 'Auctioned Watches:',
-//                 style: TextStyle(
-//                   fontSize: 20,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//             ),
-//             SizedBox(height: 10),
-//             ListView.builder(
-//               shrinkWrap: true,
-//               physics: NeverScrollableScrollPhysics(),
-//               itemCount: auctionedWatches.length,
-//               itemBuilder: (context, index) {
-//                 return _buildAuctionedWatchCard(auctionedWatches[index]);
-//               },
-//             ),
-//              SizedBox(height: 20),
-//             Padding(
-//               padding: const EdgeInsets.all(16.0),
-//               child: Text(
-//                 'Upcoming Auctions:',
-//                 style: TextStyle(
-//                   fontSize: 20,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//             ),
-//             SizedBox(height: 10),
-//             ListView.builder(
-//               shrinkWrap: true,
-//               physics: NeverScrollableScrollPhysics(),
-//               itemCount: upcomingAuctions.length,
-//               itemBuilder: (context, index) {
-//                 return _upcomingAuctions(auctionedWatches[index]);
-//               },
-//             ),
-
-            
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// Widget _buildAuctionedWatchCard(Map<String, dynamic> watch) {
-//   // Lấy thời gian hiện tại
-//   DateTime now = DateTime.now();
-//   // Chuyển đổi thời gian kết thúc đấu giá từ String sang DateTime
-//   DateTime endTime = DateFormat('yyyy-MM-dd HH:mm').parse(watch['endTime']);
-
-//   // Xác định xem đồng hồ có đang diễn ra đấu giá hay không
-//   bool isAuctionInProgress = endTime.isAfter(now);
-
-//   return Card(
-//     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-//     elevation: 4,
-//     child: ListTile(
-//       contentPadding: EdgeInsets.all(16),
-//       leading: Container(
-//         width: 80,
-//         height: 80,
-//         decoration: BoxDecoration(
-//           borderRadius: BorderRadius.circular(10),
-//           boxShadow: [
-//             BoxShadow(
-//               color: isAuctionInProgress ? Colors.green.withOpacity(0.5) : Colors.grey.withOpacity(0.5),
-//               spreadRadius: 3,
-//               blurRadius: 7,
-//               offset: Offset(0, 3), // changes position of shadow
-//             ),
-//           ],
-//         ),
-//         child: ClipRRect(
-//           borderRadius: BorderRadius.circular(10),
-//           child: Image.asset(
-//             watch['image'],
-//             fit: BoxFit.cover,
-//           ),
-//         ),
-//       ),
-//       title: Text(
-//         watch['name'],
-//         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//       ),
-//       subtitle: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-          // SizedBox(height: 5),
-          // Text(
-          //   'Năm sản xuất: ${watch['year']}',
-          //   style: TextStyle(fontSize: 16),
-          // ),
-//           SizedBox(height: 5),
-//           Text(
-//             'Starting Price: \$${watch['startingPrice']}',
-//             style: TextStyle(fontSize: 16),
-//           ),
-//           SizedBox(height: 5),
-//           Text(
-//             'End Time: ${watch['endTime']}',
-//             style: TextStyle(fontSize: 16),
-//           ),
-//         ],
-//       ),
-//       onTap: () {
-//         // Handle tap on watch item
-//       },
-//     ),
-//   );
-// }
-
-
-// Widget _buildUpcomingAuctionCard(Map<String, dynamic> watch) {
-//   return Card(
-//     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-//     elevation: 4,
-//     child: ListTile(
-//       contentPadding: EdgeInsets.all(16),
-//       leading: Container(
-//         width: 80,
-//         height: 80,
-//         decoration: BoxDecoration(
-//           borderRadius: BorderRadius.circular(10),
-//           boxShadow: [
-//             BoxShadow(
-//               color: Colors.blue.withOpacity(0.5),
-//               spreadRadius: 3,
-//               blurRadius: 7,
-//               offset: Offset(0, 3), // changes position of shadow
-//             ),
-//           ],
-//         ),
-//         child: ClipRRect(
-//           borderRadius: BorderRadius.circular(10),
-//           child: Image.asset(
-//             watch['image'],
-//             fit: BoxFit.cover,
-//           ),
-//         ),
-//       ),
-//       title: Text(
-//         watch['name'],
-//         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//       ),
-//       subtitle: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           SizedBox(height: 5),
-//           Text(
-//             'Starting Time: ${watch['startTime']}',
-//             style: TextStyle(fontSize: 16),
-//           ),
-//         ],
-//       ),
-//       onTap: () {
-//         // Handle tap on upcoming auction item
-//       },
-//     ),
-//   );
-// }
+import '../../../../app/routes/api.routes.dart';
+import '../../../../app/routes/app.routes.dart';
+import '../../../../core/models/auction_watch.dart';
 
 class AuctionPage extends StatefulWidget {
   @override
@@ -240,37 +12,59 @@ class AuctionPage extends StatefulWidget {
 }
 
 class _AuctionPageState extends State<AuctionPage> {
-  List<Map<String, dynamic>> watches = [
-    {
-      'name': 'Rolex Submariner',
-      'image': 'assets/rolex_submariner.jpg',
-      'startTime': '2024-02-05 10:00',
-      'year':'1996'
-
-    },
-    {
-      'name': 'Omega Speedmaster',
-      'image': 'assets/omega_speedmaster.jpg',
-      'startTime': '2024-02-15 23:30',
-      'year':'1996'
-
-    },
-    {
-      'name': 'Tag Heuer Carrera',
-      'image': 'assets/tag_heuer_carrera.jpg',
-      'startTime': '2024-02-15 23:00',
-      'year':'1996'
-
-    },
+  List<AuctionWatch> auctionedWatches = [
+    AuctionWatch(
+      name: 'Rolex Submariner',
+      image: 'uploads/4160a8da-1665-421c-b035-47304146a665hublot.png',
+      startTime: '2024-02-05 10:00',
+      year: '1996',
+      startPrice: '2000',
+      biddingCount: 10,
+      gender: 'Male',
+      faceSize: '42mm',
+      material: 'Stainless Steel',
+      weight: '150g',
+      brand: 'Rolex',
+      description: 'Classic chronograph watch with moonphase',
+    ),
+    AuctionWatch(
+      name: 'Omega Speedmaster',
+      image: 'uploads/4160a8da-1665-421c-b035-47304146a665hublot.png',
+      startTime: '2024-02-16 23:30',
+      year: '1995',
+      startPrice: '2001',
+      biddingCount: 12,
+      gender: 'Male',
+      faceSize: '38mm',
+      material: 'Titanium',
+      weight: '120g',
+      brand: 'Omega',
+      description: 'Iconic square-shaped chronograph watch',
+    ),
+    AuctionWatch(
+      name: 'Tag Heuer Carrera',
+      image: 'uploads/4160a8da-1665-421c-b035-47304146a665hublot.png',
+      startTime: '2024-02-15 23:00',
+      year: '1986',
+      startPrice: '2002',
+      biddingCount: 8,
+      gender: 'Male',
+      faceSize: '40mm',
+      material: 'Carbon Fiber',
+      weight: '130g',
+      brand: 'Tag Heuer',
+      description: 'Iconic square-shaped chronograph watch',
+    ),
   ];
 
-  List<Map<String, dynamic>> get _upcomingAuctions {
+  List<AuctionWatch> get _upcomingAuctions {
     // Lấy thời gian hiện tại
     DateTime now = DateTime.now();
 
     // Lọc danh sách để chỉ lấy những đồng hồ với thời gian bắt đầu đấu giá trong tương lai
-    List<Map<String, dynamic>> upcomingAuctions = watches.where((watch) {
-      DateTime startTime = DateFormat('yyyy-MM-dd HH:mm').parse(watch['startTime']);
+    List<AuctionWatch> upcomingAuctions = auctionedWatches.where((watch) {
+      DateTime startTime =
+          DateFormat('yyyy-MM-dd HH:mm').parse(watch.startTime);
       return startTime.isAfter(now);
     }).toList();
 
@@ -285,24 +79,65 @@ class _AuctionPageState extends State<AuctionPage> {
       ),
       body: ListView(
         children: [
-           Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Auction Rules:',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Auction Rules:',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis vehicula nulla eget augue pulvinar, ut posuere nulla commodo. Aenean rhoncus felis eget tellus egestas, in sodales mauris ultricies. Integer feugiat, nulla vel tristique consectetur, turpis dui interdum magna, nec scelerisque sapien dui nec enim.',
-                style: TextStyle(fontSize: 16),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Fixed Bid Increment:\n',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text:
+                        'Each bidding increment must be at least a fixed amount.\n',
+                  ),
+                  TextSpan(
+                    text: 'Auction Duration:\n',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text:
+                        'The auction takes place within a fixed time frame, which can be extended if needed.\n',
+                  ),
+                  TextSpan(
+                    text: 'Auction Success:\n',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text:
+                        'The highest bidder when the time expires wins the auction.\n',
+                  ),
+                  TextSpan(
+                    text: 'Information Display:\n',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text:
+                        'Display information about the auctioned product including name, image, description, current price, and remaining time.\n',
+                  ),
+                  TextSpan(
+                    text: 'User Authentication:\n',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(
+                    text:
+                        'Only logged-in or registered users can participate in the auction.\n',
+                  ),
+                ],
               ),
             ),
-          
+          ),
           SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -316,9 +151,9 @@ class _AuctionPageState extends State<AuctionPage> {
             height: 200,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: watches.length,
+              itemCount: auctionedWatches.length,
               itemBuilder: (context, index) {
-                return _buildAuctionCard(watches[index]);
+                return _buildAuctionCard(auctionedWatches[index]);
               },
             ),
           ),
@@ -341,64 +176,91 @@ class _AuctionPageState extends State<AuctionPage> {
     );
   }
 
-  Widget _buildAuctionCard(Map<String, dynamic> watch) {
-    return Container(
-      width: 150,
-      margin: EdgeInsets.symmetric(horizontal: 10),
-      child: Card(
-        elevation: 4,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(4),
-                topRight: Radius.circular(4),
+  Widget _buildAuctionCard(AuctionWatch watch) {
+    return GestureDetector(
+      onTap: () {
+      // chuyển hướng đến trang chi tiết 
+        Navigator.of(context).pushNamed(
+          AppRouter.auctionDetailPage,
+          arguments: AuctionDetailsPageArgs(auction: watch),
+        );
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.39,
+        margin: EdgeInsets.symmetric(horizontal: 10),
+        child: Card(
+          elevation: 4,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                ),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.width *
+                      0.26, // Đặt chiều cao của SizedBox là chiều cao mong muốn của hình ảnh
+                  width: double
+                      .infinity, // Đặt chiều rộng của SizedBox là vô hạn để đảm bảo lấp đầy không gian
+                  child: watch.image != null && watch.image.isNotEmpty
+                      ? Image.network(
+                          '$domain/${watch.image}',
+                          fit: BoxFit
+                              .cover, // Đặt thuộc tính fit thành BoxFit.cover
+                        )
+                      : Container(),
+                ),
               ),
-              child: Image.asset(
-                watch['image'],
-                fit: BoxFit.cover,
-                height: 120,
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: SizedBox(
+                  height: 40,
+                  child: Text(
+                    watch.name,
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                watch['name'],
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              Padding(
+                padding: const EdgeInsets.only(left: 4, right: 4),
+                child: Text(
+                 'Start from: \$ ${watch.startPrice}',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w100),
+                ),
               ),
-            ),
-            
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                watch['year'],
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              Padding(
+                padding: const EdgeInsets.only(left: 4, right: 4),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.access_alarm,
+                      size: 16, // Kích thước của biểu tượng đồng hồ
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                      ': ${watch.startTime}',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Starting Time: ${watch['startTime']}',
-                style: TextStyle(fontSize: 14),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildUpcomingAuctionCard(Map<String, dynamic> watch) {
+  Widget _buildUpcomingAuctionCard(AuctionWatch watch) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 4,
       child: ListTile(
-        contentPadding: EdgeInsets.all(16),
+        contentPadding: EdgeInsets.fromLTRB(20, 4, 4, 4),
         leading: Container(
-          width: 80,
-          height: 80,
+          width: 100,
+          height: 100,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
@@ -410,38 +272,53 @@ class _AuctionPageState extends State<AuctionPage> {
               ),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.asset(
-              watch['image'],
-              fit: BoxFit.cover,
+          child: SizedBox(
+             width: 80,
+          height: 80,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                            '$domain/${watch.image}',
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
         title: Text(
-          watch['name'],
+          watch.name,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             SizedBox(height: 5),
-          Text(
-            'Năm sản xuất: ${watch['year']}',
-            style: TextStyle(fontSize: 16),
-          ),
             SizedBox(height: 5),
             Text(
-              'Starting Time: ${watch['startTime']}',
+              'Start from: \$ ${watch.startPrice}',
               style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 5),
+            Row(
+              children: [
+                Icon(
+                  Icons.access_alarm,
+                  size: 16, // Kích thước của biểu tượng đồng hồ
+                ),
+                SizedBox(width: 5),
+                Text(
+                  ': ${watch.startTime}',
+                  style: TextStyle(fontSize: 14),
+                ),
+              ],
             ),
           ],
         ),
         onTap: () {
-          // Handle tap on upcoming auction item
+          Navigator.of(context).pushNamed(
+            AppRouter.auctionDetailPage,
+            arguments: AuctionDetailsPageArgs(auction: watch),
+          );
         },
       ),
     );
   }
 }
-

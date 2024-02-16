@@ -36,9 +36,29 @@ class _ProductDetailState extends State<ProductDetail> {
 
   Widget _buildProductUI(
       BuildContext context, bool themeFlag, dynamic _snapshot, int _userId) {
+    final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+    var _userId = authNotifier.auth.id != null
+        ? int.parse(authNotifier.auth.id.toString())
+        : 1;
+    var _username = authNotifier.auth.username ?? 'Wait';
+    var _userEmail = authNotifier.auth.useremail ?? 'exam@gmail.com';
+    var _userPhone = authNotifier.auth.userphoneNo ?? '0909090909';
+    var _userAddress = authNotifier.auth.useraddress ?? 'Tran Van Dand';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Row(
+          children: [
+            CustomBackPop(themeFlag: themeFlag),
+            Text(
+              'Product Detail',
+              style: CustomTextWidget.bodyTextB2(
+                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+              ),
+            ),
+          ],
+        ),
         Row(
           children: [
             CustomBackPop(themeFlag: themeFlag),
@@ -374,10 +394,10 @@ class _ProductDetailState extends State<ProductDetail> {
                       }
                     } else {
                       cartNotifier.addToHiveCart(
-                        userEmail: 'hoang@tiwi.vn',
-                        username: "Hoang",
-                        address: "Tran Van Dang",
-                        phoneNumber: '0909222009',
+                        userEmail: _userEmail,
+                        username: _username,
+                        address: _userAddress,
+                        phoneNumber: _userPhone,
                         price: _snapshot.productPrice!,
                         productName: _snapshot.productName,
                         productId: _snapshot.productId,
@@ -387,7 +407,7 @@ class _ProductDetailState extends State<ProductDetail> {
                         context: context,
                         productSize: '40',
                       );
-                      print(">>>>>>>>>>>>>>> _userId $_userId");
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackUtil.stylishSnackBar(
                           text: 'Added To Cart',
@@ -403,7 +423,7 @@ class _ProductDetailState extends State<ProductDetail> {
                           themeFlag ? AppColors.mirage : AppColors.creamColor,
                     ),
                   ),
-                ),
+                )
               ],
             ),
           ],
