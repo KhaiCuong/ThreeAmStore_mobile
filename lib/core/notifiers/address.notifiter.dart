@@ -33,6 +33,8 @@ class AddressNotifier {
       print('Error removing address from Hive: $error');
     }
   }
+
+  void sendFeedBackToApi(String newAddress) {}
   
   // deleteAdressFromHive(String address) async {
 
