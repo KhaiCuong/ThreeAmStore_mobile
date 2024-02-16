@@ -452,7 +452,9 @@ class _CartScreenState extends State<CartScreen> {
             ],
           ),
         ),
-        SizedBox(height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         SizedBox(
           height: MediaQuery.of(context).size.height * 0.07,
           width: MediaQuery.of(context).size.width,
@@ -543,60 +545,60 @@ class _CartScreenState extends State<CartScreen> {
             borderRadius: BorderRadius.circular(8),
           ),
           onPressed: () async {
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(
-            //     builder: (BuildContext context) => UsePaypal(
-            //         sandboxMode: true,
-            //         clientId: Constants.clientId,
-            //         secretKey: Constants.secretKey,
-            //         returnURL: Constants.returnURL,
-            //         cancelURL: Constants.cancelURL,
-            //         transactions: const [
-            //           {
-            //             "amount": {
-            //               "total": 10,
-            //               "currency": "USD",
-            //             },
-            //             "description": "The payment transaction description.",
-            //             // "item_list": {
-            //             //           "items": cart,
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (BuildContext context) => UsePaypal(
+                    sandboxMode: true,
+                    clientId: Constants.clientId,
+                    secretKey: Constants.secretKey,
+                    returnURL: Constants.returnURL,
+                    cancelURL: Constants.cancelURL,
+                    transactions: const [
+                      {
+                        "amount": {
+                          "total": 10,
+                          "currency": "USD",
+                        },
+                        "description": "The payment transaction description.",
+                        // "item_list": {
+                        //   "items": '',
 
-            //             //           // shipping address is not required though
-            //             //           // "shipping_address": {
-            //             //           //   "recipient_name": "Jane Foster",
-            //             //           //   "line1": "Travis County",
-            //             //           //   "line2": "",
-            //             //           //   "city": "Austin",
-            //             //           //   "country_code": "US",
-            //             //           //   "postal_code": "73301",
-            //             //           //   "phone": "+00000000",
-            //             //           //   "state": "Texas"
-            //             //           // },
-            //             //         },
-            //           }
-            //         ],
-            //         note:
-            //             "Contact us 0909222009 for any questions on your order.",
-            //         onSuccess: (Map params) async {
-            //           print("onSuccess: $params");
-            addOrderToApiCart(snapshot, totalPrice);
-            // showPayedSuccessSnackbar();
-            clearOrdersFromHive();
-            //         },
-            //         onError: (error) {
-            //           print("onError: $error");
-            //           // UIHelper.showAlertDialog(
-            //           //     'Unable to completet the Payment',
-            //           //     title: 'Error',
-            //           //     context: context);
-            //         },
-            //         onCancel: (params) {
-            //           print('cancelled: $params');
-            //           // UIHelper.showAlertDialog('Payment Cannceled',
-            //           //     title: 'Cancel', context: context);
-            //         }),
-            //   ),
-            // );
+                        //   // shipping address is not required though
+                        //   // "shipping_address": {
+                        //   //   "recipient_name": "Jane Foster",
+                        //   //   "line1": "Travis County",
+                        //   //   "line2": "",
+                        //   //   "city": "Austin",
+                        //   //   "country_code": "US",
+                        //   //   "postal_code": "73301",
+                        //   //   "phone": "+00000000",
+                        //   //   "state": "Texas"
+                        //   // },
+                        // },
+                      }
+                    ],
+                    note:
+                        "Contact us 0909222009 for any questions on your order.",
+                    onSuccess: (Map params) async {
+                      print("onSuccess: $params");
+                      addOrderToApiCart(snapshot, totalPrice);
+                      showPayedSuccessSnackbar();
+                      clearOrdersFromHive();
+                    },
+                    onError: (error) {
+                      print("onError: $error");
+                      // UIHelper.showAlertDialog(
+                      //     'Unable to completet the Payment',
+                      //     title: 'Error',
+                      //     context: context);
+                    },
+                    onCancel: (params) {
+                      print('cancelled: $params');
+                      // UIHelper.showAlertDialog('Payment Cannceled',
+                      //     title: 'Cancel', context: context);
+                    }),
+              ),
+            );
           },
           color: AppColors.rawSienna,
           child: const Text(
@@ -648,21 +650,22 @@ class _CartScreenState extends State<CartScreen> {
   void addOrderToApiCart(snapshot, double totalPrice) async {
     if (mounted) {
       CartNotifier cartNotifier = context.read<CartNotifier>();
-       final authNotifier =
-        Provider.of<AuthenticationNotifier>(context, listen: false);
-    var _userId = authNotifier.auth.id != null ? int.parse(authNotifier.auth.id.toString()) : 1;
-    var _username = authNotifier.auth.username ?? 'Wait';
-    var _userEmail = authNotifier.auth.useremail ?? 'exam@gmail.com';
-    var _phoneNumber = authNotifier.auth.userphoneNo ?? '0909090909';
-    
+      final authNotifier =
+          Provider.of<AuthenticationNotifier>(context, listen: false);
+      var _userId = authNotifier.auth.id != null
+          ? int.parse(authNotifier.auth.id.toString())
+          : 1;
+      var _username = authNotifier.auth.username ?? 'Wait';
+      var _userEmail = authNotifier.auth.useremail ?? 'exam@gmail.com';
+      var _phoneNumber = authNotifier.auth.userphoneNo ?? '0909090909';
+
       await cartNotifier.addToApiCart(
         userId: _userId,
         userName: _username,
         address: _selectedAddress,
         userEmail: _userEmail,
         phoneNumber: _phoneNumber,
-        totalPrice:totalPrice,
-    
+        totalPrice: totalPrice,
         orders: snapshot,
       );
       // Tiếp tục xử lý xoá dữ liệu trong OrderData trống
