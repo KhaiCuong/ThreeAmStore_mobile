@@ -43,7 +43,7 @@ Widget welcomeTextSignup({required bool themeFlag}) {
                     ),
                   ),
                   TextSpan(
-                    text: 'Scarvs ! 🛒  ',
+                    text: 'Three AM Watch ! 🛒  ',
                     style: TextStyle(
                       color:
                           themeFlag ? AppColors.creamColor : AppColors.mirage,
