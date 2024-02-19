@@ -41,11 +41,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   late TextEditingController receiverNameController = TextEditingController();
   late TextEditingController phoneNumberController = TextEditingController();
   late TextEditingController _textEditingController = TextEditingController();
-   double ratingValue = 0;
+  double ratingValue = 0;
   @override
   void initState() {
     super.initState();
-     _textEditingController = TextEditingController();
+    _textEditingController = TextEditingController();
     // Gọi hàm để lấy dữ liệu đơn hàng từ API sử dụng orderId
 
     // fetchOrderById(orderId);
@@ -374,7 +374,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       OrderDetail order, BuildContext context, String field) {
     var authNotifier =
         Provider.of<AuthenticationNotifier>(context, listen: false);
-     TextEditingController _textEditingController  = TextEditingController();
+    TextEditingController _textEditingController = TextEditingController();
     double ratingValue = 0;
     showModalBottomSheet(
       context: context,
@@ -741,6 +741,8 @@ Future sendFeedBackToApi({
 
     // var response;
     if (response.statusCode == 201) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+          context: context, text: 'Feed Back successfully'));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackUtil.stylishSnackBar(context: context, text: 'Register faill'));

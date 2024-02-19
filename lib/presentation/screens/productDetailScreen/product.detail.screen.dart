@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
+import 'package:scarvs/core/models/api_order_detail.dart';
 import 'package:scarvs/core/notifiers/product.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:scarvs/presentation/screens/productDetailScreen/widget/ui.detail.dart';
@@ -59,7 +61,6 @@ class _ProductDetailState extends State<ProductDetail> {
             ),
           ],
         ),
-   
         Column(
           children: [
             Center(
@@ -338,6 +339,31 @@ class _ProductDetailState extends State<ProductDetail> {
                     ),
                   ],
                 ),
+                TableRow(
+                  children: [
+                    // Cột 1: Tên trường
+                    TableCell(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Feed Back', // Tên trường
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Cột 2: Dữ liệu
+                    TableCell(
+                      child: ElevatedButton(
+                        child: Text("Show feedbacks"),
+                        onPressed: () => {
+                          _showHistoryFeedback(context, _snapshot.productId)
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
 
@@ -429,6 +455,8 @@ class _ProductDetailState extends State<ProductDetail> {
     var myAuthProvider =
         Provider.of<AuthenticationNotifier>(context, listen: false);
     var userId = myAuthProvider.auth.id;
+    var order;
+
     return Scaffold(
       backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
       body: SingleChildScrollView(
@@ -460,6 +488,74 @@ class _ProductDetailState extends State<ProductDetail> {
       ),
     );
   }
+}
+
+_showHistoryFeedback(BuildContext context, String id) {
+  print(">>>>>>>>>>>>>>>>>>>>>>>id: ${id}");
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return Container(child: Consumer<ProductNotifier>(
+        builder: (context, notifier, _) {
+          return FutureBuilder(
+            future:
+                notifier.fetchProductsFeedBack(context: context, id:id ),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                dynamic data = snapshot.data;
+
+                print(">>>>>>>>>>>>>>>>>>>>>>>snapshot: ${data}");
+                return SingleChildScrollView(
+                  child: SafeArea(
+                    child: Container(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Feedback",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          for (var item in data) ...[
+                            SizedBox(height: 8),
+                            Text(
+                              item['content'],
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                for (int i = 0; i < item['start']; i++)
+                                  Icon(
+                                    Icons.star,
+                                    color: Colors.yellow,
+                                  ),
+                              ],
+                            ),
+                            SizedBox(height: 16),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }
+            },
+          );
+        },
+      ));
+    },
+  );
 }
 
 class ProductDetailsArgs {

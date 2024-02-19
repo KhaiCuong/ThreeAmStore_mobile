@@ -662,9 +662,9 @@ class _CartScreenState extends State<CartScreen> {
       var _userId = authNotifier.auth.id != null
           ? int.parse(authNotifier.auth.id.toString())
           : 1;
-      var _username = authNotifier.auth.username ?? 'Wait';
-      var _userEmail = authNotifier.auth.useremail ?? 'exam@gmail.com';
-      var _phoneNumber = authNotifier.auth.userphoneNo ?? '0909090909';
+      var _username = authNotifier.auth.username;
+      var _userEmail = authNotifier.auth.useremail;
+      var _phoneNumber = authNotifier.auth.userphoneNo;
 
       await cartNotifier.addToApiCart(
         userId: _userId,
