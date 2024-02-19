@@ -224,7 +224,6 @@ class ProductNotifier with ChangeNotifier {
     }
   }
 
-
   //// CATEGORY
 
   Future<List<String>> fetchProductCategoryList(
@@ -368,4 +367,44 @@ class ProductNotifier with ChangeNotifier {
     }
   }
 
+  Future<List<dynamic>> fetchProductsFeedBack(
+      {required BuildContext context, required String id}) async {
+    try {
+      final dio = Dio();
+      final response =
+          await dio.get(ApiRoutes.baseurl + '/api/Feedback/GetFeedbackListByProductId/$id');
+
+      print(
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>Products response.statusCode: ${response.data}");
+      // print(">>>>>>>>>>>>>>>>>>>>>>>>>>products data: ${response.data}");
+      if (response.statusCode == 200) {
+        var responseData = response.data;
+        print(
+            ">>>>>>>>>>>>>>>>>>>>>>>>>>responseData : ${responseData['data']}");
+
+        if (responseData != null && responseData['data'] is List<dynamic>) {
+          List<dynamic> productList = (responseData['data'] as List<dynamic>);
+
+          print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: ${productList.length}");
+          return productList;
+        } else {
+          return [];
+          // Xử lý khi data là null hoặc không phải là List<dynamic>
+        }
+      } else {
+        // Xử lý khi mã trạng thái không phải là 200
+        return [];
+      }
+    } on SocketException catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+        text: 'Oops No You Need A Good Internet Connection',
+        context: context,
+      ));
+      return [];
+    } catch (e) {
+      // Xử lý lỗi tổng quát
+      print("Error: $e");
+      return [];
+    }
+  }
 }
