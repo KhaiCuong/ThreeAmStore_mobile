@@ -16,7 +16,7 @@ class _AuctionPageState extends State<AuctionPage> {
     AuctionWatch(
       name: 'Rolex Submariner',
       image: 'uploads/4160a8da-1665-421c-b035-47304146a665hublot.png',
-      startTime: '2024-02-05 10:00',
+      startTime: '2024-02-20 00:30',
       year: '1996',
       startPrice: '2000',
       biddingCount: 10,
@@ -108,7 +108,7 @@ class _AuctionPageState extends State<AuctionPage> {
                   ),
                   TextSpan(
                     text:
-                        'The auction takes place within a fixed time frame, which can be extended if needed.\n',
+                        'The auction takes place within 1 hour.\n',
                   ),
                   TextSpan(
                     text: 'Auction Success:\n',

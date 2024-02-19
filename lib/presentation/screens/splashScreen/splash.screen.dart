@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'Scarvs',
+              'Three AM',
               style: TextStyle(
                 color: themeFlag ? AppColors.creamColor : AppColors.mirage,
                 fontFamily: AppFonts.contax,
