@@ -45,7 +45,7 @@ class Core extends StatelessWidget {
     return Consumer<ThemeNotifier>(
       builder: (context, notifier, _) {
         return MaterialApp(
-          title: 'Scarvs',
+          title: 'Three AM',
           // supportedLocales: AppLocalization.all,
           theme: notifier.darkTheme ? darkTheme : lightTheme,
           debugShowCheckedModeBanner: false,

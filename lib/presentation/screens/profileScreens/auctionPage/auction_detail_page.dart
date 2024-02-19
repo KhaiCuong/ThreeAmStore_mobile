@@ -55,6 +55,7 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
         ),
         Column(
           children: [
+            vSizedBox2,
             Center(
               child: Text(
                 _snapshot.name,
@@ -63,7 +64,6 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
                 ),
               ),
             ),
-            vSizedBox2,
             Stack(
               alignment: Alignment.center,
               children: [
