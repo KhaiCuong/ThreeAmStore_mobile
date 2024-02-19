@@ -197,7 +197,7 @@ class _ProductScreenState extends State<ProductScreen> {
                       ),
                     ),
                          Text(
-                      'New Watches',
+                      'Most purchased products',
                       style: CustomTextWidget.bodyTextB2(
                         color:
                             themeFlag ? AppColors.creamColor : AppColors.mirage,

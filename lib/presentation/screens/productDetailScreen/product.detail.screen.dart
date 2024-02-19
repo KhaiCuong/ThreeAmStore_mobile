@@ -59,17 +59,7 @@ class _ProductDetailState extends State<ProductDetail> {
             ),
           ],
         ),
-        Row(
-          children: [
-            CustomBackPop(themeFlag: themeFlag),
-            Text(
-              'Product Detail',
-              style: CustomTextWidget.bodyTextB2(
-                color: themeFlag ? AppColors.creamColor : AppColors.mirage,
-              ),
-            ),
-          ],
-        ),
+   
         Column(
           children: [
             Center(
