@@ -52,7 +52,7 @@ Widget welcomeTextLogin({required bool themeFlag}) {
                     ),
                   ),
                   TextSpan(
-                    text: 'Scarvs ! 🛒',
+                    text: 'Three AM ! 🛒',
                     style: TextStyle(
                       color:
                           themeFlag ? AppColors.creamColor : AppColors.mirage,
