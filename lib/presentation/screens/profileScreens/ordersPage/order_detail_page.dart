@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -16,7 +17,9 @@ import 'package:scarvs/core/notifiers/address.notifiter.dart';
 import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/cart.notifier.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
+import 'package:scarvs/core/service/feedback.services.dart';
 import 'package:scarvs/core/utils/snackbar.util.dart';
+import 'package:scarvs/presentation/screens/profileScreens/ordersPage/appointment_page.dart';
 import 'package:scarvs/presentation/widgets/custom.back.btn.dart';
 import 'package:scarvs/presentation/widgets/custom.loader.dart';
 import 'package:scarvs/presentation/widgets/custom.text.style.dart';
@@ -220,8 +223,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     required snapshot,
     required themeFlag,
     required BuildContext context,
+
     // required double height,
   }) {
+    // Kiểm tra xem trạng thái của đơn hàng có phải là "Completed" không
+
     return Column(
       children: [
         SizedBox(
@@ -370,12 +376,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
+  Map<String, bool> feedbackStatus = {};
+
   void _showFeedbackDialog(
       OrderDetail order, BuildContext context, String field) {
     var authNotifier =
         Provider.of<AuthenticationNotifier>(context, listen: false);
     TextEditingController _textEditingController = TextEditingController();
     double ratingValue = 0;
+
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -438,16 +447,23 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   },
                 ),
                 SizedBox(height: 25),
+                //   if (authNotifier.auth.id != null && authNotifier.auth.id.toString().isNotEmpty)
+                //   SizedBox(height: 25)
+                // else
                 ElevatedButton(
                   onPressed: () {
-                    sendFeedBackToApi(
-                      productId: order.productId,
-                      context: context,
-                      title: 'Feedback',
-                      content: _textEditingController.text,
-                      userId: authNotifier.auth.id,
-                      start: ratingValue.toInt(),
-                    );
+                    setState(() {
+                      sendFeedBackToApi(
+                        productId: order.productId,
+                        context: context,
+                        title: 'Feedback',
+                        content: _textEditingController.text,
+                        userId: authNotifier.auth.id,
+                        start: ratingValue.toInt(),
+                      );
+                      feedbackStatus[order.productId] =
+                          true; // Đánh dấu sản phẩm đã có phản hồi
+                    });
                   },
                   style: ElevatedButton.styleFrom(
                     primary: Color.fromARGB(255, 233, 153, 34),
@@ -464,13 +480,19 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
-  Widget _showCartData({
-    required BuildContext context,
-    required OrderDetail order,
-    required bool themeFlag,
-    // required double height,
-  }) {
+  Widget _showCartData(
+      {required BuildContext context,
+      required OrderDetail order,
+      required bool themeFlag,
+      required
+      // required double height,
+      }) {
     var domain = ApiRoutes.baseurl;
+    var authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+    FilterStatus scheduleStatus;
+    // bool can_feed_back = order. == 'Completed';
+
     return Container(
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(8),
@@ -523,44 +545,64 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(top: 5),
-                  child: Text(
-                    '\$ ${(order.price * order.quantity).toStringAsFixed(2)}',
-                    style: CustomTextWidget.bodyText3(
-                      color:
-                          themeFlag ? AppColors.creamColor : AppColors.mirage,
-                    ),
-                  ),
-                ),
+                    margin: const EdgeInsets.only(top: 5),
+                    child: Flex(
+                      direction: Axis.horizontal,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          '\$ ${(order.price * order.quantity).toStringAsFixed(2)}',
+                          style: CustomTextWidget.bodyText3(
+                            color: themeFlag
+                                ? AppColors.creamColor
+                                : AppColors.mirage,
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        Text(
+                          'Quantity: ${order.quantity}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ],
+                    )),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        // color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Quantity: ${order.quantity}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              _showFeedbackDialog(
-                                order,
-                                context,
-                                "Feed Back",
-                              );
-                            },
-                            child: Text('Feed Back'),
-                          ),
+                          Row(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (canBeFeedback(
+                                      widget.orderDetailPageArgs.order.status,
+                                      context))
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        _showFeedbackDialog(
+                                          order,
+                                          context,
+                                          "Feed Back",
+                                        );
+                                      },
+                                      child: Text('Feed Back'),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          )
                         ],
                       ),
                     )
@@ -745,7 +787,7 @@ Future sendFeedBackToApi({
           context: context, text: 'Feed Back successfully'));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackUtil.stylishSnackBar(context: context, text: 'Register faill'));
+          SnackUtil.stylishSnackBar(context: context, text: 'Feed Back faill'));
     }
   } on SocketException catch (_) {
     ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
@@ -776,6 +818,28 @@ deleteAdressFromHive(String address) async {
     print('$address not found in Hive Box.');
     return false;
   }
+}
+
+canBeFeedback(String status, BuildContext context) {
+  var authNotifier =
+      Provider.of<AuthenticationNotifier>(context, listen: false);
+  if (status != 'Completed') return false;
+
+  // FeedbackService fb = FeedbackService();
+  // Future a = fb.fetchProductsFeedBack('PD02');
+  // print("value new");
+  // a.then((value) {
+  //   print("value future" + value);
+
+  //   for (var element in value) {
+  //     print("element.userId>>>>: " + element.userId);
+  //     if (element.userId == authNotifier.auth.id) {
+  //       return false;
+  //     }
+  //   }
+  // });
+
+  return true;
 }
 
 class OrderDetailPageArgs {

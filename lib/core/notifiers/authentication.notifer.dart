@@ -112,9 +112,12 @@ class AuthenticationNotifier with ChangeNotifier {
           () => Navigator.of(context)
               .pushReplacementNamed(AppRouter.successSignup),
         );
+      } else if (response.statusCode == 400) {
+     ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+            context: context, text: 'Email is Aldredy used'));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
-            context: context, text: 'Register faill'));
+            context: context, text: 'Register fail'));
       }
     } on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
@@ -125,6 +128,7 @@ class AuthenticationNotifier with ChangeNotifier {
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
           text: 'An error occurred', context: context));
     }
+    
   }
 
   Future userLogin({
