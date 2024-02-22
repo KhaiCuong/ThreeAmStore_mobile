@@ -139,7 +139,7 @@ class UserNotifier with ChangeNotifier {
     } on SocketException catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackUtil.stylishSnackBar(
-            text: 'Oops No You Need A Good Internet Connection',
+            text: 'Welcome To Profile Page ',
             context: context),
       );
     }

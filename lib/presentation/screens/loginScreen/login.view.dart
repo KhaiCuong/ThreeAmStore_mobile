@@ -13,14 +13,15 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController userEmailController = TextEditingController();
   final TextEditingController userPassController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-   var _email='nguyenminhbrian95@gmail.com';
-    var _password = '1234567';  
-    //    var _email='a@a.com';
-    // var _password = '123456';  
+  //  var _email='nguyenminhbrian95@gmail.com';
+  //   var _password = '1234567';
+  // var _email = 'a@a.com';
+  // var _password = '123456';
+
   @override
   Widget build(BuildContext context) {
-    userEmailController.text = _email;
-    userPassController.text = _password;
+    // userEmailController.text = _email;
+    // userPassController.text = _password;
     _userLogin() {
       if (_formKey.currentState!.validate()) {
         var authNotifier =
@@ -65,7 +66,9 @@ class LoginScreen extends StatelessWidget {
                                   !RegExp(r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
                                           .hasMatch(val!)
                                       ? 'Enter an email'
-                                      : null, obscureText: false, labelText: 'Email',
+                                      : null,
+                              obscureText: false,
+                              labelText: 'Email',
                             ),
                           ),
                           vSizedBox1,
@@ -76,7 +79,9 @@ class LoginScreen extends StatelessWidget {
                               textEditingController: userPassController,
                               hintText: 'Enter a password',
                               validator: (val) =>
-                                  val!.isEmpty ? 'Enter a password' : null, obscureText: true, labelText: 'Password',
+                                  val!.isEmpty ? 'Enter a password' : null,
+                              obscureText: true,
+                              labelText: 'Password',
                             ),
                           )
                         ],
@@ -106,13 +111,17 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
               vSizedBox2,
+              SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Not Having A Account? ",
+                    "",
                     style: TextStyle(
-                      color: themeFlag ? AppColors.creamColor : AppColors.mirage,
+                      color:
+                          themeFlag ? AppColors.creamColor : AppColors.mirage,
                       fontSize: 14.0,
                     ),
                   ),
@@ -129,9 +138,31 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                      GestureDetector(
-                    onTap: () =>
-                        Navigator.of(context).pushNamed(AppRouter.forgetPassword),
+                  SizedBox(width: 10), // Thêm khoảng cách giữa các phần tử
+                  Text(
+                    "|",
+                    style: TextStyle(
+                      color:
+                          themeFlag ? AppColors.creamColor : AppColors.mirage,
+                      fontSize: 14.0,
+                    ),
+                  ),
+                  SizedBox(width: 10), 
+                  // Thêm khoảng cách giữa các phần tử
+                  Flexible( child: Text(
+                    "",
+                    style: TextStyle(
+                      color:
+                          themeFlag ? AppColors.creamColor : AppColors.mirage,
+                      fontSize: 14.0,
+                    ),
+                    softWrap: true,
+                    )
+                
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.of(context)
+                        .pushNamed(AppRouter.forgetPassword),
                     child: Text(
                       "Forget Password",
                       style: TextStyle(
