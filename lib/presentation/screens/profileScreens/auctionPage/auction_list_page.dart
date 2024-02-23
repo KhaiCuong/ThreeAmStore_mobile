@@ -1,10 +1,16 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:scarvs/core/models/product.model.dart';
 import 'package:scarvs/presentation/screens/profileScreens/auctionPage/auction_detail_page.dart';
 
 import '../../../../app/routes/api.routes.dart';
 import '../../../../app/routes/app.routes.dart';
 import '../../../../core/models/auction_watch.dart';
+import '../../../../core/notifiers/product.notifier.dart';
+import '../../../../core/utils/snackbar.util.dart';
 
 class AuctionPage extends StatefulWidget {
   @override
@@ -12,50 +18,61 @@ class AuctionPage extends StatefulWidget {
 }
 
 class _AuctionPageState extends State<AuctionPage> {
-  List<AuctionWatch> auctionedWatches = [
-    AuctionWatch(
-      name: 'Rolex Submariner',
-      image: 'uploads/4160a8da-1665-421c-b035-47304146a665hublot.png',
-      startTime: '2024-02-20 00:30',
-      year: '1996',
-      startPrice: '2000',
-      biddingCount: 10,
-      gender: 'Male',
-      faceSize: '42mm',
-      material: 'Stainless Steel',
-      weight: '150g',
-      brand: 'Rolex',
-      description: 'Classic chronograph watch with moonphase',
-    ),
-    AuctionWatch(
-      name: 'Omega Speedmaster',
-      image: 'uploads/4160a8da-1665-421c-b035-47304146a665hublot.png',
-      startTime: '2024-02-16 23:30',
-      year: '1995',
-      startPrice: '2001',
-      biddingCount: 12,
-      gender: 'Male',
-      faceSize: '38mm',
-      material: 'Titanium',
-      weight: '120g',
-      brand: 'Omega',
-      description: 'Iconic square-shaped chronograph watch',
-    ),
-    AuctionWatch(
-      name: 'Tag Heuer Carrera',
-      image: 'uploads/4160a8da-1665-421c-b035-47304146a665hublot.png',
-      startTime: '2024-02-15 23:00',
-      year: '1986',
-      startPrice: '2002',
-      biddingCount: 8,
-      gender: 'Male',
-      faceSize: '40mm',
-      material: 'Carbon Fiber',
-      weight: '130g',
-      brand: 'Tag Heuer',
-      description: 'Iconic square-shaped chronograph watch',
-    ),
-  ];
+  ProductNotifier productNotifier = ProductNotifier();
+  List<AuctionWatch> auctionedWatches = [];
+  List<ProductData> products = [];
+  void initState() {
+    super.initState();
+    _fetchAuctions(context: context);
+  }
+
+  Future<void> _fetchAuctions({required BuildContext context}) async {
+    try {
+      final dio = Dio();
+      final response = await dio.get(ApiRoutes.baseurl + '/api/aution/getlist');
+
+      print(
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>fetchAuctions response.statusCode: ${response.statusCode}");
+      if (response.statusCode == 200) {
+        var responseData = response.data;
+        if (responseData != null && responseData['data'] is List<dynamic>) {
+          List<AuctionWatch> auctionList =
+              (responseData['data'] as List<dynamic>)
+                  .map((json) => AuctionWatch.fromJson(json))
+                  .toList();
+          print(">>>>>>>>>>>>>>>>>>>>>>>>>>AuctionList: ${auctionList.length}");
+
+          setState(() {
+            auctionedWatches = auctionList;
+          });
+          //
+        } else {
+          // Trường hợp không có dữ liệu
+          setState(() {
+            auctionedWatches = [];
+          });
+        }
+      } else {
+        // Trường hợp response code không phải 200
+        setState(() {
+          auctionedWatches = [];
+        });
+      }
+    } on SocketException catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+        text: 'Oops No You Need A Good Internet Connection',
+        context: context,
+      ));
+      setState(() {
+        auctionedWatches = [];
+      });
+    } catch (e) {
+      print("Error: $e");
+      setState(() {
+        auctionedWatches = [];
+      });
+    }
+  }
 
   List<AuctionWatch> get _upcomingAuctions {
     // Lấy thời gian hiện tại
@@ -63,12 +80,42 @@ class _AuctionPageState extends State<AuctionPage> {
 
     // Lọc danh sách để chỉ lấy những đồng hồ với thời gian bắt đầu đấu giá trong tương lai
     List<AuctionWatch> upcomingAuctions = auctionedWatches.where((watch) {
-      DateTime startTime =
-          DateFormat('yyyy-MM-dd HH:mm').parse(watch.startTime);
+      DateTime startTime = watch.startTime;
       return startTime.isAfter(now);
     }).toList();
 
     return upcomingAuctions;
+  }
+
+  List<AuctionWatch> get _currentAuctions {
+    // Lấy thời gian hiện tại
+    DateTime now = DateTime.now();
+
+    // Lọc danh sách để chỉ lấy những đồng hồ với thời gian bắt đầu đấu giá trong khoảng thời gian từ startTime đến endTime
+    List<AuctionWatch> currentAuctions = auctionedWatches.where((watch) {
+      DateTime startTime = watch.startTime;
+      DateTime endTime = startTime.add(Duration(
+          hours: 1)); // Thời gian kết thúc là startTime cộng thêm 1 giờ
+
+      // Chỉ lấy các phiên đấu giá đang diễn ra tại thời điểm hiện tại
+      return startTime.isBefore(now) && now.isBefore(endTime);
+    }).toList();
+
+    return currentAuctions;
+  }
+
+  List<AuctionWatch> getPastAuctions() {
+    // Lấy thời gian hiện tại
+    DateTime now = DateTime.now();
+
+    // Lọc danh sách để chỉ lấy những phiên đấu giá đã qua
+    List<AuctionWatch> pastAuctions = auctionedWatches.where((watch) {
+      DateTime startTime = watch.startTime;
+      DateTime endTime = startTime.add(Duration(hours: 1));
+      return endTime.isBefore(now); // Chỉ lấy những phiên đã qua
+    }).toList();
+
+    return pastAuctions;
   }
 
   @override
@@ -107,8 +154,7 @@ class _AuctionPageState extends State<AuctionPage> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   TextSpan(
-                    text:
-                        'The auction takes place within 1 hour.\n',
+                    text: 'The auction takes place within 1 hour.\n',
                   ),
                   TextSpan(
                     text: 'Auction Success:\n',
@@ -142,20 +188,24 @@ class _AuctionPageState extends State<AuctionPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              'Current Auctions',
+              'Ongoing Auctions',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(height: 10),
           Container(
             height: 200,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: auctionedWatches.length,
-              itemBuilder: (context, index) {
-                return _buildAuctionCard(auctionedWatches[index]);
-              },
-            ),
+            child: _currentAuctions.isEmpty
+                ? Center(
+                    child: Text('Not yet'),
+                  )
+                : ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _currentAuctions.length,
+                    itemBuilder: (context, index) {
+                      return _buildAuctionCard(_currentAuctions[index]);
+                    },
+                  ),
           ),
           SizedBox(height: 20),
           Padding(
@@ -171,6 +221,20 @@ class _AuctionPageState extends State<AuctionPage> {
               return _buildUpcomingAuctionCard(watch);
             }).toList(),
           ),
+          SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              'Finished Auctions',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(height: 10),
+          Column(
+            children: getPastAuctions().map<Widget>((watch) {
+              return _buildUpcomingAuctionCard(watch);
+            }).toList(),
+          ),
         ],
       ),
     );
@@ -179,7 +243,7 @@ class _AuctionPageState extends State<AuctionPage> {
   Widget _buildAuctionCard(AuctionWatch watch) {
     return GestureDetector(
       onTap: () {
-      // chuyển hướng đến trang chi tiết 
+        // chuyển hướng đến trang chi tiết
         Navigator.of(context).pushNamed(
           AppRouter.auctionDetailPage,
           arguments: AuctionDetailsPageArgs(auction: watch),
@@ -203,9 +267,10 @@ class _AuctionPageState extends State<AuctionPage> {
                       0.26, // Đặt chiều cao của SizedBox là chiều cao mong muốn của hình ảnh
                   width: double
                       .infinity, // Đặt chiều rộng của SizedBox là vô hạn để đảm bảo lấp đầy không gian
-                  child: watch.image != null && watch.image.isNotEmpty
+                  child: watch.autionProductEntity.image != null &&
+                          watch.autionProductEntity.image!.isNotEmpty
                       ? Image.network(
-                          '$domain/${watch.image}',
+                          '$domain/${watch.autionProductEntity.image}',
                           fit: BoxFit
                               .cover, // Đặt thuộc tính fit thành BoxFit.cover
                         )
@@ -217,7 +282,7 @@ class _AuctionPageState extends State<AuctionPage> {
                 child: SizedBox(
                   height: 40,
                   child: Text(
-                    watch.name,
+                    watch.autionProductEntity.producName!,
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -225,7 +290,7 @@ class _AuctionPageState extends State<AuctionPage> {
               Padding(
                 padding: const EdgeInsets.only(left: 4, right: 4),
                 child: Text(
-                 'Start from: \$ ${watch.startPrice}',
+                  'Start from: \$ ${watch.autionProductEntity.price!}',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w100),
                 ),
               ),
@@ -239,8 +304,8 @@ class _AuctionPageState extends State<AuctionPage> {
                     ),
                     SizedBox(width: 5),
                     Text(
-                      ': ${watch.startTime}',
-                      style: TextStyle(fontSize: 12),
+                      '${DateFormat('HH:mm  dd/MM/yyyy').format(watch.startTime!)}',
+                      style: TextStyle(fontSize: 8),
                     ),
                   ],
                 ),
@@ -273,19 +338,19 @@ class _AuctionPageState extends State<AuctionPage> {
             ],
           ),
           child: SizedBox(
-             width: 80,
-          height: 80,
+            width: 80,
+            height: 80,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.network(
-                            '$domain/${watch.image}',
+                '$domain/${watch.autionProductEntity.image}',
                 fit: BoxFit.cover,
               ),
             ),
           ),
         ),
         title: Text(
-          watch.name,
+          watch.autionProductEntity.producName!,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
@@ -293,7 +358,7 @@ class _AuctionPageState extends State<AuctionPage> {
           children: [
             SizedBox(height: 5),
             Text(
-              'Start from: \$ ${watch.startPrice}',
+              'Start from: \$ ${watch.autionProductEntity.price!}',
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 5),
@@ -305,7 +370,7 @@ class _AuctionPageState extends State<AuctionPage> {
                 ),
                 SizedBox(width: 5),
                 Text(
-                  ': ${watch.startTime}',
+                  '${DateFormat('HH:mm  dd/MM/yyyy').format(watch.startTime!)}',
                   style: TextStyle(fontSize: 14),
                 ),
               ],

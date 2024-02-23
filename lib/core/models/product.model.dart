@@ -38,6 +38,7 @@ class ProductData {
   late final bool? isWaterproof;
   late final double? diameter;
   late final String? gender;
+  late final int? totalBuy;
 
   ProductData({
     required this.productId,
@@ -54,6 +55,7 @@ class ProductData {
     required this.isWaterproof,
     required this.diameter,
     required this.gender,
+    required this.totalBuy,
   });
 
   factory ProductData.fromJson(Map<String, dynamic> json) {
@@ -70,6 +72,7 @@ class ProductData {
       isWaterproof: json['isWaterproof'] ?? true, 
       diameter: json['diameter']?.toDouble(),
       gender: json['gender'],
+      totalBuy: json['totalBuy'],
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
@@ -90,6 +93,7 @@ class ProductData {
       'isWaterproof': isWaterproof,
       'diameter': diameter,
       'gender': gender,
+      'totalBuy': totalBuy,
       'created_at': createdAt?.toIso8601String(),
       'update_at': updatedAt?.toIso8601String(),
     };

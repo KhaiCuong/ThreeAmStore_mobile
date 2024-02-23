@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
@@ -58,7 +59,7 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
             vSizedBox2,
             Center(
               child: Text(
-                _snapshot.name,
+                _snapshot.autionProductEntity.producName!,
                 style: CustomTextWidget.bodyTextB1(
                   color: themeFlag ? AppColors.creamColor : AppColors.mirage,
                 ),
@@ -85,7 +86,8 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
               alignment: Alignment.center,
               children: [
                 FutureBuilder(
-                  future: productNotifier.fetchProductImages('PD04'),
+                  future: productNotifier.fetchProductImages(
+                      '${_snapshot.autionProductEntity.productId!}'),
                   builder: (context, imageSnapshot) {
                     if (imageSnapshot.connectionState == ConnectionState.done) {
                       List<String> imageList =
@@ -106,7 +108,6 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
                 ),
               ],
             ),
-           
           ],
         ),
         vSizedBox2,
@@ -122,15 +123,14 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
         Padding(
           padding: const EdgeInsets.fromLTRB(10, 0, 00, 0),
           child: Text(
-           _snapshot.description!,
+            _snapshot.autionProductEntity.description!,
             style: CustomTextWidget.bodyText1(
               color: themeFlag ? AppColors.creamColor : AppColors.mirage,
             ),
           ),
         ),
-         vSizedBox1,
-
-            Padding(
+        vSizedBox1,
+        Padding(
           padding: const EdgeInsets.fromLTRB(0, 20, 20, 0),
           child: Text(
             'Information: ',
@@ -139,7 +139,6 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
             ),
           ),
         ),
-       
         Table(
           border: TableBorder.all(), // Tùy chỉnh border của bảng
           columnWidths: {
@@ -151,74 +150,14 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
           },
           children: [
             // Dòng 1: Tên trường và dữ liệu tương ứng
-            TableRow(
-              children: [
-                // Cột 1: Tên trường
-                TableCell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Brand', // Tên trường
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                // Cột 2: Dữ liệu
-                TableCell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      _snapshot.brand!,
-                      style: CustomTextWidget.bodyText3(
-                        color:
-                            themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      ),
-                      textAlign: TextAlign.justify,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            // Dòng 2: Tên trường và dữ liệu tương ứng
-            TableRow(
-              children: [
-                // Cột 1: Tên trường
-                TableCell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Year', // Tên trường
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                // Cột 2: Dữ liệu
-                TableCell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      _snapshot.year!,
-                      style: CustomTextWidget.bodyText3(
-                        color:
-                            themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      ),
-                      textAlign: TextAlign.justify,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+
             TableRow(
               children: [
                 TableCell(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      'Material', // Tên trường
+                      'isWaterproof', // Tên trường
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -229,7 +168,9 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      _snapshot.material!,
+                      _snapshot.autionProductEntity.isWaterproof!
+                          ? 'True'
+                          : 'False',
                       style: CustomTextWidget.bodyText3(
                         color:
                             themeFlag ? AppColors.creamColor : AppColors.mirage,
@@ -241,34 +182,34 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
               ],
             ),
 
-            TableRow(
-              children: [
-                TableCell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Weight', // Tên trường
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                TableCell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      _snapshot.weight!,
-                      style: CustomTextWidget.bodyText3(
-                        color:
-                            themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      ),
-                      textAlign: TextAlign.justify,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            // TableRow(
+            //   children: [
+            //     TableCell(
+            //       child: Padding(
+            //         padding: const EdgeInsets.all(8.0),
+            //         child: Text(
+            //           'Weight', // Tên trường
+            //           style: TextStyle(
+            //             fontWeight: FontWeight.bold,
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //     TableCell(
+            //       child: Padding(
+            //         padding: const EdgeInsets.all(8.0),
+            //         child: Text(
+            //           _snapshot.weight!,
+            //           style: CustomTextWidget.bodyText3(
+            //             color:
+            //                 themeFlag ? AppColors.creamColor : AppColors.mirage,
+            //           ),
+            //           textAlign: TextAlign.justify,
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
 
             TableRow(
               children: [
@@ -287,7 +228,8 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      _snapshot.faceSize!,
+                      _snapshot.autionProductEntity.diameter.toString()!,
+                      // "",
                       style: CustomTextWidget.bodyText3(
                         color:
                             themeFlag ? AppColors.creamColor : AppColors.mirage,
@@ -316,7 +258,7 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      _snapshot.gender!,
+                      _snapshot.autionProductEntity.gender!,
                       style: CustomTextWidget.bodyText3(
                         color:
                             themeFlag ? AppColors.creamColor : AppColors.mirage,
@@ -345,7 +287,8 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      _snapshot.startTime!,
+                      // _snapshot.startTime!,
+                      '${DateFormat('HH:mm  dd/MM/yyyy').format(_snapshot.startTime)}',
                       style: CustomTextWidget.bodyText3(
                         color:
                             themeFlag ? AppColors.creamColor : AppColors.mirage,
@@ -363,34 +306,6 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      'Bidding count', // Tên trường
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                TableCell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                     '\$ ${_snapshot.biddingCount.toString()}',
-                      style: CustomTextWidget.bodyText3(
-                        color:
-                            themeFlag ? AppColors.creamColor : AppColors.mirage,
-                      ),
-                      textAlign: TextAlign.justify,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            TableRow(
-              children: [
-                TableCell(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
                       'Start Price', // Tên trường
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -402,7 +317,7 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                    '\$ ${_snapshot.startPrice}',
+                      '\$ ${_snapshot.autionProductEntity.price}',
                       style: CustomTextWidget.bodyText3(
                         color:
                             themeFlag ? AppColors.creamColor : AppColors.mirage,
@@ -416,7 +331,6 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
           ],
         ),
         vSizedBox2,
-       
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor:
@@ -431,10 +345,10 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
             ),
           ),
           onPressed: () {
-             Navigator.of(context).pushNamed(
-            AppRouter.auctionBiddingPage,
-            arguments: AuctionBiddingPageArgs(auction: _snapshot),
-          );
+            Navigator.of(context).pushNamed(
+              AppRouter.auctionBiddingPage,
+              arguments: AuctionBiddingPageArgs(auction: _snapshot),
+            );
           },
           child: Text(
             'Biding Page',

@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
 import 'package:scarvs/core/notifiers/authentication.notifer.dart';
@@ -12,10 +16,13 @@ import 'package:scarvs/presentation/widgets/dimensions.widget.dart';
 
 import '../../../app/routes/api.routes.dart';
 import '../../../app/routes/app.routes.dart';
+import '../../../core/models/auction_watch.dart';
 import '../../../core/models/favorite_product.dart';
 import '../../../core/models/product.model.dart';
 import '../../../core/service/favorite_product_box.dart';
+import '../../../core/utils/snackbar.util.dart';
 import '../productDetailScreen/product.detail.screen.dart';
+import '../profileScreens/auctionPage/auction_detail_page.dart';
 
 class ProductScreen extends StatefulWidget {
   const ProductScreen({Key? key}) : super(key: key);
@@ -25,6 +32,76 @@ class ProductScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<ProductScreen> {
+  ProductNotifier productNotifier = ProductNotifier();
+  List<AuctionWatch> auctionedWatches = [];
+  List<ProductData> products = [];
+  void initState() {
+    super.initState();
+    _fetchAuctions(context: context);
+  }
+
+  Future<void> _fetchAuctions({required BuildContext context}) async {
+    try {
+      final dio = Dio();
+      final response = await dio.get(ApiRoutes.baseurl + '/api/aution/getlist');
+
+      print(
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>fetchAuctions response.statusCode: ${response.statusCode}");
+      if (response.statusCode == 200) {
+        var responseData = response.data;
+        if (responseData != null && responseData['data'] is List<dynamic>) {
+          List<AuctionWatch> auctionList =
+              (responseData['data'] as List<dynamic>)
+                  .map((json) => AuctionWatch.fromJson(json))
+                  .toList();
+          print(">>>>>>>>>>>>>>>>>>>>>>>>>>AuctionList: ${auctionList.length}");
+
+          setState(() {
+            auctionedWatches = auctionList;
+          });
+          //
+        } else {
+          // Trường hợp không có dữ liệu
+          setState(() {
+            auctionedWatches = [];
+          });
+        }
+      } else {
+        // Trường hợp response code không phải 200
+        setState(() {
+          auctionedWatches = [];
+        });
+      }
+    } on SocketException catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+        text: 'Oops No You Need A Good Internet Connection',
+        context: context,
+      ));
+      setState(() {
+        auctionedWatches = [];
+      });
+    } catch (e) {
+      print("Error: $e");
+      setState(() {
+        auctionedWatches = [];
+      });
+    }
+  }
+
+ 
+List<AuctionWatch> get _upcomingAuctions {
+  // Lấy thời gian hiện tại
+  DateTime now = DateTime.now();
+
+  // Lọc danh sách để chỉ lấy những đồng hồ với thời gian bắt đầu đấu giá trong tương lai
+  // và không có điều kiện
+  List<AuctionWatch> upcomingAuctions = auctionedWatches;
+    return upcomingAuctions.toList();
+
+
+}
+
+
   @override
   Widget build(BuildContext context) {
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
@@ -36,6 +113,86 @@ class _ProductScreenState extends State<ProductScreen> {
     //     Provider.of<AuthenticationNotifier>(context);
     // var userName = _userData.getUserName ?? ' ';
     var userName = authNotifier.auth.username ?? 'Wait';
+
+    Widget _buildAuctionCard(AuctionWatch watch) {
+      return GestureDetector(
+        onTap: () {
+          Navigator.of(context).pushNamed(
+            AppRouter.auction,
+          );
+          // Navigator.of(context).pushNamed(
+          //   AppRouter.auctionDetailPage,
+          //   arguments: AuctionDetailsPageArgs(auction: watch),
+          // );
+        },
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.39,
+          margin: EdgeInsets.symmetric(horizontal: 10),
+          child: Card(
+            elevation: 4,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.width *
+                        0.26, // Đặt chiều cao của SizedBox là chiều cao mong muốn của hình ảnh
+                    width: double
+                        .infinity, // Đặt chiều rộng của SizedBox là vô hạn để đảm bảo lấp đầy không gian
+                    child: watch.autionProductEntity.image != null && watch.autionProductEntity.image.isNotEmpty
+                        ? Image.network(
+                            '$domain/${watch.autionProductEntity.image}',
+                            fit: BoxFit
+                                .cover, // Đặt thuộc tính fit thành BoxFit.cover
+                          )
+                        : Container(),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: SizedBox(
+                    height: 40,
+                    child: Text(
+                      watch.autionProductEntity.producName,
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 4, right: 4),
+                  child: Text(
+                    'From: \$ ${watch.autionProductEntity.price.toString()!}',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w100),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 4, right: 4),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.access_alarm,
+                        size: 16, // Kích thước của biểu tượng đồng hồ
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        '${DateFormat('HH:mm  dd/MM/yyyy').format(watch.startTime!)}',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: themeFlag ? AppColors.mirage : AppColors.creamColor,
@@ -96,23 +253,23 @@ class _ProductScreenState extends State<ProductScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.creamColor,
-                                    enableFeedback: true,
-                                    padding: const EdgeInsets.symmetric(),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                    ),
-                                  ),
-                                  onPressed: () {},
-                                  child: Text(
-                                    'Check',
-                                    style: CustomTextWidget.bodyText3(
-                                      color: AppColors.mirage,
-                                    ),
-                                  ),
-                                ),
+                                // ElevatedButton(
+                                //   style: ElevatedButton.styleFrom(
+                                //     backgroundColor: AppColors.creamColor,
+                                //     enableFeedback: true,
+                                //     padding: const EdgeInsets.symmetric(),
+                                //     shape: RoundedRectangleBorder(
+                                //       borderRadius: BorderRadius.circular(5.0),
+                                //     ),
+                                //   ),
+                                //   onPressed: () {},
+                                //   child: Text(
+                                //     'Check',
+                                //     style: CustomTextWidget.bodyText3(
+                                //       color: AppColors.mirage,
+                                //     ),
+                                //   ),
+                                // ),
                                 hSizedBox3,
                                 SizedBox(
                                   height: 124,
@@ -126,8 +283,27 @@ class _ProductScreenState extends State<ProductScreen> {
                         ),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        'Auctions',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      height: 200,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _upcomingAuctions.length,
+                        itemBuilder: (context, index) {
+                          return _buildAuctionCard(_upcomingAuctions[index]);
+                        },
+                      ),
+                    ),
                     vSizedBox2,
-                     BrandWidget(),
+                    BrandWidget(),
                     vSizedBox2,
                     Text(
                       'New Watches',
@@ -143,7 +319,8 @@ class _ProductScreenState extends State<ProductScreen> {
                       child: Consumer<ProductNotifier>(
                         builder: (context, notifier, _) {
                           return FutureBuilder(
-                            future: notifier.fetchProducts(context: context),
+                            future: notifier.fetchProductsShortNew(
+                                context: context),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
@@ -196,7 +373,7 @@ class _ProductScreenState extends State<ProductScreen> {
                         },
                       ),
                     ),
-                         Text(
+                    Text(
                       'Most purchased products',
                       style: CustomTextWidget.bodyTextB2(
                         color:
@@ -210,7 +387,7 @@ class _ProductScreenState extends State<ProductScreen> {
                       child: Consumer<ProductNotifier>(
                         builder: (context, notifier, _) {
                           return FutureBuilder(
-                            future: notifier.fetchProducts(context: context),
+                            future: notifier.fetchProductss(context: context),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
@@ -291,7 +468,8 @@ class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     var domain = ApiRoutes.baseurl;
-print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.productImage}");
+    print(
+        ">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.productImage}");
 
     return InkWell(
       onTap: () {
@@ -304,8 +482,7 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
         width: 190,
         height: 120,
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child:
-         Card(
+        child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
@@ -348,8 +525,9 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
                     isProductFavorite(widget.prod.productId)
                         ? Icons.favorite
                         : Icons.favorite_border,
-                    color:
-                        widget.themeFlag ? AppColors.creamColor : AppColors.mirage,
+                    color: widget.themeFlag
+                        ? AppColors.creamColor
+                        : AppColors.mirage,
                   ),
                 ),
               ),
@@ -463,7 +641,8 @@ class _ProductCardState1 extends State<ProductCard1> {
   @override
   Widget build(BuildContext context) {
     var domain = ApiRoutes.baseurl;
-print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.productImage}");
+    print(
+        ">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.productImage}");
 
     return InkWell(
       onTap: () {
@@ -474,10 +653,9 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
       },
       child: Container(
         width: 190,
-        height: 120,
+        height: 140,
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child:
-         Card(
+        child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
@@ -497,10 +675,10 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
                   child: Container(
                     width: 60,
                     height: 20,
-                    color: Colors.red,
+                    color: Color.fromARGB(255, 221, 126, 17),
                     child: const Center(
                       child: Text(
-                        "NEW",
+                        "BEST",
                         style: TextStyle(
                           color: Colors.white,
                         ),
@@ -520,8 +698,9 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
                     isProductFavorite(widget.prod.productId)
                         ? Icons.favorite
                         : Icons.favorite_border,
-                    color:
-                        widget.themeFlag ? AppColors.creamColor : AppColors.mirage,
+                    color: widget.themeFlag
+                        ? AppColors.creamColor
+                        : AppColors.mirage,
                   ),
                 ),
               ),
@@ -544,8 +723,8 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
                 ),
               ),
               Positioned(
-                top: 132,
-                left: 02,
+                bottom: 0,
+                left: 00,
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                   child: Column(
@@ -563,13 +742,36 @@ print(">>>>>>>>>>>>>> Product Image Url In Product screen: ${widget.prod.product
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        '      \$  ${widget.prod.productPrice}',
+                        '\$  ${widget.prod.productPrice}',
                         style: CustomTextWidget.bodyText3(
                           color: widget.themeFlag
                               ? AppColors.creamColor
                               : AppColors.mirage,
                         ),
                         maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                right: 00,
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Buy:${widget.prod.totalBuy}',
+                        style: CustomTextWidget.bodyText3(
+                          color: widget.themeFlag
+                              ? AppColors.creamColor
+                              : AppColors.mirage,
+                        ),
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],

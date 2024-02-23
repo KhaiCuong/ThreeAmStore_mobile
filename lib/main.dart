@@ -6,6 +6,7 @@ import 'package:scarvs/app/providers/app.provider.dart';
 import 'package:scarvs/app/routes/app.routes.dart';
 import 'package:scarvs/core/models/address.dart';
 import 'package:scarvs/core/models/favorite_product.dart';
+import 'package:scarvs/core/models/feedback_status.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'core/models/orders.dart';
 import 'core/notifiers/address.notifiter.dart';
@@ -20,9 +21,11 @@ Future<void> main() async {
   Hive.registerAdapter(OrderDataAdapter());
   Hive.registerAdapter(FavoriteProductAdapter());
   Hive.registerAdapter(AddressAdapter());
+  Hive.registerAdapter(FeedbackStatusAdapter());
   await Hive.openBox<OrderData>('orders');
   await Hive.openBox<FavoriteProduct>('favorite_products');
   await Hive.openBox<Address>('addresses');
+  await Hive.openBox<FeedbackStatus>('feedback_status');
   runApp(const Lava());
 }
 

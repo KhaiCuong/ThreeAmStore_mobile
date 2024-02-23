@@ -109,6 +109,11 @@ class CartAPI {
             "orderId": orderId,
             "productId": order.productId,
           }));
+      var subUrl3 = '/api/Product/UpdateProductInStock/${order.productId}';
+      final Uri uri3 = Uri.parse(ApiRoutes.baseurl + subUrl3);
+      http.Response response3 = await client.put(uri3,
+          headers: headers, body: jsonEncode({"quantity": 1}));
+
       print(
           "====================================================================");
       print("quantity : ${order.quantity}");
@@ -120,6 +125,8 @@ class CartAPI {
 
       print(
           "ADD OrderDetail APi response2.statusCode : ${response2.statusCode}");
+               print(
+          "ADD Update Product Quantity APi response3.statusCode : ${response3.statusCode}");
     }
 
     const subUrl3 = '/api/Payment/AddPayment';

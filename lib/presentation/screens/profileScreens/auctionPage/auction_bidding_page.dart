@@ -1,11 +1,17 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import '../../../../app/constants/app.assets.dart';
 import '../../../../app/routes/api.routes.dart';
 import '../../../../core/models/auction_watch.dart';
+import '../../../../core/models/bid_auction.dart';
+import '../../../../core/notifiers/authentication.notifer.dart';
 import '../../../../core/notifiers/theme.notifier.dart';
+import '../../../../core/utils/snackbar.util.dart';
 
 class AuctionBiddingPage extends StatefulWidget {
   const AuctionBiddingPage({Key? key, required this.auctionDetailsPageArgs})
@@ -18,19 +24,21 @@ class AuctionBiddingPage extends StatefulWidget {
 }
 
 class _AuctionBiddingPageState extends State<AuctionBiddingPage> {
-  late String highestBid = '5000'; // Giá cao nhất khởi tạo mặc định
+  late String highestBid = '0'; // Giá cao nhất khởi tạo mặc định
   List<Bid> bidHistory = []; // Lịch sử bids
   late DateTime endTime;
   late Timer timer;
+  
+  late Bid highestBidBid = Bid(bidId: 0, pidPrice: 0.0, autionId: 3, userId: 1);
 
   @override
   void initState() {
     super.initState();
     // Bắt đầu timer khi widget được khởi tạo
     var watch = widget.auctionDetailsPageArgs.auction;
- endTime = DateTime.parse(watch.startTime).add(Duration(hours: 1));
- // Thời gian kết thúc đấu giá
-
+    endTime = watch.startTime.add(Duration(hours: 1));
+    // Thời gian kết thúc đấu giá
+    _fetchAuctionsBids();
     timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
       fetchHighestBid();
     });
@@ -44,51 +52,102 @@ class _AuctionBiddingPageState extends State<AuctionBiddingPage> {
     super.dispose();
   }
 
+  Future<void> _fetchAuctionsBids() async {
+    try {
+      final dio = Dio();
+      final response = await dio.get(ApiRoutes.baseurl + '/api/bid/getlist');
+      // print(
+      // ">>>>>>>>>>>>>>>>>>>>>>>>>>_fetchAuctionsBids response.data: ${response.data}");
+      print(
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>_fetchAuctionsBids response.statusCode: ${response.statusCode}");
+      if (response.statusCode == 200) {
+        var responseData = response.data;
+        if (responseData != null && responseData['data'] is List<dynamic>) {
+          List<Bid> auctionList = (responseData['data'] as List<dynamic>)
+              .map((json) => Bid.fromJson(json))
+              .where((bid) =>
+                  bid.autionId ==
+                  widget.auctionDetailsPageArgs.auction.autionId) // Lọc các bid với auctionId = 3
+              .toList();
+          print(
+              ">>>>>>>>>>>>>>>>>>>>>>>>>>_fetchAuctionsBids: ${auctionList.length}");
+
+          setState(() {
+            bidHistory = auctionList;
+
+            // Tìm bid có giá cao nhất từ danh sách bid mới
+            double maxBidPrice = 0.0;
+            Bid maxBid = Bid(bidId: 0, pidPrice: 0.0, autionId: 3, userId: 1);
+            for (var bid in auctionList) {
+              if (bid.pidPrice! > maxBidPrice) {
+                maxBidPrice = bid.pidPrice!;
+                maxBid = bid;
+              }
+            }
+            highestBidBid = maxBid;
+            highestBid = maxBidPrice.toString();
+          });
+          //
+        } else {
+          // Trường hợp không có dữ liệu
+          setState(() {
+            bidHistory = [];
+          });
+        }
+      } else {
+        // Trường hợp response code không phải 200
+        setState(() {
+          bidHistory = [];
+        });
+      }
+    } on SocketException catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+        text: 'Oops No You Need A Good Internet Connection',
+        context: context,
+      ));
+      setState(() {
+        bidHistory = [];
+      });
+    } catch (e) {
+      print("Error: $e");
+      setState(() {
+        bidHistory = [];
+      });
+    }
+  }
+
   // Hàm gọi API để lấy giá cao nhất
   Future<void> fetchHighestBid() async {
-    // Giả lập dữ liệu từ API, thay thế với dữ liệu thực tế
-    // final response = await http.get(Uri.parse('your_api_url'));
-    // if (response.statusCode == 200) {
-    //   final data = jsonDecode(response.body);
-    //   setState(() {
-    //     highestBid = data['highest_bid'].toString();
-    //   });
-    // } else {
-    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    //     content: Text('Failed to fetch highest bid'),
-    //   ));
-    // }
+
+    _fetchAuctionsBids();
 
     // Giả lập dữ liệu
     setState(() {
-      highestBid = '6000'; 
-      endTime = endTime.subtract(Duration(seconds: 1));// Giả lập dữ liệu mới
+      // highestBid = '6000';
+      endTime = endTime.subtract(Duration(seconds: 1)); // Giả lập dữ liệu mới
     });
   }
 
   // Hàm giả lập lịch sử bids
   void fetchBidHistory() {
-    // Giả lập dữ liệu
-    List<Bid> tempBids = [
-      Bid(bidPrice: 5100, bidderName: 'User A'),
-      Bid(bidPrice: 5500, bidderName: 'User B'),
-      Bid(bidPrice: 5900, bidderName: 'User C'),
-    ];
+    _fetchAuctionsBids();
 
     setState(() {
-      bidHistory = tempBids;
+      // bidHistory = tempBids;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     var watch = widget.auctionDetailsPageArgs.auction;
+    final authNotifier =
+        Provider.of<AuthenticationNotifier>(context, listen: false);
+    var _userId = authNotifier.auth.id!;
     ThemeNotifier _themeNotifier = Provider.of<ThemeNotifier>(context);
     var themeFlag = _themeNotifier.darkTheme;
     return Scaffold(
-        resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        
         title: Text('Auction Bidding'),
       ),
       body: Padding(
@@ -110,49 +169,33 @@ class _AuctionBiddingPageState extends State<AuctionBiddingPage> {
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.4,
                     width: MediaQuery.of(context).size.width * 0.8,
-                    child: watch.image != null && watch.image!.isNotEmpty
-                        ? Image.network("$domain/${watch.image!}",
+                    child: watch.autionProductEntity.image != null &&
+                            watch.autionProductEntity.image!.isNotEmpty
+                        ? Image.network(
+                            "$domain/${watch.autionProductEntity.image!}",
                             alignment: Alignment.center)
                         : Container(),
                   ),
                 ),
               ],
             ),
-            // ClipRRect(
-            //   borderRadius: const BorderRadius.only(
-            //     topLeft: Radius.circular(10),
-            //     topRight: Radius.circular(10),
-            //   ),
-            //   child: SizedBox(
-            //     height: MediaQuery.of(context).size.height *
-            //         0.35, // Đặt chiều cao của SizedBox là chiều cao mong muốn của hình ảnh
-            //     width: double
-            //         .infinity, // Đặt chiều rộng của SizedBox là vô hạn để đảm bảo lấp đầy không gian
-            //     child: watch.image != null && watch.image!.isNotEmpty
-            //         ? Image.network(
-            //             "$domain/${watch.image!}",
-            //             fit: BoxFit
-            //                 .cover, // Đặt thuộc tính fit thành BoxFit.cover
-            //           )
-            //         : Container(),
-            //   ),
-            // ),
+
             SizedBox(height: 15),
 
             Row(
               children: [
                 Text(
-                  'Start Price: \$${widget.auctionDetailsPageArgs.auction.startPrice}',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  'Start Price: \$${widget.auctionDetailsPageArgs.auction.autionProductEntity.price}',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(width: 20),
                 Text(
                   'Highest Price: $highestBid',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
-             SizedBox(height: 15),
+            SizedBox(height: 15),
             // Hiển thị thời gian còn lại
             Text(
               'Time to Bid: ${_formatTimeLeft(endTime)}',
@@ -160,42 +203,44 @@ class _AuctionBiddingPageState extends State<AuctionBiddingPage> {
             ),
             SizedBox(height: 20),
             // Kiểm tra điều kiện để hiển thị nút Place Bid hoặc Time out to Bid
-            if (DateTime.now().isBefore(endTime)) // Kiểm tra nếu vẫn còn thời gian
+            if (DateTime.now()
+                .isBefore(endTime)) // Kiểm tra nếu vẫn còn thời gian
               ElevatedButton(
                 onPressed: () {
-                  _showBidDialog(
-                    context,
-                    "Bidding",
-                  );
+                _showBidDialog(context, "Bidding", watch.autionId, _userId, 100, double.parse(highestBid));
+
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text('Place Bid'),
                 ),
               ),
-            if (DateTime.now().isAfter(endTime)) // Kiểm tra nếu đã hết thời gian
+            if (DateTime.now()
+                .isAfter(endTime)) // Kiểm tra nếu đã hết thời gian
               ElevatedButton(
                 onPressed: null, // Vô hiệu hóa nút khi đã hết thời gian
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.grey, // Màu xám để biểu thị nút đã bị vô hiệu hóa
+                  primary:
+                      Colors.grey, // Màu xám để biểu thị nút đã bị vô hiệu hóa
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text('Not Time to Bid'), // Hiển thị thông báo đã hết thời gian
+                  child: Text(
+                      'Not Time to Bid'), // Hiển thị thông báo đã hết thời gian
                 ),
               ),
             SizedBox(height: 20),
             Text(
-                  'Curent Bid: ',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+              'Curent Bid: ',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: bidHistory.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text('Bid: ${bidHistory[index].bidPrice}'),
-                    subtitle: Text('Bidder: ${bidHistory[index].bidderName}'),
+                    title: Text('Bidder: ${bidHistory[index].userId!}'),
+                    subtitle: Text('Bid: ${bidHistory[index].pidPrice!}'),
                   );
                 },
               ),
@@ -205,13 +250,21 @@ class _AuctionBiddingPageState extends State<AuctionBiddingPage> {
       ),
     );
   }
-   // Hàm hiển thị thời gian còn lại dưới dạng giờ:phút:giây
-  String _formatTimeLeft(DateTime endTime) {
+
+  String _formatTimeLeft(DateTime startTime) {
+    DateTime endTime = startTime;
     Duration difference = endTime.difference(DateTime.now());
-    String hours = difference.inHours.toString().padLeft(2, '0');
-    String minutes = (difference.inMinutes % 60).toString().padLeft(2, '0');
-    String seconds = (difference.inSeconds % 60).toString().padLeft(2, '0');
-    return '$hours:$minutes:$seconds';
+
+    if (difference.inSeconds < 0) {
+      return 'Time out';
+    } else if (difference.inHours > 1) {
+      return 'Please Waite';
+    } else {
+      String hours = difference.inHours.toString().padLeft(2, '0');
+      String minutes = (difference.inMinutes % 60).toString().padLeft(2, '0');
+      String seconds = (difference.inSeconds % 60).toString().padLeft(2, '0');
+      return '$hours:$minutes:$seconds';
+    }
   }
 }
 
@@ -220,15 +273,37 @@ class AuctionBiddingPageArgs {
   const AuctionBiddingPageArgs({required this.auction});
 }
 
-class Bid {
-  final int bidPrice;
-  final String bidderName;
+void _showBidDialog(BuildContext context, String field, int autionId, int userId, double pidPice, double highestBid) async {
 
-  Bid({required this.bidPrice, required this.bidderName});
-}
-
- void _showBidDialog(BuildContext context, String field) async {
   TextEditingController _textEditingController = TextEditingController();
+
+  Future addBidToApiCart(
+      {required double pidPice,
+      required int autionId,
+      required int userId}) async {
+    var headers = {'Content-Type': 'application/json'};
+    var request =
+        http.Request('POST', Uri.parse(ApiRoutes.baseurl + '/api/bid/addnew'));
+    request.body = json
+        .encode({"pidPice": pidPice, "autionId": autionId, "userId": userId});
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 201) {
+      // print(await response.stream.bytesToString());
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+          context: context, text: 'Bid SuccessFully'));
+    } else {
+      // print(response.reasonPhrase);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackUtil.stylishSnackBar(context: context, text: 'Bid fail'));
+    }
+    print(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>> ADD Bid APi response.statusCode : ${response.statusCode}");
+    // print(
+    // ">>>>>>>>>>>>>>>>>>>>>>>>>> ADD Bid APi response.body : ${response.}");
+  }
 
   showDialog(
     context: context,
@@ -242,7 +317,7 @@ class Bid {
                 controller: _textEditingController,
                 style: TextStyle(color: Colors.black),
                 decoration: InputDecoration(
-                  labelText: "Enter Price to Bid:",
+                  labelText: "Enter Price > $highestBid:",
                   labelStyle: TextStyle(color: Colors.grey),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey),
@@ -263,21 +338,26 @@ class Bid {
           ),
         ),
         actions: [
-          ElevatedButton(
-            onPressed: () {
-              String newBid = _textEditingController.text;
-              if (newBid.isNotEmpty) {
-                // Xử lý logic đặt bid ở đây
-                Navigator.pop(context);
-              } else {
-                // Hiển thị thông báo khi người dùng chưa nhập giá bid
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Please enter a bid amount'),
-                ));
-              }
-            },
-            child: Text("Bid"),
-          ),
+         ElevatedButton(
+  onPressed: () {
+    String newBid = _textEditingController.text;
+    double intBid = double.parse(newBid);
+
+    // Kiểm tra nếu giá bid mới nhỏ hơn hoặc bằng giá cao nhất
+    if (intBid <= highestBid) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Your bid must be higher than the current highest bid.'),
+      ));
+    } else {
+      // Xử lý logic đặt bid ở đây
+      addBidToApiCart(
+          autionId: autionId, pidPice: intBid, userId: userId);
+      Navigator.pop(context);
+    }
+  },
+  child: Text("Bid"),
+),
+
           TextButton(
             onPressed: () {
               Navigator.pop(context);
