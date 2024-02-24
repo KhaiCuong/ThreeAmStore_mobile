@@ -75,8 +75,8 @@ class _ShowDataGridState extends State<ShowDataGrid> {
                     child: Hero(
                       tag: Key(prod.productId.toString()),
                       child: SizedBox(
-                        height:
-                            MediaQuery.of(context).size.width * 0.40, // Đặt chiều cao của SizedBox là chiều cao mong muốn của hình ảnh
+                        height: MediaQuery.of(context).size.width *
+                            0.40, // Đặt chiều cao của SizedBox là chiều cao mong muốn của hình ảnh
                         width: double
                             .infinity, // Đặt chiều rộng của SizedBox là vô hạn để đảm bảo lấp đầy không gian
                         child: prod.productImage != null &&
@@ -88,7 +88,6 @@ class _ShowDataGridState extends State<ShowDataGrid> {
                               )
                             : Container(),
                       ),
-
                     ),
                   ),
 
@@ -214,35 +213,34 @@ class _ShowDataGridState extends State<ShowDataGrid> {
                   //   ),
                   // ),
                   // Tên sản phẩm
-                 Positioned(
-  bottom: 36,
-  left: 2,
-  right: 2,
-  child: Container(
-    padding: EdgeInsets.only(top: 10),
-    height: 60,
-    width: 60,
-    child: Row(
-      children: [
-        Expanded(
-          child: Container(
-            padding: EdgeInsets.only(left: 2),
-            child: Text(
-              prod.productName,
-              style: TextStyle(
-                color: themeFlag
-                    ? AppColors.creamColor
-                    : AppColors.blackPearl,
-                fontSize: 12,
-              ),
-            ),
-          ),
-        ),
-      ],
-    ),
-  ),
-),
-
+                  Positioned(
+                    bottom: 36,
+                    left: 2,
+                    right: 2,
+                    child: Container(
+                      padding: EdgeInsets.only(top: 10),
+                      height: 60,
+                      width: 60,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.only(left: 2),
+                              child: Text(
+                                prod.productName,
+                                style: TextStyle(
+                                  color: themeFlag
+                                      ? AppColors.creamColor
+                                      : AppColors.blackPearl,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -673,7 +673,7 @@ class _ProductCardState1 extends State<ProductCard1> {
       },
       child: Container(
         width: 190,
-        height: 140,
+        height: 146,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Card(
           shape: RoundedRectangleBorder(
@@ -742,39 +742,46 @@ class _ProductCardState1 extends State<ProductCard1> {
                   ),
                 ),
               ),
-              Positioned(
-                bottom: 0,
-                left: 00,
-                child: Container(
-                  margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.prod.productName,
-                        style: CustomTextWidget.bodyText3(
-                          color: widget.themeFlag
-                              ? AppColors.creamColor
-                              : AppColors.mirage,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        '\$  ${widget.prod.productPrice}',
-                        style: CustomTextWidget.bodyText3(
-                          color: widget.themeFlag
-                              ? AppColors.creamColor
-                              : AppColors.mirage,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+             Positioned(
+  bottom: 0,
+  left: 0,
+  child: Container(
+    margin: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+        
+          height: 38,
+          width: 140,
+          
+          child: Text(
+            widget.prod.productName,
+            style: CustomTextWidget.bodyText3(
+              color: widget.themeFlag
+                  ? AppColors.creamColor
+                  : AppColors.mirage,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Text(
+          '\$  ${widget.prod.productPrice}',
+          style: CustomTextWidget.bodyText3(
+            color: widget.themeFlag
+                ? AppColors.creamColor
+                : AppColors.mirage,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    ),
+  ),
+),
+
               Positioned(
                 bottom: 0,
                 right: 00,
