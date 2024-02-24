@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
-import 'package:scarvs/core/models/userDetails.model.dart';
 import 'package:scarvs/core/notifiers/authentication.notifer.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:scarvs/core/notifiers/user.notifier.dart';
-import 'package:scarvs/core/utils/snackbar.util.dart';
 import 'package:scarvs/presentation/widgets/custom.back.btn.dart';
 import 'package:scarvs/presentation/widgets/custom.text.field.dart';
 import 'package:scarvs/presentation/widgets/custom.text.style.dart';
@@ -120,28 +117,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         // validator: (val) =>
                         //     val!.isEmpty ? 'Enter FullName' : null,
                       ),
-                      vSizedBox3,
-                         Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Password',
-                          style: TextStyle(
-                            color: themeFlag
-                                ? AppColors.creamColor
-                                : AppColors.mirage,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                      ),
-                      CustomTextField.customTextField(
-                        textEditingController: passwordController,
+                      // vSizedBox3,
+                      //    Align(
+                      //   alignment: Alignment.centerLeft,
+                      //   child: Text(
+                      //     'Password',
+                      //     style: TextStyle(
+                      //       color: themeFlag
+                      //           ? AppColors.creamColor
+                      //           : AppColors.mirage,
+                      //       fontSize: 17,
+                      //       fontWeight: FontWeight.w300,
+                      //     ),
+                      //   ),
+                      // ),
+                      // CustomTextField.customTextField(
+                      //   textEditingController: passwordController,
 
-                        hintText: 'Enter New Password',
-                        obscureText: true, labelText: 'PassWord:',
-                        // validator: (val) =>
-                        //     val!.isEmpty ? 'Enter New Password' : null,
-                      ),
+                      //   hintText: 'Enter New Password',
+                      //   obscureText: true, labelText: 'PassWord:',
+                      //   // validator: (val) =>
+                      //   //     val!.isEmpty ? 'Enter New Password' : null,
+                      // ),
                       vSizedBox3,
                       Align(
                         alignment: Alignment.centerLeft,
@@ -200,7 +197,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     userId: authNotifier.auth.id,
                                     email: authNotifier.auth.useremail,
                                     address: addressController.text,
-                                    phone_number: numberController.text,
+                                    phoneNumber: numberController.text,
                                     fullname: nameController.text,
                                     password: authNotifier.auth.userpassword,
                                     context: context)

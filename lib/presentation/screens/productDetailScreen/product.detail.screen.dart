@@ -402,10 +402,10 @@ class _ProductDetailState extends State<ProductDetail> {
                           .updateQuantityInCart(_snapshot.productId, 1);
                       if (updateQuantity) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackUtil.stylishSnackBar(
-                            text: 'Added More To Cart',
-                            context: context,
-                          ),
+                            SnackBar(
+    content: Text('Added More To Cart'),
+    duration: Duration(seconds: 2), // Thời gian tồn tại 2 giây
+  ),
                         );
                       }
                     } else {
@@ -425,10 +425,10 @@ class _ProductDetailState extends State<ProductDetail> {
                       );
 
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackUtil.stylishSnackBar(
-                          text: 'Added To Cart',
-                          context: context,
-                        ),
+                         SnackBar(
+    content: Text('Added To Cart'),
+    duration: Duration(seconds: 2), // Thời gian tồn tại 2 giây
+  ),
                       );
                     }
                   },
@@ -498,8 +498,7 @@ _showHistoryFeedback(BuildContext context, String id) {
       return Container(child: Consumer<ProductNotifier>(
         builder: (context, notifier, _) {
           return FutureBuilder(
-            future:
-                notifier.fetchProductsFeedBack(context: context, id:id ),
+            future: notifier.fetchProductsFeedBack(context: context, id: id),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
@@ -528,7 +527,13 @@ _showHistoryFeedback(BuildContext context, String id) {
                           for (var item in data) ...[
                             SizedBox(height: 8),
                             Text(
-                              item['content'],
+                              item['title'],
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                             Text("content: ${item['content']}"
+                              ,
                               style: TextStyle(
                                 fontSize: 16,
                               ),

@@ -11,6 +11,7 @@ import 'package:scarvs/presentation/widgets/custom.text.style.dart';
 import 'package:scarvs/presentation/widgets/custom.loader.dart';
 import 'package:scarvs/presentation/widgets/dimensions.widget.dart';
 import 'package:scarvs/presentation/widgets/shimmer.effects.dart';
+import '../../../core/models/category.dart';
 import '../../../core/models/product.model.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -44,7 +45,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   ),
                   Center(
                     child: Text(
-                      widget.categoryScreenArgs.categoryName,
+                      widget.categoryScreenArgs.category.categoryName,
                       style: CustomTextWidget.bodyTextB2(
                         color:
                             themeFlag ? AppColors.creamColor : AppColors.mirage,
@@ -63,57 +64,19 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   child: Consumer<ProductNotifier>(
                     builder: (context, notifier, _) {
                       return FutureBuilder(
-                        future: widget.categoryScreenArgs.categoryName ==
-                                'All Brands'
+                        future: widget.categoryScreenArgs.category.categoryId ==
+                                'all'
                             ? notifier.fetchProducts(context: context)
                             : notifier.fetchProductCategoryById(
                                 context: context,
-                                id: widget.categoryScreenArgs.categoryName ==
-                                        'Rolex'
-                                    ? 'RL'
-                                    : widget.categoryScreenArgs.categoryName ==
-                                            'Omega'
-                                        ? 'OM'
-                                        : widget.categoryScreenArgs
-                                                    .categoryName ==
-                                                'Casio'
-                                            ? 'CS'
-                                            : widget.categoryScreenArgs
-                                                        .categoryName ==
-                                                    'Orient'
-                                                ? 'OR'
-                                                : widget.categoryScreenArgs
-                                                            .categoryName ==
-                                                        'Citizen'
-                                                    ? 'CT'
-                                                    : widget.categoryScreenArgs
-                                                                .categoryName ==
-                                                            'Calvin Klein'
-                                                        ? 'CK'
-                                                        : widget.categoryScreenArgs
-                                                                    .categoryName ==
-                                                                'Daniel Wellington'
-                                                            ? 'DW'
-                                                             : widget.categoryScreenArgs
-                                                        .categoryName ==
-                                                    'Movado'
-                                                ? 'MV'
-                                                            : widget.categoryScreenArgs
-                                                                        .categoryName ==
-                                                                    'Seiko'
-                                                                ? 'Sk'
-                                                                : widget.categoryScreenArgs
-                                                                            .categoryName ==
-                                                                        'Hublot'
-                                                                    ? 'HL'
-                                                                    : 'HL',
+                                id: widget.categoryScreenArgs.category.categoryId
                               ),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return ShimmerEffects.buildCategoryShimmer(
                                 context: context);
-                          } else if (!snapshot.hasData) {
+                          } else if (snapshot?.data == null || (snapshot.data as List<ProductData>).isEmpty) {
                             return customLoader(
                               context: context,
                               themeFlag: themeFlag,
@@ -139,6 +102,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
 }
 
 class CategoryScreenArgs {
-  final dynamic categoryName;
-  const CategoryScreenArgs({required this.categoryName});
+  final Category category;
+  const CategoryScreenArgs({required this.category});
 }

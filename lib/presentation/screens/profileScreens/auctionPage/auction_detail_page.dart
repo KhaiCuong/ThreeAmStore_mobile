@@ -40,6 +40,9 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
 
   Widget _buildProductUI(
       BuildContext context, bool themeFlag, dynamic _snapshot, int _userId) {
+          DateTime now = DateTime.now();
+  DateTime auctionStartTime = _snapshot.startTime; // Giả sử startTime là thời gian bắt đầu đấu giá
+  bool isAuctionStarted = now.isAfter(auctionStartTime);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -331,6 +334,7 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
           ],
         ),
         vSizedBox2,
+          if (isAuctionStarted)
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor:
@@ -356,7 +360,32 @@ class _AuctionDetailPageState extends State<AuctionDetailPage> {
               color: themeFlag ? AppColors.mirage : AppColors.creamColor,
             ),
           ),
-        ),
+        )
+         else
+          ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor:
+                themeFlag ? AppColors.creamColor : AppColors.lightmirage,
+            enableFeedback: true,
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.286,
+              vertical: 8,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+          onPressed: () {
+          
+          },
+          child: Text(
+            'Please Wait',
+            style: CustomTextWidget.bodyTextB2(
+              color: themeFlag ? AppColors.mirage : AppColors.creamColor,
+            ),
+          ),
+        )
+    
       ],
     );
   }

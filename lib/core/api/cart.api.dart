@@ -14,46 +14,6 @@ class CartAPI {
     // "Authorization": token,
   };
 
-//  Future addToCart({
-//   required String useremail,
-//   required BuildContext context,
-//   required String productSize,
-// }) async {
-//   const subUrl = '/api/Order/AddOrder';
-//   final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
-
-//   final http.Response response = await client.post(uri,
-//       headers: headers,
-//       body: jsonEncode({
-//         "username": 'nguyen minh hoang',
-//         "address": 'tran van dang q5',
-//         "phone_number": '0909090909',
-//         "userId": 1,
-//       }));
-
-//   print(">>>>>>>>>>>>>>>>>>>>>>>>>> ADD Order response.statusCode : ${response.statusCode}");
-
-//   final dynamic orderBody = jsonDecode(response.body);
-//   final int orderId = orderBody["orderId"];
-//   print(">>>>>>>>>>>>>>>>>>>>>>>>>>  orderId: ${orderId}");
-
-//   const subUrl2 = '/api/OrderDetail/AddOrderDetail';
-//   final Uri uri2 = Uri.parse(ApiRoutes.baseurl + subUrl2);
-
-//   final http.Response response2 = await client.post(uri2,
-//       headers: headers,
-//       body: jsonEncode({
-//         "quantity": 2,
-//         "price": 1223412,
-//         "produc_name": 'CALVIN KLEIN K8M216G6',
-//         "productId": 'PD03',
-//         "image": '/uploads/lue14k4d.3i4PD1-1.jpg',
-//         "orderId": orderId,
-//       }));
-//   print(">>>>>>>>>>>>>>>>>>>>>>>>>> ADD OrderDetail response.statusCode : ${response2.statusCode}");
-//   final dynamic body = jsonDecode(response2.body);
-//   return body;
-// }
   Future addToApiCart({
     required String useremail,
     required String username,
@@ -109,24 +69,34 @@ class CartAPI {
             "orderId": orderId,
             "productId": order.productId,
           }));
-      var subUrl3 = '/api/Product/UpdateProductInStock/${order.productId}';
-      final Uri uri3 = Uri.parse(ApiRoutes.baseurl + subUrl3);
-      http.Response response3 = await client.put(uri3,
-          headers: headers, body: jsonEncode({"quantity": 1}));
+      var subUrl4 = '/api/Product/UpdateProductInStock/${order.productId}';
+      final Uri uri4 = Uri.parse(ApiRoutes.baseurl + subUrl4);
+      http.Response response4 = await client.put(uri4,
+          headers: headers, body: jsonEncode( order.quantity));
 
-      print(
-          "====================================================================");
-      print("quantity : ${order.quantity}");
-      print("price    : ${order.price}");
-      print("name     : ${order.productName}");
-      print("product id: ${order.productId}");
-      print("image    : ${order.image}");
-      print("order id : ${orderId}");
+
+      var subUrl5 = '/api/Product/UpdateProductTotalBuy/${order.productId}';
+      final Uri uri5 = Uri.parse(ApiRoutes.baseurl + subUrl5);
+      http.Response response5 = await client.put(uri5,
+          headers: headers, body: jsonEncode( order.quantity));
+              print(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>> Instock update APi response.statusCode : ${response4.statusCode}");
+            print(
+        ">>>>>>>>>>>>>>>>>>>>>>>>>> Total Buy APi response.statusCode : ${response5.statusCode}");
+
+      // print(
+      //     "====================================================================");
+      // print("quantity : ${order.quantity}");
+      // print("price    : ${order.price}");
+      // print("name     : ${order.productName}");
+      // print("product id: ${order.productId}");
+      // print("image    : ${order.image}");
+      // print("order id : ${orderId}");
 
       print(
           "ADD OrderDetail APi response2.statusCode : ${response2.statusCode}");
                print(
-          "ADD Update Product Quantity APi response3.statusCode : ${response3.statusCode}");
+          "ADD Update Product Quantity APi response3.statusCode : ${response4.statusCode}");
     }
 
     const subUrl3 = '/api/Payment/AddPayment';

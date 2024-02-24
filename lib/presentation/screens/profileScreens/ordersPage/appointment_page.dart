@@ -645,7 +645,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        duration: Duration(seconds: time), // Thời gian
+        duration: Duration(seconds: 2), // Thời gian
       ),
     );
   }
@@ -662,8 +662,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
   void showPaySuccessSnackbar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Đã Thanh toán thành công!'),
-        duration: Duration(seconds: 3), // Thời gian
+        content: Text('Payment success!'),
+        duration: Duration(seconds: 2), // Thời gian
       ),
     );
   }

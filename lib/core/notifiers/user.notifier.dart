@@ -137,11 +137,12 @@ class UserNotifier with ChangeNotifier {
         notifyListeners();
       }
     } on SocketException catch (_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackUtil.stylishSnackBar(
-            text: 'Oops No You Need A Good Internet Connection',
-            context: context),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackUtil.stylishSnackBar(
+      //       text: '',
+      //       context: context),
+      // );
+      print('w');
     }
   }
 

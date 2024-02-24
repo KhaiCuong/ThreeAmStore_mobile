@@ -239,7 +239,7 @@ class AuthenticationNotifier with ChangeNotifier {
       required int userId,
       required String password,
       required String fullname,
-      required String phone_number,
+      required String phoneNumber,
       required String address,
       required String email}) async {
     // try {
@@ -257,11 +257,11 @@ class AuthenticationNotifier with ChangeNotifier {
           "fullname": fullname,
           "email": email,
           "address": address,
-          "phone_number": phone_number,
+          "phone_number": phoneNumber,
           "role": "User",
           "password": password
         }));
-    // print(">>>>>>>>>>>>>>>>>>>>>>>body: ${jsonEncode({
+    print(">>>>>>>>>>>>>>>>>>>>>>>phoneNumber in api: ${phoneNumber}");
     //       "userId": userId,
     //       "fullname": fullname,
     //       "email": email,

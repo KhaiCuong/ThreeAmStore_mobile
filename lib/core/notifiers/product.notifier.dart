@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:scarvs/core/api/product.api.dart';
 import 'package:scarvs/core/models/auction_watch.dart';
 import 'package:scarvs/core/models/product.model.dart';
+import 'package:scarvs/core/models/category.dart';
 import 'package:scarvs/core/utils/snackbar.util.dart';
 
 import '../../app/routes/api.routes.dart';
@@ -133,13 +134,14 @@ class ProductNotifier with ChangeNotifier {
         var responseData = response.data;
         // print(">>>>>>>>>>>>>>>>>>>>>>>>>>responseData : ${responseData['data']}");
 
-    if (responseData != null && responseData['data'] is List<dynamic>) {
-  List<ProductData> productList = (responseData['data'] as List<dynamic>)
-      .where((json) => json['status'] == true) // Filter by status=true
-      .map((json) => ProductData.fromJson(json))
-      .toList();
-  print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: ${productList.length}");
-  return productList;
+        if (responseData != null && responseData['data'] is List<dynamic>) {
+          List<ProductData> productList = (responseData['data']
+                  as List<dynamic>)
+              .where((json) => json['status'] == true) // Filter by status=true
+              .map((json) => ProductData.fromJson(json))
+              .toList();
+          print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: ${productList.length}");
+          return productList;
         } else {
           return [];
           // Xử lý khi data là null hoặc không phải là List<dynamic>
@@ -161,98 +163,102 @@ class ProductNotifier with ChangeNotifier {
     }
   }
 
-  Future<List<ProductData>> fetchProductss({required BuildContext context}) async {
-  try {
-    final dio = Dio();
-    final response = await dio.get(ApiRoutes.baseurl + '/api/Product/GetProductList');
+  Future<List<ProductData>> fetchProductss(
+      {required BuildContext context}) async {
+    try {
+      final dio = Dio();
+      final response =
+          await dio.get(ApiRoutes.baseurl + '/api/Product/GetProductList');
 
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>Products response.statusCode: ${response.statusCode}");
-    if (response.statusCode == 200) {
-      var responseData = response.data;
-      if (responseData != null && responseData['data'] is List<dynamic>) {
-  List<ProductData> productList = (responseData['data'] as List<dynamic>)
-      .where((json) => json['status'] == true) // Filter by status=true
-      .map((json) => ProductData.fromJson(json))
-      .toList();
+      print(
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>Products response.statusCode: ${response.statusCode}");
+      if (response.statusCode == 200) {
+        var responseData = response.data;
+        if (responseData != null && responseData['data'] is List<dynamic>) {
+          List<ProductData> productList = (responseData['data']
+                  as List<dynamic>)
+              .where((json) => json['status'] == true) // Filter by status=true
+              .map((json) => ProductData.fromJson(json))
+              .toList();
 
+          // Sắp xếp danh sách sản phẩm theo trường totalBuy giảm dần
+          productList.sort((a, b) {
+            final totalBuyA = a.totalBuy;
+            final totalBuyB = b.totalBuy;
 
-        // Sắp xếp danh sách sản phẩm theo trường totalBuy giảm dần
-        productList.sort((a, b) {
-          final totalBuyA = a.totalBuy;
-          final totalBuyB = b.totalBuy;
-          
-          if (totalBuyA != null && totalBuyB != null) {
-            return totalBuyB.compareTo(totalBuyA);
-          } else {
-            // Xử lý khi trường totalBuy của một trong hai đối tượng là null
-            return 0;
-          }
-        });
+            if (totalBuyA != null && totalBuyB != null) {
+              return totalBuyB.compareTo(totalBuyA);
+            } else {
+              // Xử lý khi trường totalBuy của một trong hai đối tượng là null
+              return 0;
+            }
+          });
 
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: ${productList.length}");
-        return productList;
+          print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: ${productList.length}");
+          return productList;
+        } else {
+          return [];
+        }
       } else {
         return [];
       }
-    } else {
+    } on SocketException catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+        text: 'Oops No You Need A Good Internet Connection',
+        context: context,
+      ));
+      return [];
+    } catch (e) {
+      print("Error: $e");
       return [];
     }
-  } on SocketException catch (_) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
-      text: 'Oops No You Need A Good Internet Connection',
-      context: context,
-    ));
-    return [];
-  } catch (e) {
-    print("Error: $e");
-    return [];
   }
-}
 
+  Future<List<ProductData>> fetchProductsShortNew(
+      {required BuildContext context}) async {
+    try {
+      final dio = Dio();
+      final response =
+          await dio.get(ApiRoutes.baseurl + '/api/Product/GetProductList');
 
-Future<List<ProductData>> fetchProductsShortNew({required BuildContext context}) async {
-  try {
-    final dio = Dio();
-    final response = await dio.get(ApiRoutes.baseurl + '/api/Product/GetProductList');
+      print(
+          ">>>>>>>>>>>>>>>>>>>>>>>>>>Products response.statusCode: ${response.statusCode}");
+      if (response.statusCode == 200) {
+        var responseData = response.data;
+        if (responseData != null && responseData['data'] is List<dynamic>) {
+          List<ProductData> productList = (responseData['data']
+                  as List<dynamic>)
+              .where((json) => json['status'] == true) // Filter by status=true
+              .map((json) => ProductData.fromJson(json))
+              .toList();
 
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>Products response.statusCode: ${response.statusCode}");
-    if (response.statusCode == 200) {
-      var responseData = response.data;
-   if (responseData != null && responseData['data'] is List<dynamic>) {
-  List<ProductData> productList = (responseData['data'] as List<dynamic>)
-      .where((json) => json['status'] == true) // Filter by status=true
-      .map((json) => ProductData.fromJson(json))
-      .toList();
+          // Sắp xếp danh sách sản phẩm theo thứ tự mới nhất (vd: theo trường createdAt)
+          productList.sort((a, b) {
+            if (a.createdAt != null && b.createdAt != null) {
+              return b.createdAt!.compareTo(a.createdAt!);
+            }
+            return 0; // hoặc bạn có thể xử lý trường hợp null ở đây theo cách bạn muốn
+          });
 
-
-        // Sắp xếp danh sách sản phẩm theo thứ tự mới nhất (vd: theo trường createdAt)
-        productList.sort((a, b) {
-          if (a.createdAt != null && b.createdAt != null) {
-            return b.createdAt!.compareTo(a.createdAt!);
-          }
-          return 0; // hoặc bạn có thể xử lý trường hợp null ở đây theo cách bạn muốn
-        });
-
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: ${productList.length}");
-        return productList;
+          print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: ${productList.length}");
+          return productList;
+        } else {
+          return [];
+        }
       } else {
         return [];
       }
-    } else {
+    } on SocketException catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+        text: 'Oops No You Need A Good Internet Connection',
+        context: context,
+      ));
+      return [];
+    } catch (e) {
+      print("Error: $e");
       return [];
     }
-  } on SocketException catch (_) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
-      text: 'Oops No You Need A Good Internet Connection',
-      context: context,
-    ));
-    return [];
-  } catch (e) {
-    print("Error: $e");
-    return [];
   }
-}
-
 
   Future fetchProductDetail({required dynamic id}) async {
     try {
@@ -322,7 +328,7 @@ Future<List<ProductData>> fetchProductsShortNew({required BuildContext context})
 
   //// CATEGORY
 
-  Future<List<String>> fetchProductCategoryList(
+  Future<List<Category>> fetchProductCategoryList(
       {required BuildContext context}) async {
     try {
       final dio = Dio();
@@ -330,22 +336,16 @@ Future<List<ProductData>> fetchProductsShortNew({required BuildContext context})
           await dio.get(ApiRoutes.baseurl + '/api/Category/GetCategoryList');
       print(
           ">>>>>>>>>>>>>>>> fetch GetCategoryList response.statusCode: ${response.statusCode}");
-      // print(">>>>>>>>>>>>>>>> GetCategoryList data: ${response.data}");
 
       if (response.statusCode == 200) {
         var responseData = response.data['data'];
-        // print(">>>>>>>>>>>>>>>> responseData: $responseData");
 
-        // Tạo danh sách rỗng để lưu trữ category_name
-        List<String> categoryList = [];
+        // Sử dụng phương thức map để chuyển đổi danh sách dữ liệu thành danh sách đối tượng Category
+        List<Category> categoryList = responseData
+            .map<Category>((json) => Category.fromJson(json))
+            .toList();
 
-        // Lặp qua từng đối tượng trong danh sách và trích xuất category_name
-        for (var category in responseData) {
-          String categoryName = category['category_name'];
-          categoryList.add(categoryName);
-        }
-        print(">>>>>>>>>>>>>>>> categoryList: $categoryList");
-        // Trả về danh sách categoryList đã được xây dựng từ category_name
+        print(">>>>>>>>>>>>>>>> categoryList: ${categoryList.length}");
         return categoryList;
       } else {
         return [];
@@ -377,11 +377,16 @@ Future<List<ProductData>> fetchProductsShortNew({required BuildContext context})
         // print(">>>>>>>>>>>>>>>>>>>>>>>>>>responseData : ${responseData['data']}");
 
         if (responseData != null && responseData['data'] is List<dynamic>) {
-          List<ProductData> productList =
-              (responseData['data'] as List<dynamic>)
-                  .map((json) => ProductData.fromJson(json))
-                  .toList();
-          // print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: $productList");
+          // Chuyển đổi danh sách dữ liệu thành danh sách đối tượng ProductData
+          List<ProductData> productList = (responseData['data']
+                  as List<dynamic>)
+              // Lọc các sản phẩm có status = true
+              .where((json) => json['status'] == true)
+              // Chuyển đổi JSON thành đối tượng ProductData và tạo danh sách
+              .map((json) => ProductData.fromJson(json))
+              .toList();
+
+          // Trả về danh sách sản phẩm đã được lọc
           return productList;
         } else {
           return [];
@@ -432,10 +437,11 @@ Future<List<ProductData>> fetchProductsShortNew({required BuildContext context})
           // print(">>>>>>>>>>>>>>>>>>>>>>>>>>productList: $productList");
           // Hàm kiểm tra tên sản phẩm có thỏa mãn điều kiện tìm kiếm gần đúng không
 
-          List<ProductData> searchResults = productList
-              .where((item) =>
-                  item.productName.toLowerCase().contains(query.toLowerCase()))
-              .toList();
+       List<ProductData> searchResults = productList
+    .where((item) =>
+        item.productName.toLowerCase().contains(query.toLowerCase()) &&
+        item.status == true)
+    .toList();
           print(">>>>>>>>>>>>>>>>>>>>>>>>>>searchResults: $searchResults");
           return searchResults;
         } else {
@@ -467,8 +473,8 @@ Future<List<ProductData>> fetchProductsShortNew({required BuildContext context})
       {required BuildContext context, required String id}) async {
     try {
       final dio = Dio();
-      final response =
-          await dio.get(ApiRoutes.baseurl + '/api/Feedback/GetFeedbackListByProductId/$id');
+      final response = await dio.get(
+          ApiRoutes.baseurl + '/api/Feedback/GetFeedbackListByProductId/$id');
 
       print(
           ">>>>>>>>>>>>>>>>>>>>>>>>>>Products response.statusCode: ${response.data}");
@@ -504,7 +510,5 @@ Future<List<ProductData>> fetchProductsShortNew({required BuildContext context})
     }
   }
 
-
 // AUCTION
-
 }

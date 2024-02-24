@@ -4,6 +4,7 @@ class AppColors {
   static Color white = Colors.white;
   static Color blackPearl = const Color(0xff040e22);
   static Color mirage = const Color(0xff1d273b);
+  static Color lightmirage = Color.fromARGB(255, 149, 173, 220);
   static Color mediumPurple = const Color(0xff9371ea);
   static Color fuchsiaPink = const Color(0xffc549bc);
   static Color rawSienna = const Color(0xffd7834f);

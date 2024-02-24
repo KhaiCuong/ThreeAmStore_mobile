@@ -66,7 +66,7 @@ Future forgetPassword({
     required String userEmail,
     required BuildContext context,
   }) async {
-    var subUrl = '/api/User/ResetPassword';
+    var subUrl = '/api/User/ResetPassword/${userEmail}';
     final Uri uri = Uri.parse(ApiRoutes.baseurl + subUrl);
 
     var request = http.Request('GET', uri);
@@ -88,9 +88,18 @@ Future forgetPassword({
         () => Navigator.of(context)
             .pushReplacementNamed(AppRouter.successForgetPassword),
       );
-    } else {
+    } else if (response.statusCode != 200) {
+      WriteCache.setString(key: AppKeys.userData, value: userEmail)
+          .whenComplete(
+        () => Navigator.of(context)
+            .pushReplacementNamed(AppRouter.forgetPassword),
+      );
+         ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
+          context: context, text: 'Email Not exists '));
+    }
+    else {
       ScaffoldMessenger.of(context).showSnackBar(SnackUtil.stylishSnackBar(
-          context: context, text: 'Forget Password faill'));
+          context: context, text: 'Error'));
     }
 
     return response.statusCode == 200;

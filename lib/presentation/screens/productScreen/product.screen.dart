@@ -35,9 +35,12 @@ class _ProductScreenState extends State<ProductScreen> {
   ProductNotifier productNotifier = ProductNotifier();
   List<AuctionWatch> auctionedWatches = [];
   List<ProductData> products = [];
+  Future<void>? _auctionsFuture;
+
+  @override
   void initState() {
     super.initState();
-    _fetchAuctions(context: context);
+    _auctionsFuture = _fetchAuctions(context: context);
   }
 
   Future<void> _fetchAuctions({required BuildContext context}) async {
@@ -88,19 +91,15 @@ class _ProductScreenState extends State<ProductScreen> {
     }
   }
 
- 
-List<AuctionWatch> get _upcomingAuctions {
-  // Lấy thời gian hiện tại
-  DateTime now = DateTime.now();
+  List<AuctionWatch> get _upcomingAuctions {
+    // Lấy thời gian hiện tại
+    DateTime now = DateTime.now();
 
-  // Lọc danh sách để chỉ lấy những đồng hồ với thời gian bắt đầu đấu giá trong tương lai
-  // và không có điều kiện
-  List<AuctionWatch> upcomingAuctions = auctionedWatches;
+    // Lọc danh sách để chỉ lấy những đồng hồ với thời gian bắt đầu đấu giá trong tương lai
+    // và không có điều kiện
+    List<AuctionWatch> upcomingAuctions = auctionedWatches;
     return upcomingAuctions.toList();
-
-
-}
-
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +142,8 @@ List<AuctionWatch> get _upcomingAuctions {
                         0.26, // Đặt chiều cao của SizedBox là chiều cao mong muốn của hình ảnh
                     width: double
                         .infinity, // Đặt chiều rộng của SizedBox là vô hạn để đảm bảo lấp đầy không gian
-                    child: watch.autionProductEntity.image != null && watch.autionProductEntity.image.isNotEmpty
+                    child: watch.autionProductEntity.image != null &&
+                            watch.autionProductEntity.image.isNotEmpty
                         ? Image.network(
                             '$domain/${watch.autionProductEntity.image}',
                             fit: BoxFit
@@ -253,27 +253,33 @@ List<AuctionWatch> get _upcomingAuctions {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                // ElevatedButton(
-                                //   style: ElevatedButton.styleFrom(
-                                //     backgroundColor: AppColors.creamColor,
-                                //     enableFeedback: true,
-                                //     padding: const EdgeInsets.symmetric(),
-                                //     shape: RoundedRectangleBorder(
-                                //       borderRadius: BorderRadius.circular(5.0),
-                                //     ),
-                                //   ),
-                                //   onPressed: () {},
-                                //   child: Text(
-                                //     'Check',
-                                //     style: CustomTextWidget.bodyText3(
-                                //       color: AppColors.mirage,
-                                //     ),
-                                //   ),
-                                // ),
-                                hSizedBox3,
+                               Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 0.0),
+  child: ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: AppColors.creamColor,
+      enableFeedback: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+    ),
+    onPressed: () {},
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Text(
+        'Comming soon',
+        style: CustomTextWidget.bodyText3(
+          color: AppColors.mirage,
+        ),
+      ),
+    ),
+  ),
+),
+
+                                
                                 SizedBox(
                                   height: 124,
-                                  width: 190,
+                                  width: 170,
                                   child: Image.network(
                                       'https://rolex.dafc.com.vn/wp-content/uploads/watch-assets-laying-down/landscape_assets/m126508-0003_modelpage_laying_down_landscape.png'),
                                 ),
@@ -294,11 +300,25 @@ List<AuctionWatch> get _upcomingAuctions {
                     SizedBox(height: 10),
                     Container(
                       height: 200,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _upcomingAuctions.length,
-                        itemBuilder: (context, index) {
-                          return _buildAuctionCard(_upcomingAuctions[index]);
+                      child: FutureBuilder(
+                        future:
+                            _auctionsFuture, // Thay yourFuture bằng Future bạn muốn chờ
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return ShimmerEffects.loadShimmer(context: context);
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            return ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _upcomingAuctions.length,
+                              itemBuilder: (context, index) {
+                                return _buildAuctionCard(
+                                    _upcomingAuctions[index]);
+                              },
+                            );
+                          }
                         },
                       ),
                     ),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:scarvs/app/constants/app.assets.dart';
 import 'package:scarvs/app/constants/app.colors.dart';
 import 'package:scarvs/app/routes/app.routes.dart';
+import 'package:scarvs/core/models/category.dart';
 import 'package:scarvs/core/notifiers/theme.notifier.dart';
 import 'package:scarvs/presentation/screens/categoryScreen/category.screen.dart';
 import 'package:scarvs/presentation/widgets/custom.text.style.dart';
@@ -49,17 +50,18 @@ class BrandWidget extends StatelessWidget {
       "Movado": 8,
       "Orient": 9,
       "Seiko": 10,
-      "Daniel Wellington": 11
+      "Daniel Wellington": 11,
+        "HubLot": 1,
     };
 
     // Widget showBrands không thay đổi
 
-    showBrands(String text, String images) {
+    showBrands(Category category, String images) {
       return GestureDetector(
         onTap: () {
           Navigator.of(context).pushNamed(
             AppRouter.categoryRoute,
-            arguments: CategoryScreenArgs(categoryName: text),
+            arguments: CategoryScreenArgs(category: category),
           );
         },
         child: Padding(
@@ -83,7 +85,7 @@ class BrandWidget extends StatelessWidget {
                 ),
                 vSizedBox1,
                 Text(
-                  text,
+                  category.categoryName,
                   style: CustomTextWidget.bodyText2(
                     color: themeFlag ? AppColors.creamColor : AppColors.mirage,
                   ),
@@ -110,10 +112,11 @@ class BrandWidget extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
+                Category category =Category(categoryId: 'all', categoryName: 'All Brands', description: '1', status: true);
                 Navigator.of(context).pushNamed(
                   AppRouter.categoryRoute,
                   arguments:
-                      const CategoryScreenArgs(categoryName: 'All Brands'),
+                       CategoryScreenArgs(category:category),
                 );
               },
               child: Text(
@@ -138,7 +141,7 @@ class BrandWidget extends StatelessWidget {
         ),
         vSizedBox2,
         // Sử dụng FutureBuilder để lấy dữ liệu từ hàm fetchProductCategoryList
-        FutureBuilder<List<String>>(
+        FutureBuilder<List<Category>>(
           future: productNotifier.fetchProductCategoryList(context: context),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -159,18 +162,19 @@ class BrandWidget extends StatelessWidget {
                   itemCount: snapshot.data!.length,
                   itemBuilder: (BuildContext context, int index) {
                     // Lấy brand từ snapshot.data![index]
-                    String brand = snapshot.data![index];
+                    Category brand = snapshot.data![index];
+                    String name = brand.categoryName;
                     // Kiểm tra xem brand có trong ánh xạ không
-                    if (brandToImageIndex.containsKey(brand)) {
+                    if (brandToImageIndex.containsKey(name)) {
                       // Nếu có, lấy chỉ số tương ứng trong _categoriesImages
-                      int imageIndex = brandToImageIndex[brand]!;
+                      int imageIndex = brandToImageIndex[name]!;
                       // Sử dụng chỉ số đó để lấy hình ảnh tương ứng trong _categoriesImages
                       String image = _categoriesImages[imageIndex];
                       // Trả về widget hiển thị hình ảnh và brand
                       return showBrands(brand, image);
                     } else {
                       // Nếu không tìm thấy ánh xạ, trả về widget trống
-                      return showBrands(brand, _categoriesImages[4]);
+                      return showBrands(brand , _categoriesImages[4]);
                     }
                   },
                 ),

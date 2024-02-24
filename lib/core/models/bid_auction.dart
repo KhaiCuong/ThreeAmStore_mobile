@@ -6,6 +6,7 @@ class Bid {
   final double pidPrice;
   final int? autionId;
   final int? userId;
+  final String? userName;
 
   Bid({
     this.createdAt,
@@ -15,6 +16,7 @@ class Bid {
     required this.pidPrice,
     required this.autionId,
     required this.userId,
+    required this.userName,
   });
 
   factory Bid.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Bid {
       pidPrice: json['pidPice'].toDouble(),
       autionId: json['autionId']??3,
       userId: json['userId']??1,
+      userName: json['userName']??'demo',
     );
   }
 }

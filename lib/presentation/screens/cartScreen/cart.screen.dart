@@ -184,7 +184,7 @@ class _CartScreenState extends State<CartScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Payment successful, See detail in Profile'),
-          duration: Duration(seconds: 4),
+          duration: Duration(seconds: 2),
         ),
       );
     }
@@ -278,7 +278,7 @@ class _CartScreenState extends State<CartScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('$title: $message'),
-        duration: Duration(seconds: duration),
+        duration: Duration(seconds: 2),
       ),
     );
   }
@@ -861,17 +861,21 @@ class _CartScreenState extends State<CartScreen> {
             Navigator.pop(context);
             cartNotifier.refresh();
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackUtil.stylishSnackBar(
-                text: 'Deleted From Cart',
-                context: context,
-              ),
+              // SnackUtil.stylishSnackBar(
+              //   text: 'Deleted From Cart',
+              //   context: context,
+              // ),
+                SnackBar(
+    content: Text('Deleted from Cart'),
+    duration: Duration(seconds: 2), // Thời gian tồn tại 2 giây
+  ),
             );
           } else if (!value) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackUtil.stylishSnackBar(
-                text: 'Oops Error Occurred',
-                context: context,
-              ),
+               SnackBar(
+    content: Text('Error'),
+    duration: Duration(seconds: 2), // Thời gian tồn tại 2 giây
+  ),
             );
           }
         });

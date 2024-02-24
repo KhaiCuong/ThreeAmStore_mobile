@@ -290,7 +290,7 @@ class _AuctionPageState extends State<AuctionPage> {
               Padding(
                 padding: const EdgeInsets.only(left: 4, right: 4),
                 child: Text(
-                  'Start from: \$ ${watch.autionProductEntity.price!}',
+                  'Start: \$${watch.autionProductEntity.price!}',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w100),
                 ),
               ),
@@ -358,7 +358,7 @@ class _AuctionPageState extends State<AuctionPage> {
           children: [
             SizedBox(height: 5),
             Text(
-              'Start from: \$ ${watch.autionProductEntity.price!}',
+              'Start: \$${watch.autionProductEntity.price!}',
               style: TextStyle(fontSize: 16),
             ),
             SizedBox(height: 5),

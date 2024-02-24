@@ -100,9 +100,9 @@ class SignUpScreen extends StatelessWidget {
                                 35.0, 10.0, 35.0, 2.0),
                             child: CustomTextField.customTextField(
                               textEditingController: userAddressController,
-                              hintText: 'Enter a Youre Addresss',
+                              hintText: 'Enter a Your Addresss',
                               validator: (val) =>
-                                  val!.isEmpty ? 'Enter a Youre Address' : null, obscureText: false, labelText: 'Address:',
+                                  val!.isEmpty ? 'Enter a Your Address' : null, obscureText: false, labelText: 'Address:',
                             ),
                           ),
                           Padding(

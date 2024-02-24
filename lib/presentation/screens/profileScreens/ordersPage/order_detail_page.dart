@@ -126,7 +126,7 @@ Future<void> _openFeedbackBox() async {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Payment successful, See detail in Profile'),
-          duration: Duration(seconds: 4),
+          duration: Duration(seconds: 2),
         ),
       );
     }
@@ -212,7 +212,7 @@ Future<void> _openFeedbackBox() async {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('$title: $message'),
-        duration: Duration(seconds: duration),
+        duration: Duration(seconds: 2),
       ),
     );
   }
@@ -447,7 +447,7 @@ void _showFeedbackDialog(
                   sendFeedBackToApi(
                     productId: order.productId,
                     context: context,
-                    title: 'Feedback',
+                    title: authNotifier.auth.username,
                     content: _textEditingController.text,
                     userId: authNotifier.auth.id,
                     start: ratingValue.toInt(), orderDetailId: order.detailId,
@@ -561,7 +561,8 @@ void _showFeedbackDialog(
                               fontWeight: FontWeight.w300,
                             ),
                           ),
-                          if (!hasFeedback) // Hiển thị nút feedback nếu chưa feedback
+                          SizedBox(width: 10,),
+                          if (!hasFeedback && widget.orderDetailPageArgs.order.status == 'Completed' ) // Hiển thị nút feedback nếu chưa feedback
                             ElevatedButton(
                               onPressed: () {
                                 _showFeedbackDialog(
