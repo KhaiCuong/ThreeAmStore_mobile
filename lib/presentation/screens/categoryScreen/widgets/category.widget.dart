@@ -88,6 +88,7 @@ class _ShowDataGridState extends State<ShowDataGrid> {
                               )
                             : Container(),
                       ),
+
                     ),
                   ),
 
@@ -213,33 +214,35 @@ class _ShowDataGridState extends State<ShowDataGrid> {
                   //   ),
                   // ),
                   // Tên sản phẩm
-                  Positioned(
-                    bottom: 36,
-                    left: 2,
-                    right: 2,
-                    child: Container(
-                      padding: EdgeInsets.only(top: 10),
-                      height: 60,
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(left: 2),
-                            child: Text(
-                              prod.productName,
-                              style: TextStyle(
-                                color: themeFlag
-                                    ? AppColors.creamColor
-                                    : AppColors.blackPearl,
-                                fontSize: 12,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                 Positioned(
+  bottom: 36,
+  left: 2,
+  right: 2,
+  child: Container(
+    padding: EdgeInsets.only(top: 10),
+    height: 60,
+    width: 60,
+    child: Row(
+      children: [
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.only(left: 2),
+            child: Text(
+              prod.productName,
+              style: TextStyle(
+                color: themeFlag
+                    ? AppColors.creamColor
+                    : AppColors.blackPearl,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  ),
+),
+
                 ],
               ),
             ),
